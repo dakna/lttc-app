@@ -29,7 +29,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
-
     //firebaseUI is still on support lib 27.1.0
 
     //UI
@@ -44,7 +43,7 @@ dependencies {
     //Firebase
     compile 'com.google.firebase:firebase-core:15.0.2'
     compile 'com.google.firebase:firebase-auth:15.1.0'
-    compile 'com.google.firebase:firebase-firestore:16.0.0'
+    compile 'com.google.firebase:firebase-firestore:15.0.0'
     compile 'com.google.firebase:firebase-storage:15.0.2'
     compile 'com.google.firebase:firebase-messaging:15.0.2'
 
