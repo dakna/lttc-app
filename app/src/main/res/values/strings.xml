@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">LTTC</string>
     <string name="nfc_explain">Hello NFC World!</string>
+    <string name="member_completion_hint">Type member name</string>
 </resources>

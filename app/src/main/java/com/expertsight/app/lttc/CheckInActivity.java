@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
@@ -52,17 +54,24 @@ public class CheckInActivity extends AppCompatActivity {
 
     private void setupAutoCompleteView() {
 
+        db = FirebaseFirestore.getInstance();
 
-        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line);
+        final ArrayAdapter<Member> adapter = new ArrayAdapter<Member>(this, android.R.layout.simple_dropdown_item_1line);
         AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.actvMembers);
         autoCompleteTextView.setAdapter(adapter);
 
-        db = FirebaseFirestore.getInstance();
+        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Member member = (Member) parent.getAdapter().getItem(position);
+                Toast.makeText(context, "You clicked on " + member.getFullName(), Toast.LENGTH_SHORT).show();
+                parent.clearFocus();
+            }
+        });
 
 
         // TODO: 5/16/2018 this should register a SnapshotListener, so the activity lookup gets updated if a member is added outside the activity.
         // as of now that is not needed, since we will add members on the member activity.
-        final Collection<String> memberFullNameList = new ArrayList<String>();
         CollectionReference members = db.collection("members");
         members.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -72,9 +81,8 @@ public class CheckInActivity extends AppCompatActivity {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
                                 Member member = document.toObject(Member.class).withId(document.getId());
-                                memberFullNameList.add(member.getFullName());
+                                adapter.add(member);
                             }
-                            adapter.addAll(memberFullNameList);
                         } else {
                             Log.d(TAG, "Error getting members: ", task.getException());
                         }
