@@ -6,6 +6,12 @@
     android:layout_height="match_parent"
     tools:context="com.expertsight.app.lttc.CheckInActivity">
 
+    <android.support.v7.widget.AppCompatAutoCompleteTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/actvMembers"
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
     <com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx
         android:layout_width="match_parent"

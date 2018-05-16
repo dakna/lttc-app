@@ -1,6 +1,8 @@
 package com.expertsight.app.lttc.model;
 
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.IgnoreExtraProperties;
 
 public class Member extends FirestoreModel {
 
@@ -73,5 +75,13 @@ public class Member extends FirestoreModel {
         this.balance = balance;
     }
 
+    @Exclude
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
 
+    @Override
+    public String toString() {
+        return getFullName();
+    }
 }
