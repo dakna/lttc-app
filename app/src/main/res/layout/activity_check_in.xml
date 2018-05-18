@@ -4,15 +4,96 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context="com.expertsight.app.lttc.CheckInActivity">
 
-    <android.support.v7.widget.AppCompatAutoCompleteTextView
-        android:layout_width="match_parent"
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelineVertical"
+        android:layout_width="1dp"
         android:layout_height="wrap_content"
-        android:id="@+id/actvMembers"
-        android:completionThreshold="1"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.4"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelineHorizontal"
+        android:layout_width="1dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.4"/>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/tilMembers"
+        android:layout_width="0dp"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineVertical"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="125dp"
+        >
+        <android.support.v7.widget.AppCompatAutoCompleteTextView
+            android:id="@+id/actvMembers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:paddingStart="8dp"
+            android:completionThreshold="1"
+            android:hint="Search by name"
+
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.design.widget.TextInputLayout>
+
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineVertical"
+        app:layout_constraintTop_toBottomOf="@+id/tilMembers"
+        app:layout_constraintBottom_toTopOf="@id/rvMembersNotCheckedInToday">
+        <View
+            android:layout_height="2dp"
+            android:layout_width="50dp"
+            android:background="@color/grey"
+            android:layout_gravity="center"/>
+
+        <TextView
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="or"
+            android:layout_gravity="center"/>
+
+        <View
+            android:layout_height="2dp"
+            android:layout_width="50dp"
+            android:background="@color/grey"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvMembersNotCheckedInToday"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavViewBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineVertical"
+        app:layout_constraintTop_toTopOf="@+id/guidelineHorizontal">
+
+    </android.support.v7.widget.RecyclerView>
 
     <com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx
         android:layout_width="match_parent"
@@ -22,4 +103,8 @@
         android:background="@drawable/white_grey_border_top"
         app:menu="@menu/bottom_navigation_menu">
     </com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx>
+
+
+
+
 </android.support.constraint.ConstraintLayout>

@@ -15,6 +15,52 @@ maybe the member lookup should be on home, then start checking the found member
 
 text: Scan your smartcard or start typing your name here to find your member acount
 
+new member: 2 ways: scan a card and select a member, or scan a card and enter add new member
+
+attach card to member. must create member first, then scan card
+
+card is scanned, but no member found: dialog new card found, pick a member to assign the card to
+
+after card is scanned , show if user is already checked in.
+if not show payment options for check in
+
+next to selected member to check in have a cancel field to clear selected member
+
+
+
+If you have a smartcard, hold it to the side
+
+No member yet? Create an account
+
+Become a member dialog
+
+left side:Select member to check in
+
+
+	search by name autocomplete
+
+	Add new member	button to trigger dialog
+
+	on bottom Member list not checked in scroll view
+
+
+
+right side current member payments to comlete checkin
+
+	if selected 
+		Current user / welcome <NAME>
+		fee is $5 today, and your balance is $-5
+		Select amount: 5 10 20
+
+
+	on bottom Member list checked in today scroll view
+
+
+add member button pops up dialog and loads current member into member checkin view
+card scan loads found member into member checkin view
+if not found, dialog pops up and asks which member the card should be assigned to. will overwrite current card, old car will be moved to unused cards stack.
+
+
 
 Member Document
 ==================
@@ -36,3 +82,5 @@ smartcardId
 
 card Scan:
 if id not found, ask if you want to add a member and pass the id as bundle to the activity. which one? main? or member and then pass the member back to checkin?
+
+

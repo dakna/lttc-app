@@ -8,9 +8,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.expertsight.app.lttc.model.Member;
@@ -28,6 +30,10 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 
 public class CheckInActivity extends AppCompatActivity {
 
@@ -38,16 +44,15 @@ public class CheckInActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private FirebaseStorage storage;
 
-    // test only
-    private static final String[] TEST_MEMBERS = new String[] {
-            "Daniel Knapp", "Dan E. Knapp", "Trey Aughenbaugh", "Jeff Stiles", "Jeff Hallenbach", "Bradley Matkze"
-    };
+    @BindView(R.id.actvMembers)
+    AutoCompleteTextView autoCompleteTextView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_in);
+        ButterKnife.bind(this);
         setupBottomNavigationView();
         setupAutoCompleteView();
     }
@@ -57,15 +62,23 @@ public class CheckInActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         final ArrayAdapter<Member> adapter = new ArrayAdapter<Member>(this, android.R.layout.simple_dropdown_item_1line);
-        AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.actvMembers);
         autoCompleteTextView.setAdapter(adapter);
 
         autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Member member = (Member) parent.getAdapter().getItem(position);
-                Toast.makeText(context, "You clicked on " + member.getFullName(), Toast.LENGTH_SHORT).show();
-                parent.clearFocus();
+                Toast.makeText(context, "You clicked on " + member.getFullName() +" " + member.getId(), Toast.LENGTH_SHORT).show();
+                autoCompleteTextView.setText("");
+                autoCompleteTextView.clearFocus();
+            }
+        });
+
+        autoCompleteTextView.setOnDismissListener(new AutoCompleteTextView.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                in.hideSoftInputFromWindow(getCurrentFocus().getApplicationWindowToken(), 0);
             }
         });
 
@@ -91,7 +104,6 @@ public class CheckInActivity extends AppCompatActivity {
 
 
     }
-
 
 
     private void setupBottomNavigationView() {
