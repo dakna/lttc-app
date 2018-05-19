@@ -6,6 +6,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -181,6 +182,10 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
             protected void onBindViewHolder(MemberViewHolder holder, int position, final Member member) {
                 Log.d(TAG, "onBindViewHolder: Member ID " + member.getId());
                 holder.fullName.setText(member.getFullName());
+                String email = member.getEmail();
+                if (!email.isEmpty()) {
+                    holder.email.setText(member.getEmail());
+                }
 
             }
 
@@ -214,7 +219,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         dbAdapterAllMembers.notifyDataSetChanged();
         rvMembers.setAdapter(dbAdapterAllMembers);
         rvMembers.setLayoutManager(new LinearLayoutManager(context));
-
+        rvMembers.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
     }
 
 
@@ -232,10 +237,12 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
     public class MemberViewHolder extends RecyclerView.ViewHolder {
         public TextView fullName;
+        public TextView email;
 
         public MemberViewHolder(View view) {
             super(view);
             fullName = view.findViewById(R.id.tvFullName);
+            email = view.findViewById(R.id.tvEmail);
         }
     }
 

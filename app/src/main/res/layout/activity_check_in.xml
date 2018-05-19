@@ -32,6 +32,7 @@
             android:layout_marginStart="16dp"
             android:paddingStart="8dp"
             android:completionThreshold="1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:hint="Search by name"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -65,7 +66,7 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvMembers"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
