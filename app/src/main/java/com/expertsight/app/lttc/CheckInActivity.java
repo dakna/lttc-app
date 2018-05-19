@@ -38,7 +38,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class CheckInActivity extends AppCompatActivity {
+public class CheckInActivity extends AppCompatActivity implements AddMemberDialogFragment.AddMemberDialogListener{
 
     private static final String TAG = "CheckInActivity";
     private static final int ACTIVITY_NUM = 1;
@@ -132,5 +132,10 @@ public class CheckInActivity extends AppCompatActivity {
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
+    }
+
+    @Override
+    public void applyMemberData(String firstName, String lastName, Boolean mailingList) {
+        Log.d(TAG, "applyMemberData: " + firstName + " " + lastName + " " + mailingList);
     }
 }
