@@ -6,20 +6,27 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.expertsight.app.lttc.model.Member;
 import com.expertsight.app.lttc.ui.BottomNavigationViewHelper;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 
 import com.google.android.gms.tasks.Task;
@@ -27,6 +34,8 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
@@ -48,6 +57,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
     private FirebaseFirestore db;
     private FirebaseStorage storage;
+    private FirestoreRecyclerAdapter dbAdapterAllMembers, dbAdapterCheckedInMembers;
 
     @BindView(R.id.actvMembers)
     AutoCompleteTextView autoCompleteTextView;
@@ -55,6 +65,8 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     @BindView(R.id.btnAddMember)
     Button btnAddMember;
 
+    @BindView(R.id.rvMembers)
+    RecyclerView rvMembers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +78,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         ButterKnife.bind(this);
         setupBottomNavigationView();
         setupAutoCompleteView();
+        setupMemberListView();
     }
 
     private void setupAutoCompleteView() {
@@ -93,7 +106,6 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
 
         // TODO: 5/16/2018 this should register a SnapshotListener, so the activity lookup gets updated if a member is added outside the activity.
-        // as of now that is not needed, since we will add members on the member activity.
         CollectionReference members = db.collection("members");
         members.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -125,6 +137,106 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         AddMemberDialogFragment addMemberDialogFragment = new AddMemberDialogFragment();
         addMemberDialogFragment.show(manager, "fragment_add_member_dialog");
 
+    }
+
+
+    private void setupMemberListView() {
+
+        final CollectionReference membersRef = db.collection("/members/");
+        final Query query = membersRef.orderBy("firstName");
+
+        Log.d(TAG, "starting to get Member list");
+/*
+
+        query.get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "size of the snapshots after get and result " + String.valueOf(task.getResult().size()));
+                        }
+                    }
+                });
+*/
+
+
+
+        FirestoreRecyclerOptions<Member> response = new FirestoreRecyclerOptions.Builder<Member>()
+                .setQuery(query, Member.class)
+                .build();
+
+
+        dbAdapterAllMembers = new FirestoreRecyclerAdapter<Member, MemberViewHolder>(response) {
+
+
+            @Override
+            public Member getItem(int position) {
+                Member member = super.getItem(position);
+                // fill id into local POJO so we can pass it on when clicked
+                member.setId(this.getSnapshots().getSnapshot(position).getId());
+                return member;
+            }
+
+            @Override
+            protected void onBindViewHolder(MemberViewHolder holder, int position, final Member member) {
+                Log.d(TAG, "onBindViewHolder: Member ID " + member.getId());
+                holder.fullName.setText(member.getFullName());
+
+            }
+
+            @Override
+            public MemberViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.layout_member_list, parent, false);
+
+                return new MemberViewHolder(view);
+            }
+
+            @Override
+            public void onError(FirebaseFirestoreException e) {
+                Log.e("onError : error ", e.getMessage());
+            }
+
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+                Log.d(TAG,"on Data changed");
+            }
+
+            @Override
+            public int getItemViewType(int position) {
+                return super.getItemViewType(position);
+            }
+
+        };
+
+        dbAdapterAllMembers.notifyDataSetChanged();
+        rvMembers.setAdapter(dbAdapterAllMembers);
+        rvMembers.setLayoutManager(new LinearLayoutManager(context));
+
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        dbAdapterAllMembers.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        dbAdapterAllMembers.stopListening();
+    }
+
+    public class MemberViewHolder extends RecyclerView.ViewHolder {
+        public TextView fullName;
+
+        public MemberViewHolder(View view) {
+            super(view);
+            fullName = view.findViewById(R.id.tvFullName);
+        }
     }
 
     private void setupBottomNavigationView() {

@@ -84,6 +84,9 @@ card Scan:
 if id not found, ask if you want to add a member and pass the id as bundle to the activity. which one? main? or member and then pass the member back to checkin?
 
 
+auth: kein login, wegen nutzung offline.
+stattdessen master passwort hinterlegen und in einem dialog abfragen bei akttionen wie loeschen etc.
+
 ++++++++++++++++++
 NEXT STEPS
 ++++++++++++++++++

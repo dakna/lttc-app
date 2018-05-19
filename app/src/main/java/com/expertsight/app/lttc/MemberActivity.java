@@ -117,7 +117,7 @@ public class MemberActivity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(UserViewHolder holder, int position, final Member member) {
                 Log.d(TAG, "onBindViewHolder: Member ID " + member.getId());
-                holder.tvLastName.setText(member.getId() + " " + member.getLastName());
+                holder.tvFullName.setText(member.getId() + " " + member.getLastName());
 
             }
 
@@ -166,11 +166,11 @@ public class MemberActivity extends AppCompatActivity {
     }
 
     public class UserViewHolder extends ViewHolder {
-        public TextView tvLastName;
+        public TextView tvFullName;
 
         public UserViewHolder(View view) {
             super(view);
-            tvLastName = view.findViewById(R.id.tv_last_name);
+            tvFullName = view.findViewById(R.id.tvFullName);
         }
     }
 
