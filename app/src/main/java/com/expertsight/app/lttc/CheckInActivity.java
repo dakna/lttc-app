@@ -1,5 +1,7 @@
 package com.expertsight.app.lttc;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -46,6 +49,9 @@ public class CheckInActivity extends AppCompatActivity {
 
     @BindView(R.id.actvMembers)
     AutoCompleteTextView autoCompleteTextView;
+
+    @BindView(R.id.btnAddMember)
+    Button btnAddMember;
 
 
     @Override
@@ -105,6 +111,18 @@ public class CheckInActivity extends AppCompatActivity {
 
     }
 
+    @OnClick(R.id.btnAddMember)
+    public void addMember() {
+        Log.d(TAG, "addMember: start");
+        FragmentManager manager = getFragmentManager();
+        Fragment frag = manager.findFragmentByTag("fragment_add_member_dialog");
+        if (frag != null) {
+            manager.beginTransaction().remove(frag).commit();
+        }
+        AddMemberDialogFragment addMemberDialogFragment = new AddMemberDialogFragment();
+        addMemberDialogFragment.show(manager, "fragment_add_member_dialog");
+
+    }
 
     private void setupBottomNavigationView() {
         Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");

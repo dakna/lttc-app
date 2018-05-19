@@ -84,3 +84,14 @@ card Scan:
 if id not found, ask if you want to add a member and pass the id as bundle to the activity. which one? main? or member and then pass the member back to checkin?
 
 
+++++++++++++++++++
+NEXT STEPS
+++++++++++++++++++
+add member
+	onlick listener for button
+	create dialog fragment with edittexts and checkbox
+			use alertdialog and  http://www.vogella.com/tutorials/AndroidDialogs/article.html
+	save values in activity to firestore
+
+
+
