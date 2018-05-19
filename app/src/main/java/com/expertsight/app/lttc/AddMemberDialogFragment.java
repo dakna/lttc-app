@@ -17,6 +17,7 @@ public class AddMemberDialogFragment extends DialogFragment {
 
     private TextInputEditText textInputEditTextFirstName;
     private TextInputEditText textInputEditTextLastName;
+    private TextInputEditText textInputEditTextEmail;
     private CheckBox checkBoxMailingList;
     private AddMemberDialogListener listener;
 
@@ -26,6 +27,7 @@ public class AddMemberDialogFragment extends DialogFragment {
         View form = inflater.inflate(R.layout.fragment_add_member_dialog,null);
         textInputEditTextFirstName = form.findViewById(R.id.firstName);
         textInputEditTextLastName = form.findViewById(R.id.lastName);
+        textInputEditTextEmail = form.findViewById(R.id.email);
         checkBoxMailingList = form.findViewById(R.id.mailingList);
         AlertDialog.Builder builder =  new AlertDialog.Builder(getActivity())
                 .setView(form)
@@ -41,9 +43,10 @@ public class AddMemberDialogFragment extends DialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         String firstName = textInputEditTextFirstName.getText().toString();
                         String lastName = textInputEditTextLastName.getText().toString();
+                        String email = textInputEditTextEmail.getText().toString();
                         Boolean mailingList = checkBoxMailingList.isChecked();
 
-                        listener.applyMemberData(firstName, lastName, mailingList);
+                        listener.applyNewMemberData(firstName, lastName, email, mailingList);
 
                         Toast.makeText(getActivity(), "Pressed OK ", Toast.LENGTH_SHORT).show();
                     }
@@ -73,7 +76,7 @@ public class AddMemberDialogFragment extends DialogFragment {
     }
 
     public interface AddMemberDialogListener {
-        void applyMemberData(String firstName, String lastName, Boolean mailingList);
+        void applyNewMemberData(String firstName, String lastName, String email, Boolean mailingList);
     }
 
 }

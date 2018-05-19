@@ -24,6 +24,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -57,6 +59,9 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        db = FirebaseFirestore.getInstance();
+
         setContentView(R.layout.activity_check_in);
         ButterKnife.bind(this);
         setupBottomNavigationView();
@@ -64,8 +69,6 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     }
 
     private void setupAutoCompleteView() {
-
-        db = FirebaseFirestore.getInstance();
 
         final ArrayAdapter<Member> adapter = new ArrayAdapter<Member>(this, android.R.layout.simple_dropdown_item_1line);
         autoCompleteTextView.setAdapter(adapter);
@@ -135,7 +138,27 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     }
 
     @Override
-    public void applyMemberData(String firstName, String lastName, Boolean mailingList) {
-        Log.d(TAG, "applyMemberData: " + firstName + " " + lastName + " " + mailingList);
+    public void applyNewMemberData(final String firstName, final String lastName, String email, Boolean mailingList) {
+        Log.d(TAG, "applyMemberData: " + firstName + " " + lastName + " " + email +" " + mailingList);
+        Member newMember = new Member();
+        newMember.setFirstName(firstName);
+        newMember.setLastName(lastName);
+        newMember.setEmail(email);
+        newMember.setMailingSubscriber(mailingList);
+
+        CollectionReference members = db.collection("members");
+        members.add(newMember).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentReference> task) {
+                if(task.isSuccessful()) {
+                    DocumentReference memberRef = task.getResult();
+                    Log.d(TAG, "onComplete: new member added with ID " + memberRef.getId());
+                    Toast.makeText(context, "Added new member: " + firstName + " " + lastName, Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.d(TAG, "onComplete: error adding new member");
+                    Toast.makeText(context, "Unknown Error: Couldn't add new member", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }
