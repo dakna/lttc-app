@@ -44,17 +44,17 @@ public class AddMemberDialogFragment extends DialogFragment {
                         String firstName = textInputEditTextFirstName.getText().toString();
                         String lastName = textInputEditTextLastName.getText().toString();
                         String email = textInputEditTextEmail.getText().toString();
-                        Boolean mailingList = checkBoxMailingList.isChecked();
+                        boolean mailingList = checkBoxMailingList.isChecked();
 
                         listener.applyNewMemberData(firstName, lastName, email, mailingList);
 
-                        Toast.makeText(getActivity(), "Pressed OK ", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Adding new member", Toast.LENGTH_SHORT).show();
                     }
                 })
                 // negative button
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getActivity(), "Cancel", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Cancelled", Toast.LENGTH_SHORT).show();
                     }
                 });
         AlertDialog alertDialog = builder.create();
@@ -76,7 +76,7 @@ public class AddMemberDialogFragment extends DialogFragment {
     }
 
     public interface AddMemberDialogListener {
-        void applyNewMemberData(String firstName, String lastName, String email, Boolean mailingList);
+        void applyNewMemberData(String firstName, String lastName, String email, boolean mailingList);
     }
 
 }

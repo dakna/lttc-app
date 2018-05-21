@@ -1,0 +1,102 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/addMemberDialog"
+    tools:context="com.expertsight.app.lttc.CheckInMemberDialogFragment">
+
+
+    <TextView
+        android:id="@+id/tvMemberFullName"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:text="Fullname"
+        android:textStyle="bold"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvMemberBalance"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:text="Balance"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintStart_toEndOf="@id/tvMemberFullName"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvPaymentQuestion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="How much money do you put in today?"
+        app:layout_constraintTop_toBottomOf="@+id/tvMemberBalance"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <RadioGroup
+        android:id="@+id/radioPayment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/tvPaymentQuestion">
+        <RadioButton
+            android:id="@+id/radioPayFive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:text="$5" />
+        <RadioButton
+            android:id="@+id/radioPayTen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:text="$10" />
+        <RadioButton
+            android:id="@+id/radioPayTwenty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:text="$20" />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/tvChangeQuestion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="Do you want change back?"
+        app:layout_constraintTop_toBottomOf="@+id/radioPayment"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+    <CheckBox
+        android:id="@+id/cbKeepChange"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="No, add to my balance"
+        app:layout_constraintTop_toBottomOf="@+id/tvChangeQuestion"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+
+</android.support.constraint.ConstraintLayout>

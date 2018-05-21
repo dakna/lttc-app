@@ -92,6 +92,21 @@ NEXT STEPS
 ++++++++++++++++++
 onclick listener to member list
 test layout for playin today list in right half of screen
+	better: just signal if the player is playing today in main member list
+	or: GridLayoutManager for recyclerview, and order by lastCheckIn, show icon if its today. participants not checkin in often move down the list
+
 build form for check in
+
+
+check in per dialog, money per radio button. check if we can have a selection AND a checkbox in the same dialog
+playing today per green checkmark in table. make a headline
+
+onselectionchange listener und die fragen nach change ein/ausblenden
+
+icon in checkin dialog aendern, title aendern
+Welcome Daniel Knapp!
+The fee for playing today is $5. Your current balance is $0
+
+pass member object to checkIn dialog as parcelable bundle
 
 

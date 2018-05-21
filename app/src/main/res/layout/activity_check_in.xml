@@ -9,7 +9,7 @@
     tools:context="com.expertsight.app.lttc.CheckInActivity">
 
     <android.support.constraint.Guideline
-        android:id="@+id/guidelineVerticalLeft"
+        android:id="@+id/guidelineVertical"
         android:layout_width="1dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -43,14 +43,14 @@
         android:layout_marginTop="8dp"
         android:layout_marginStart="16dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/guidelineVerticalLeft"
+        app:layout_constraintEnd_toEndOf="@id/guidelineVertical"
         tools:layout_editor_absoluteX="16dp"
         tools:layout_editor_absoluteY="135dp" />
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/tilMembers"
         android:layout_width="0dp"
-        app:layout_constraintEnd_toStartOf="@+id/guidelineVerticalLeft"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineVertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnAddMember"
         android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginBottom="16dp"
-        app:layout_constraintEnd_toStartOf="@+id/guidelineVerticalLeft">
+        app:layout_constraintEnd_toStartOf="@+id/guidelineVertical">
 
 
         <android.support.v7.widget.RecyclerView
@@ -134,15 +134,83 @@
         />
 
 
+
+    <TextView
+        android:id="@+id/tvCurrentMemberHeadline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        style="@style/TextAppearance.AppCompat.Large"
+        android:text="@string/headline_current_member"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guidelineVertical"/>
+
     <TextView
         android:id="@+id/tvNFC"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="16dp"
         android:text="@string/nfc_explain"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/guidelineVerticalLeft"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintStart_toEndOf="@id/guidelineVertical"
+        app:layout_constraintTop_toBottomOf="@id/tvCurrentMemberHeadline" />
+
+    <TextView
+        android:id="@+id/tvMemberFullName"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:text="name"
+        android:textStyle="bold"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintStart_toEndOf="@id/guidelineVertical"
+        app:layout_constraintTop_toBottomOf="@id/tvNFC"/>
+
+    <TextView
+        android:id="@+id/tvMemberBalance"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:text="name"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintStart_toEndOf="@id/guidelineVertical"
+        app:layout_constraintTop_toBottomOf="@id/tvMemberFullName"/>
+
+    <android.support.v7.widget.ButtonBarLayout
+        android:id="@+id/buttonBarLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toEndOf="@id/guidelineVertical"
+        app:layout_constraintTop_toBottomOf="@id/tvMemberBalance">
+
+        <Button
+            android:id="@+id/btnPayFive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5" />
+
+        <Button
+            android:id="@+id/btnPayTen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10" />
+
+        <Button
+            android:id="@+id/btnPayTwenty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10" />
+
+    </android.support.v7.widget.ButtonBarLayout>
+
 
 
 </android.support.constraint.ConstraintLayout>

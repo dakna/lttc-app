@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -38,6 +39,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -60,7 +62,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class CheckInActivity extends AppCompatActivity implements AddMemberDialogFragment.AddMemberDialogListener{
+public class CheckInActivity extends AppCompatActivity implements AddMemberDialogFragment.AddMemberDialogListener, CheckInMemberDialogFragment.CheckInMemberDialogListener{
 
     private static final String TAG = "CheckInActivity";
     private static final int ACTIVITY_NUM = 1;
@@ -89,6 +91,13 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
     @BindView(R.id.tvNFC)
     TextView mTextView;
+
+    @BindView(R.id.tvMemberFullName)
+    TextView tvMemberFullName;
+
+    @BindView(R.id.tvMemberBalance)
+    TextView tvMemberBalance;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -186,6 +195,18 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     }
 
 
+    public void checkInMember() {
+        Log.d(TAG, "checkInMember: start");
+        FragmentManager manager = getFragmentManager();
+        Fragment frag = manager.findFragmentByTag("fragment_check_in_member_dialog");
+        if (frag != null) {
+            manager.beginTransaction().remove(frag).commit();
+        }
+        CheckInMemberDialogFragment checkInMemberDialogFragment = new CheckInMemberDialogFragment();
+        checkInMemberDialogFragment.show(manager, "fragment_check_in_member_dialog");
+
+    }
+
     private void setupMemberListView() {
 
         final CollectionReference membersRef = db.collection("/members/");
@@ -282,14 +303,23 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         dbAdapterMembersCheckedIn.stopListening();
     }
 
-    public class MemberViewHolder extends RecyclerView.ViewHolder {
+    public class MemberViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView fullName;
         public TextView email;
 
         public MemberViewHolder(View view) {
             super(view);
+            view.setOnClickListener(this);
             fullName = view.findViewById(R.id.tvFullName);
             email = view.findViewById(R.id.tvEmail);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int adapterPos = getAdapterPosition();
+            Member member = (Member) dbAdapterAllMembers.getItem(adapterPos);
+            Toast.makeText(context, "clicked on " + member.getId(), Toast.LENGTH_SHORT).show();
+            checkInMember();
         }
     }
 
@@ -408,9 +438,30 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
             Log.d(TAG, "handleIntent: tag" + tag);
 
             byte[] id = tag.getId();
-            Log.d(TAG, "handleIntent: tag ID in HEX " + MifareHelper.getHexString(id, id.length));
 
-            mTextView.setText(MifareHelper.getHexString(id, id.length));
+            String hexId = MifareHelper.getHexString(id, id.length);
+            Log.d(TAG, "handleIntent: tag ID in HEX " + hexId);
+
+
+
+            //member lookup
+            CollectionReference membersRef = db.collection("/members/");
+            final Query query = membersRef.whereEqualTo("smartcardId", hexId);
+
+            query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    if (queryDocumentSnapshots.size() == 1) {
+                        DocumentSnapshot memberDoc = queryDocumentSnapshots.getDocuments().get(0);
+                        Member member = memberDoc.toObject(Member.class).withId(memberDoc.getId());
+                        //setupMemberCheckInView(member);
+                        Log.d(TAG, "onSuccess getting member by smartcard lookup: " + member.toString());
+                        mTextView.setText("Found a member with Smartcard ID " + member.getSmartcardId());
+                        tvMemberFullName.setText(member.getFullName());
+                        tvMemberBalance.setText("Balance: $" + member.getBalance());
+                    }
+                }
+            });
 
         }
     }
@@ -455,7 +506,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     }*/
 
     @Override
-    public void applyNewMemberData(final String firstName, final String lastName, String email, Boolean mailingList) {
+    public void applyNewMemberData(final String firstName, final String lastName, String email, boolean mailingList) {
         Log.d(TAG, "applyMemberData: " + firstName + " " + lastName + " " + email +" " + mailingList);
         Member newMember = new Member();
         newMember.setFirstName(firstName);
@@ -477,5 +528,30 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                 }
             }
         });
+    }
+
+    @Override
+    public void applyCheckInData(float payment, boolean keepChange) {
+        Log.d(TAG, "applyCheckInMemberData: payment" + payment + " keepChange " +keepChange);
+/*        Member newMember = new Member();
+        newMember.setFirstName(firstName);
+        newMember.setLastName(lastName);
+        newMember.setEmail(email);
+        newMember.setMailingSubscriber(mailingList);
+
+        CollectionReference members = db.collection("members");
+        members.add(newMember).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentReference> task) {
+                if(task.isSuccessful()) {
+                    DocumentReference memberRef = task.getResult();
+                    Log.d(TAG, "onComplete: new member added with ID " + memberRef.getId());
+                    Toast.makeText(context, "Added new member: " + firstName + " " + lastName, Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.d(TAG, "onComplete: error adding new member");
+                    Toast.makeText(context, "Unknown Error: Couldn't add new member", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });*/
     }
 }
