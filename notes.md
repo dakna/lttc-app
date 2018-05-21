@@ -90,11 +90,8 @@ stattdessen master passwort hinterlegen und in einem dialog abfragen bei akttion
 ++++++++++++++++++
 NEXT STEPS
 ++++++++++++++++++
-add member
-	onlick listener for button
-	create dialog fragment with edittexts and checkbox
-			use alertdialog and  http://www.vogella.com/tutorials/AndroidDialogs/article.html
-	save values in activity to firestore
-
+onclick listener to member list
+test layout for playin today list in right half of screen
+build form for check in
 
 

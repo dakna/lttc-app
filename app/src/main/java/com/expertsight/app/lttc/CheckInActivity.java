@@ -1,8 +1,14 @@
 package com.expertsight.app.lttc;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,6 +33,7 @@ import android.widget.Toast;
 import com.expertsight.app.lttc.model.Member;
 import com.expertsight.app.lttc.ui.BottomNavigationViewHelper;
 import com.expertsight.app.lttc.util.FirebaseHelper;
+import com.expertsight.app.lttc.util.MifareHelper;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -59,6 +66,11 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     private static final int ACTIVITY_NUM = 1;
     private Context context = CheckInActivity.this;
 
+    public static final String MIME_TEXT_PLAIN = "text/plain";
+
+
+    private NfcAdapter mNfcAdapter = null;
+
     private FirebaseFirestore db;
     private FirebaseStorage storage;
     private FirestoreRecyclerAdapter dbAdapterAllMembers, dbAdapterMembersCheckedIn;
@@ -75,6 +87,9 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     @BindView(R.id.rvMembersCheckedIn)
     RecyclerView rvMembersCheckedIn;
 
+    @BindView(R.id.tvNFC)
+    TextView mTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,11 +97,34 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         db = FirebaseFirestore.getInstance();
 
         setContentView(R.layout.activity_check_in);
+
+
+
+
+
         ButterKnife.bind(this);
         //setupBottomNavigationView();
         setupAutoCompleteView();
         setupMemberListView();
         setupMemberCheckedInListView();
+
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+
+        if (mNfcAdapter == null) {
+            // Stop here, we definitely need NFC
+            Toast.makeText(this, "This device doesn't support NFC.", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+
+        }
+
+        if (!mNfcAdapter.isEnabled()) {
+            mTextView.setText("NFC is disabled.");
+        } else {
+            mTextView.setText("NFC is enabled for MifareClassic");
+        }
+
+        handleIntent(getIntent());
     }
 
     private void setupAutoCompleteView() {
@@ -333,6 +371,77 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         rvMembersCheckedIn.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.HORIZONTAL));
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        setupForegroundDispatch(this, mNfcAdapter);
+    }
+
+    @Override
+    protected void onPause() {
+
+        stopForegroundDispatch(this, mNfcAdapter);
+
+        super.onPause();
+    }
+
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        Log.d(TAG, "handleIntent: entry");
+
+        String action = intent.getAction();
+        mTextView.setText("handling intent with action" + action);
+
+        if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
+
+
+
+            Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            Log.d(TAG, "handleIntent: tag" + tag);
+
+            byte[] id = tag.getId();
+            Log.d(TAG, "handleIntent: tag ID in HEX " + MifareHelper.getHexString(id, id.length));
+
+            mTextView.setText(MifareHelper.getHexString(id, id.length));
+
+        }
+    }
+
+
+    public static void setupForegroundDispatch(final Activity activity, NfcAdapter adapter) {
+        final Intent intent = new Intent(activity.getApplicationContext(), activity.getClass());
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        final PendingIntent pendingIntent = PendingIntent.getActivity(activity.getApplicationContext(), 0, intent, 0);
+
+        IntentFilter[] filters = new IntentFilter[1];
+        String[][] techList = new String[][]{};
+
+        // Notice that this is the same filter as in our manifest.
+        filters[0] = new IntentFilter();
+        filters[0].addAction(NfcAdapter.ACTION_TAG_DISCOVERED);
+        filters[0].addCategory(Intent.CATEGORY_DEFAULT);
+        try {
+            filters[0].addDataType(MIME_TEXT_PLAIN);
+        } catch (IntentFilter.MalformedMimeTypeException e) {
+            throw new RuntimeException("Check your mime type.");
+        }
+
+        adapter.enableForegroundDispatch(activity, pendingIntent, filters, techList);
+    }
+
+
+    public static void stopForegroundDispatch(final Activity activity, NfcAdapter adapter) {
+        adapter.disableForegroundDispatch(activity);
+    }
 
 
 /*    private void setupBottomNavigationView() {
