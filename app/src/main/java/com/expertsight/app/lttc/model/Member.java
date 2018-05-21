@@ -4,6 +4,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
+import java.util.Date;
+
 public class Member extends FirestoreModel {
 
     private String firstName;
@@ -13,6 +15,15 @@ public class Member extends FirestoreModel {
     private boolean isMailingSubscriber;
     private boolean isActive;
     private float balance;
+    private Date lastCheckIn;
+
+    public Date getLastCheckIn() {
+        return lastCheckIn;
+    }
+
+    public void setLastCheckIn(Date lastCheckIn) {
+        this.lastCheckIn = lastCheckIn;
+    }
     // maybe just authID and that is the check if you are an admin? instead of extra user object. we could keep the username in firebase auth
     //private DocumentReference userRef;
 

@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.expertsight.app.lttc.model.Member;
 import com.expertsight.app.lttc.ui.BottomNavigationViewHelper;
+import com.expertsight.app.lttc.util.FirebaseHelper;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -42,8 +43,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -58,7 +61,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
     private FirebaseFirestore db;
     private FirebaseStorage storage;
-    private FirestoreRecyclerAdapter dbAdapterAllMembers, dbAdapterCheckedInMembers;
+    private FirestoreRecyclerAdapter dbAdapterAllMembers, dbAdapterMembersCheckedIn;
 
     @BindView(R.id.actvMembers)
     AutoCompleteTextView autoCompleteTextView;
@@ -69,6 +72,9 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     @BindView(R.id.rvMembers)
     RecyclerView rvMembers;
 
+    @BindView(R.id.rvMembersCheckedIn)
+    RecyclerView rvMembersCheckedIn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,9 +83,10 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
         setContentView(R.layout.activity_check_in);
         ButterKnife.bind(this);
-        setupBottomNavigationView();
+        //setupBottomNavigationView();
         setupAutoCompleteView();
         setupMemberListView();
+        setupMemberCheckedInListView();
     }
 
     private void setupAutoCompleteView() {
@@ -227,12 +234,14 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     public void onStart() {
         super.onStart();
         dbAdapterAllMembers.startListening();
+        dbAdapterMembersCheckedIn.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         dbAdapterAllMembers.stopListening();
+        dbAdapterMembersCheckedIn.stopListening();
     }
 
     public class MemberViewHolder extends RecyclerView.ViewHolder {
@@ -246,7 +255,87 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         }
     }
 
-    private void setupBottomNavigationView() {
+    public class MemberCheckedInViewHolder extends RecyclerView.ViewHolder {
+        public TextView fullName;
+
+        public MemberCheckedInViewHolder(View view) {
+            super(view);
+            fullName = view.findViewById(R.id.tvFullName);
+        }
+    }
+
+    private void setupMemberCheckedInListView() {
+
+        Date startOfToday = FirebaseHelper.getStartOfDay(new Date());
+
+        final CollectionReference membersRef = db.collection("/members/");
+        final Query query = membersRef
+                            .whereGreaterThanOrEqualTo("lastCheckIn", startOfToday)
+                            .orderBy("lastCheckIn")
+                            .orderBy("firstName");
+
+        Log.d(TAG, "starting to get Member list checked in for " + new Date());
+
+
+        FirestoreRecyclerOptions<Member> response = new FirestoreRecyclerOptions.Builder<Member>()
+                .setQuery(query, Member.class)
+                .build();
+
+
+        dbAdapterMembersCheckedIn = new FirestoreRecyclerAdapter<Member, MemberCheckedInViewHolder>(response) {
+
+
+            @Override
+            public Member getItem(int position) {
+                Member member = super.getItem(position);
+                // fill id into local POJO so we can pass it on when clicked
+                member.setId(this.getSnapshots().getSnapshot(position).getId());
+                return member;
+            }
+
+            @Override
+            protected void onBindViewHolder(MemberCheckedInViewHolder holder, int position, final Member member) {
+                Log.d(TAG, "onBindViewHolder: Member CheckedIn ID " + member.getId() + " lastCheckIn " + member.getLastCheckIn());
+                holder.fullName.setText(member.getFullName());
+
+            }
+
+            @Override
+            public MemberCheckedInViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.layout_member_checked_in_list, parent, false);
+
+                return new MemberCheckedInViewHolder(view);
+            }
+
+            @Override
+            public void onError(FirebaseFirestoreException e) {
+                Log.e("onError : error ", e.getMessage());
+            }
+
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+                Log.d(TAG,"on Data changed for members checked in today");
+            }
+
+            @Override
+            public int getItemViewType(int position) {
+                return super.getItemViewType(position);
+            }
+
+        };
+
+        dbAdapterMembersCheckedIn.notifyDataSetChanged();
+        rvMembersCheckedIn.setAdapter(dbAdapterMembersCheckedIn);
+        rvMembersCheckedIn.setLayoutManager(new LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL, false));
+        rvMembersCheckedIn.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.HORIZONTAL));
+    }
+
+
+
+/*    private void setupBottomNavigationView() {
         Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");
         BottomNavigationViewEx bottomNavigationViewEx = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
         BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
@@ -254,7 +343,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
-    }
+    }*/
 
     @Override
     public void applyNewMemberData(final String firstName, final String lastName, String email, Boolean mailingList) {
