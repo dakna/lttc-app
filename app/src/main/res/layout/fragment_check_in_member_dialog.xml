@@ -8,13 +8,13 @@
 
 
     <TextView
-        android:id="@+id/tvMemberFullName"
+        android:id="@+id/tvFee"
         android:layout_width="wrap_content"
-        android:layout_height="16dp"
-        android:text="Fullname"
+        android:layout_height="wrap_content"
+        android:text="Fee"
         android:textStyle="bold"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,20 +22,21 @@
     <TextView
         android:id="@+id/tvMemberBalance"
         android:layout_width="wrap_content"
-        android:layout_height="16dp"
+        android:layout_height="wrap_content"
         android:text="Balance"
+        android:textStyle="bold"
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-        app:layout_constraintStart_toEndOf="@id/tvMemberFullName"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvFee" />
 
     <TextView
         android:id="@+id/tvPaymentQuestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:layout_marginBottom="16dp"
         android:text="How much money do you put in today?"
         app:layout_constraintTop_toBottomOf="@+id/tvMemberBalance"
@@ -80,7 +81,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:layout_marginBottom="16dp"
         android:text="Do you want change back?"
         app:layout_constraintTop_toBottomOf="@+id/radioPayment"

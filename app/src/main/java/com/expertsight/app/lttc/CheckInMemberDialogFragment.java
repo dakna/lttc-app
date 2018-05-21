@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
@@ -19,6 +20,8 @@ import java.util.Date;
 
 public class CheckInMemberDialogFragment extends DialogFragment {
 
+    private TextView tvFee;
+    private TextView tvMemberBalance;
     private RadioGroup radioPayment;
     private CheckBox checkKeepChange;
     private CheckInMemberDialogListener listener;
@@ -26,10 +29,17 @@ public class CheckInMemberDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final Bundle args = getArguments();
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View form = inflater.inflate(R.layout.fragment_check_in_member_dialog,null);
+        tvFee = form.findViewById(R.id.tvFee);
+        tvMemberBalance = form.findViewById(R.id.tvMemberBalance);
         radioPayment = form.findViewById(R.id.radioPayment);
         checkKeepChange = form.findViewById(R.id.cbKeepChange);
+
+        tvFee.setText("The fee for playing today is $" + FEE_PER_DAY + ".");
+        tvMemberBalance.setText("Your balance is $" + args.getFloat("member_balance"));
+
         AlertDialog.Builder builder =  new AlertDialog.Builder(getActivity())
                 .setView(form)
                 // set dialog icon
@@ -37,14 +47,27 @@ public class CheckInMemberDialogFragment extends DialogFragment {
                 // set Dialog Title
                 .setTitle("Club Check-In " + new SimpleDateFormat("MM/dd/yyyy").format(new Date()))
                 // Set Dialog Message
-                .setMessage("Welcome! The fee for playing today is $" + FEE_PER_DAY)
+                .setMessage("Welcome " + args.getString("member_fullname") + "! ")
 
                 // positive button
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
                         //test data
-                        listener.applyCheckInData(10f, false);
+                        int radioButtonId = radioPayment.getCheckedRadioButtonId();
+                        float payment = 0f;
+
+                        if(radioButtonId == R.id.radioPayFive) {
+                            payment = 5f;
+                        } else if (radioButtonId == R.id.radioPayTen) {
+                            payment = 10f;
+                        } else if (radioButtonId == R.id.radioPayTwenty) {
+                            payment = 20f;
+                        }
+
+                        boolean keepChange = checkKeepChange.isChecked();
+
+                        listener.applyCheckInData(args.getString("member_id"), payment, keepChange);
 
                         Toast.makeText(getActivity(), "Pressed OK ", Toast.LENGTH_SHORT).show();
                     }
@@ -70,7 +93,7 @@ public class CheckInMemberDialogFragment extends DialogFragment {
     }
 
     public interface CheckInMemberDialogListener {
-        void applyCheckInData(float payment, boolean keepChange);
+        void applyCheckInData(String memberId, float payment, boolean keepChange);
     }
 
 }

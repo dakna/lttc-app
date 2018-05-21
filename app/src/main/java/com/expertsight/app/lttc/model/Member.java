@@ -1,12 +1,18 @@
 package com.expertsight.app.lttc.model;
 
+import android.util.Log;
+
+import com.expertsight.app.lttc.util.FirebaseHelper;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class Member extends FirestoreModel {
+
+    private static final String TAG = "Member";
 
     private String firstName;
     private String lastName;
@@ -17,13 +23,7 @@ public class Member extends FirestoreModel {
     private float balance;
     private Date lastCheckIn;
 
-    public Date getLastCheckIn() {
-        return lastCheckIn;
-    }
 
-    public void setLastCheckIn(Date lastCheckIn) {
-        this.lastCheckIn = lastCheckIn;
-    }
     // maybe just authID and that is the check if you are an admin? instead of extra user object. we could keep the username in firebase auth
     //private DocumentReference userRef;
 
@@ -86,10 +86,42 @@ public class Member extends FirestoreModel {
         this.balance = balance;
     }
 
+    public Date getLastCheckIn() { return lastCheckIn; }
+
+    public void setLastCheckIn(Date lastCheckIn) {
+        this.lastCheckIn = lastCheckIn;
+    }
+
+
+    @Exclude
+    public boolean isPlayingToday() {
+        Date lastCheckIn = getLastCheckIn();
+        if (lastCheckIn == null) return false;
+
+        Date startOfToday = FirebaseHelper.getStartOfDay(new Date());
+
+        Calendar cal1 = Calendar.getInstance();
+        cal1.setTime(startOfToday);
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(lastCheckIn);
+
+        if (cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) &&
+                cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)) {
+            Log.d(TAG, "isPlayingToday: true");
+            return true;
+        }
+
+        
+        return false;
+    }
+
     @Exclude
     public String getFullName() {
         return firstName + " " + lastName;
     }
+
+
 
     @Override
     public String toString() {

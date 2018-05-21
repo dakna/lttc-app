@@ -17,9 +17,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -27,12 +24,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.expertsight.app.lttc.model.Member;
-import com.expertsight.app.lttc.ui.BottomNavigationViewHelper;
 import com.expertsight.app.lttc.util.FirebaseHelper;
 import com.expertsight.app.lttc.util.MifareHelper;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -50,11 +45,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
-import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 
 import butterknife.BindView;
@@ -182,8 +173,8 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     }
 
     @OnClick(R.id.btnAddMember)
-    public void addMember() {
-        Log.d(TAG, "addMember: start");
+    public void showAddMemberDialog() {
+        Log.d(TAG, "showAddMemberDialog: start");
         FragmentManager manager = getFragmentManager();
         Fragment frag = manager.findFragmentByTag("fragment_add_member_dialog");
         if (frag != null) {
@@ -195,14 +186,26 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     }
 
 
-    public void checkInMember() {
-        Log.d(TAG, "checkInMember: start");
+    public void showCheckInMemberDialog(Member member) {
+        Log.d(TAG, "showCheckInMemberDialog: Member");
+
+        if (member.isPlayingToday()) {
+            Toast.makeText(context, "This member already checked in today.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Bundle args = new Bundle();
+        args.putString("member_id", member.getId());
+        args.putString("member_fullname", member.getFullName());
+        args.putFloat("member_balance", member.getBalance());
+
         FragmentManager manager = getFragmentManager();
         Fragment frag = manager.findFragmentByTag("fragment_check_in_member_dialog");
         if (frag != null) {
             manager.beginTransaction().remove(frag).commit();
         }
         CheckInMemberDialogFragment checkInMemberDialogFragment = new CheckInMemberDialogFragment();
+        checkInMemberDialogFragment.setArguments(args);
         checkInMemberDialogFragment.show(manager, "fragment_check_in_member_dialog");
 
     }
@@ -319,7 +322,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
             int adapterPos = getAdapterPosition();
             Member member = (Member) dbAdapterAllMembers.getItem(adapterPos);
             Toast.makeText(context, "clicked on " + member.getId(), Toast.LENGTH_SHORT).show();
-            checkInMember();
+            showCheckInMemberDialog(member);
         }
     }
 
@@ -531,8 +534,8 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     }
 
     @Override
-    public void applyCheckInData(float payment, boolean keepChange) {
-        Log.d(TAG, "applyCheckInMemberData: payment" + payment + " keepChange " +keepChange);
+    public void applyCheckInData(String memberId, float payment, boolean keepChange) {
+        Log.d(TAG, "applyCheckInMemberData: memberId: " + memberId + " payment" + payment + " keepChange " +keepChange);
 /*        Member newMember = new Member();
         newMember.setFirstName(firstName);
         newMember.setLastName(lastName);
