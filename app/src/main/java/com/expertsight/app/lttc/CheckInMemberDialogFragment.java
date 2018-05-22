@@ -47,12 +47,19 @@ public class CheckInMemberDialogFragment extends DialogFragment {
             radioButtonZero.setVisibility(View.GONE);
         }
 
+        checkKeepChange.setEnabled(false);
         // you have to select a payment to continue
         radioPayment.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 AlertDialog dialog = (AlertDialog) getDialog();
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                if ((checkedId != R.id.radioPayZero) && (checkedId != R.id.radioPayFive)) {
+                    checkKeepChange.setEnabled(true);
+                } else {
+                    checkKeepChange.setEnabled(false);
+                    checkKeepChange.setChecked(false);
+                }
             }
         });
 
