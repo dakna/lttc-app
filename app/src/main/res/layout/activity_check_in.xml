@@ -16,11 +16,11 @@
         app:layout_constraintGuide_percent="0.45"/>
 
     <android.support.constraint.Guideline
-        android:id="@+id/guidelineHorizontalBottom"
+        android:id="@+id/guidelineVertical2"
         android:layout_width="wrap_content"
         android:layout_height="1dp"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.85"/>
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.55"/>
 
     <TextView
         android:id="@+id/tvMemberListHeadline"
@@ -80,8 +80,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@+id/tilMembers"
-        app:layout_constraintBottom_toTopOf="@id/tvMemberCheckedInListHeadline"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginBottom="16dp"
@@ -104,6 +103,7 @@
 
 
 
+
     <TextView
         android:id="@+id/tvMemberCheckedInListHeadline"
         android:layout_width="wrap_content"
@@ -114,102 +114,32 @@
         style="@style/TextAppearance.AppCompat.Large"
         android:text="@string/headline_member_checked_in_list"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/rvMembersCheckedIn" />
+        app:layout_constraintStart_toEndOf="@+id/guidelineVertical2"
+        app:layout_constraintTop_toTopOf="parent" />
 
-
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvMembersCheckedIn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:background="@color/material_gray_300"
-        />
-
-
-
-    <TextView
-        android:id="@+id/tvCurrentMemberHeadline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        style="@style/TextAppearance.AppCompat.Large"
-        android:text="@string/headline_current_member"
-        android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/guidelineVertical"/>
-
-    <TextView
-        android:id="@+id/tvNFC"
-        android:layout_width="wrap_content"
-        android:layout_height="16dp"
-        android:text="@string/nfc_explain"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintStart_toEndOf="@id/guidelineVertical"
-        app:layout_constraintTop_toBottomOf="@id/tvCurrentMemberHeadline" />
-
-    <TextView
-        android:id="@+id/tvMemberFullName"
-        android:layout_width="wrap_content"
-        android:layout_height="16dp"
-        android:text="name"
-        android:textStyle="bold"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintStart_toEndOf="@id/guidelineVertical"
-        app:layout_constraintTop_toBottomOf="@id/tvNFC"/>
-
-    <TextView
-        android:id="@+id/tvMemberBalance"
-        android:layout_width="wrap_content"
-        android:layout_height="16dp"
-        android:text="name"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintStart_toEndOf="@id/guidelineVertical"
-        app:layout_constraintTop_toBottomOf="@id/tvMemberFullName"/>
-
-    <android.support.v7.widget.ButtonBarLayout
-        android:id="@+id/buttonBarLayout"
+    <ScrollView
+        android:id="@+id/scrollMembersCheckedIn"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toEndOf="@id/guidelineVertical"
-        app:layout_constraintTop_toBottomOf="@id/tvMemberBalance">
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/tvMemberCheckedInListHeadline"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/guidelineVertical2"
+        android:layout_marginBottom="16dp"
+        >
 
-        <Button
-            android:id="@+id/btnPayFive"
-            android:layout_width="wrap_content"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvMembersCheckedIn"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="5" />
-
-        <Button
-            android:id="@+id/btnPayTen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="10" />
-
-        <Button
-            android:id="@+id/btnPayTwenty"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="10" />
-
-    </android.support.v7.widget.ButtonBarLayout>
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@color/material_gray_300"
+            />
+    </ScrollView>
 
 
 

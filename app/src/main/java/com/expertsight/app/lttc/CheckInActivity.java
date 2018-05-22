@@ -86,15 +86,6 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     @BindView(R.id.rvMembersCheckedIn)
     RecyclerView rvMembersCheckedIn;
 
-    @BindView(R.id.tvNFC)
-    TextView mTextView;
-
-    @BindView(R.id.tvMemberFullName)
-    TextView tvMemberFullName;
-
-    @BindView(R.id.tvMemberBalance)
-    TextView tvMemberBalance;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,9 +116,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         }
 
         if (!mNfcAdapter.isEnabled()) {
-            mTextView.setText("NFC is disabled.");
-        } else {
-            mTextView.setText("NFC is enabled for MifareClassic");
+            Toast.makeText(this, "NFC is disabled, please enable to read smart cards", Toast.LENGTH_LONG).show();
         }
 
         handleIntent(getIntent());
@@ -353,10 +342,12 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
     public class MemberCheckedInViewHolder extends RecyclerView.ViewHolder {
         public TextView fullName;
+        public TextView time;
 
         public MemberCheckedInViewHolder(View view) {
             super(view);
             fullName = view.findViewById(R.id.tvFullName);
+            time = view.findViewById(R.id.tvTime);
         }
     }
 
@@ -393,6 +384,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
             protected void onBindViewHolder(MemberCheckedInViewHolder holder, int position, final Member member) {
                 Log.d(TAG, "onBindViewHolder: Member CheckedIn ID " + member.getId() + " lastCheckIn " + member.getLastCheckIn());
                 holder.fullName.setText(member.getFullName());
+                holder.time.setText(member.getLastCheckIn().toString());
 
             }
 
@@ -425,8 +417,8 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
         dbAdapterMembersCheckedIn.notifyDataSetChanged();
         rvMembersCheckedIn.setAdapter(dbAdapterMembersCheckedIn);
-        rvMembersCheckedIn.setLayoutManager(new LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL, false));
-        rvMembersCheckedIn.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.HORIZONTAL));
+        rvMembersCheckedIn.setLayoutManager(new LinearLayoutManager(context));
+        rvMembersCheckedIn.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
     }
 
 
@@ -456,7 +448,6 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         Log.d(TAG, "handleIntent: entry");
 
         String action = intent.getAction();
-        mTextView.setText("handling intent with action" + action);
 
         if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
 
@@ -483,10 +474,6 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                         DocumentSnapshot memberDoc = queryDocumentSnapshots.getDocuments().get(0);
                         Member member = memberDoc.toObject(Member.class).withId(memberDoc.getId());
 
-                        /*mTextView.setText("Found a member with Smartcard ID " + member.getSmartcardId());
-                        tvMemberFullName.setText(member.getFullName());
-                        tvMemberBalance.setText("Balance: $" + member.getBalance());
-                    */
                         Log.d(TAG, "onSuccess getting member by smartcard id " + member.getSmartcardId() + ": " + member.toString());
                         showCheckInMemberDialog(member);
                     } else if (queryDocumentSnapshots.size() > 1){
