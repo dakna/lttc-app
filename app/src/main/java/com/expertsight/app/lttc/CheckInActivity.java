@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -40,6 +41,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
@@ -155,10 +157,28 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         });
 
 
-        // TODO: 5/16/2018 this should register a SnapshotListener, so the activity lookup gets updated if a member is added outside the activity.
         CollectionReference members = db.collection("members");
-        members.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        members.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
+                adapter.clear();
+                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                    Log.d(TAG, document.getId() + " => " + document.getData());
+                    Member member = document.toObject(Member.class).withId(document.getId());
+                    adapter.add(member);
+                }
+            }
+        });
+
+        /*
+        This loads member value into adapter only on load without updates. and since we pass the member object from the adapter to the dialog without any further updates, it can be stale data and not updated.
+        So we use snapshot listener on every update instead , see above
+
+        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
@@ -171,7 +191,8 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                             Log.d(TAG, "Error getting members: ", task.getException());
                         }
                     }
-                });
+                })
+        */;
 
 
     }
