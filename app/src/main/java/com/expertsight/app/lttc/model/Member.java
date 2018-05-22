@@ -20,6 +20,7 @@ public class Member extends FirestoreModel {
     private String smartcardId;
     private boolean isMailingSubscriber;
     private boolean isActive;
+    private boolean isAdmin;
     private float balance;
     private Date lastCheckIn;
 
@@ -62,16 +63,26 @@ public class Member extends FirestoreModel {
         this.smartcardId = smartcardId;
     }
 
-    public boolean isMailingSubscriber() {
+    public boolean getIsMailingSubscriber() {
         return isMailingSubscriber;
     }
 
-    public void setMailingSubscriber(boolean mailingSubscriber) {
+    public void setIsMailingSubscriber(boolean mailingSubscriber) {
         isMailingSubscriber = mailingSubscriber;
     }
 
     public boolean isActive() {
         return isActive;
+    }
+
+    // firestore POJO mapper needs the exact fieldname as getter and ignores the convention for boolean fields
+    public boolean getIsAdmin() {
+        Log.d(TAG, "isAdmin: ");
+        return isAdmin;
+    }
+
+    public void setIsAdmin(boolean admin) {
+        isAdmin = admin;
     }
 
     public void setActive(boolean active) {

@@ -500,6 +500,10 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                         Member member = memberDoc.toObject(Member.class).withId(memberDoc.getId());
 
                         Log.d(TAG, "onSuccess getting member by smartcard id " + member.getSmartcardId() + ": " + member.toString());
+                        if (member.getIsAdmin() == true) {
+                            Log.d(TAG, "onComplete: member is admin");
+                            toastTotalBalance();
+                        }
                         showCheckInMemberDialog(member);
                     } else if (queryDocumentSnapshots.size() > 1){
                         Toast.makeText(context, "Error: The smartcard ID " + hexId + " is assigned to more than one member", Toast.LENGTH_LONG).show();
@@ -559,7 +563,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         newMember.setFirstName(firstName);
         newMember.setLastName(lastName);
         newMember.setEmail(email);
-        newMember.setMailingSubscriber(mailingList);
+        newMember.setIsMailingSubscriber(mailingList);
         newMember.setSmartcardId(smartcardId);
 
         CollectionReference members = db.collection("members");
@@ -641,5 +645,22 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                 }
             }
         });*/
+    }
+
+    private void toastTotalBalance() {
+        Log.d(TAG, "toastTotalBalance: start");
+        CollectionReference members = db.collection("members");
+
+        members.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                float totalBalance = 0;
+                for(DocumentSnapshot memberDoc: queryDocumentSnapshots) {
+                    Member member = memberDoc.toObject(Member.class).withId(memberDoc.getId());
+                    totalBalance = totalBalance + member.getBalance();
+                }
+                Toast.makeText(context, "Hello admin! Total balance is " + totalBalance, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }
