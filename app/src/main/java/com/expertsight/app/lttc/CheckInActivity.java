@@ -467,7 +467,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
             byte[] id = tag.getId();
 
-            String hexId = MifareHelper.getHexString(id, id.length);
+            final String hexId = MifareHelper.getHexString(id, id.length);
             Log.d(TAG, "handleIntent: tag ID in HEX " + hexId);
 
 
@@ -482,11 +482,17 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                     if (queryDocumentSnapshots.size() == 1) {
                         DocumentSnapshot memberDoc = queryDocumentSnapshots.getDocuments().get(0);
                         Member member = memberDoc.toObject(Member.class).withId(memberDoc.getId());
-                        //setupMemberCheckInView(member);
-                        Log.d(TAG, "onSuccess getting member by smartcard lookup: " + member.toString());
-                        mTextView.setText("Found a member with Smartcard ID " + member.getSmartcardId());
+
+                        /*mTextView.setText("Found a member with Smartcard ID " + member.getSmartcardId());
                         tvMemberFullName.setText(member.getFullName());
                         tvMemberBalance.setText("Balance: $" + member.getBalance());
+                    */
+                        Log.d(TAG, "onSuccess getting member by smartcard id " + member.getSmartcardId() + ": " + member.toString());
+                        showCheckInMemberDialog(member);
+                    } else if (queryDocumentSnapshots.size() > 1){
+                        Toast.makeText(context, "Error: The smartcard ID " + hexId + " is assigned to more than one member", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(context, "Couldn't find a member with the smartcard ID " + hexId, Toast.LENGTH_LONG).show();
                     }
                 }
             });
