@@ -112,4 +112,6 @@ pass member object to checkIn dialog as parcelable bundle
 remove side layout, make gridlayout for member data, hook up smart card
 add checks for dialogs so you have to fill in fields . set OK to disabled
 
+fix bug on orientation change dialog pop ups again.
+
 

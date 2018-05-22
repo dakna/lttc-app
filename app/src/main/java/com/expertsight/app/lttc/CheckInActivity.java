@@ -12,6 +12,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -51,6 +52,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import butterknife.BindView;
@@ -188,14 +190,26 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     }
 
     @OnClick(R.id.btnAddMember)
-    public void showAddMemberDialog() {
-        Log.d(TAG, "showAddMemberDialog: start");
+    public void onClickAddMember() {
+        showAddMemberDialog(null);
+    }
+
+
+    public void showAddMemberDialog(String hexId) {
+        Log.d(TAG, "showAddMemberDialog: start " + hexId);
+
+        Bundle args = new Bundle();
+        if (hexId != null) {
+            args.putString("smartcard_id", hexId);
+        }
+
         FragmentManager manager = getFragmentManager();
         Fragment frag = manager.findFragmentByTag("fragment_add_member_dialog");
         if (frag != null) {
             manager.beginTransaction().remove(frag).commit();
         }
         AddMemberDialogFragment addMemberDialogFragment = new AddMemberDialogFragment();
+        addMemberDialogFragment.setArguments(args);
         addMemberDialogFragment.show(manager, "fragment_add_member_dialog");
 
     }
@@ -266,8 +280,16 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                 Log.d(TAG, "onBindViewHolder: Member ID " + member.getId());
                 holder.fullName.setText(member.getFullName());
                 String email = member.getEmail();
+                float balance = member.getBalance();
+                holder.balance.setText("$" + String.valueOf(balance));
                 if (!email.isEmpty()) {
                     holder.email.setText(member.getEmail());
+                }
+                if (balance > 0) {
+                    holder.balance.setTextColor(ContextCompat.getColor(context, R.color.darkGreen));
+                }
+                if (balance < 0) {
+                    holder.balance.setTextColor(ContextCompat.getColor(context, R.color.darkRed));
                 }
 
             }
@@ -323,12 +345,14 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     public class MemberViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView fullName;
         public TextView email;
+        public TextView balance;
 
         public MemberViewHolder(View view) {
             super(view);
             view.setOnClickListener(this);
             fullName = view.findViewById(R.id.tvFullName);
             email = view.findViewById(R.id.tvEmail);
+            balance = view.findViewById(R.id.tvMemberBalance);
         }
 
         @Override
@@ -384,7 +408,8 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
             protected void onBindViewHolder(MemberCheckedInViewHolder holder, int position, final Member member) {
                 Log.d(TAG, "onBindViewHolder: Member CheckedIn ID " + member.getId() + " lastCheckIn " + member.getLastCheckIn());
                 holder.fullName.setText(member.getFullName());
-                holder.time.setText(member.getLastCheckIn().toString());
+                // TODO: 5/22/2018 use string resource
+                holder.time.setText("Checked in at " + new SimpleDateFormat("HH:mm").format(member.getLastCheckIn()));
 
             }
 
@@ -480,6 +505,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                         Toast.makeText(context, "Error: The smartcard ID " + hexId + " is assigned to more than one member", Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(context, "Couldn't find a member with the smartcard ID " + hexId, Toast.LENGTH_LONG).show();
+                        showAddMemberDialog(hexId);
                     }
                 }
             });
@@ -527,13 +553,14 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     }*/
 
     @Override
-    public void applyNewMemberData(final String firstName, final String lastName, String email, boolean mailingList) {
-        Log.d(TAG, "applyMemberData: " + firstName + " " + lastName + " " + email +" " + mailingList);
+    public void applyNewMemberData(final String firstName, final String lastName, String email, boolean mailingList, String smartcardId) {
+        Log.d(TAG, "applyMemberData: " + firstName + " " + lastName + " " + email + " " + mailingList + " " + smartcardId);
         Member newMember = new Member();
         newMember.setFirstName(firstName);
         newMember.setLastName(lastName);
         newMember.setEmail(email);
         newMember.setMailingSubscriber(mailingList);
+        newMember.setSmartcardId(smartcardId);
 
         CollectionReference members = db.collection("members");
         members.add(newMember).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {

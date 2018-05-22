@@ -44,6 +44,7 @@
     <color name="black">#000000</color>
     <color name="link_blue">#4d94ff</color>
     <color name="darkRed">#cc0000</color>
+    <color name="darkGreen">#00aa00</color>
     <color name="colordarkRed">#cc0000</color>
 
     <color name="mcam_color_light">#FAFAFA</color>

@@ -9,6 +9,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 
 public class AddMemberDialogFragment extends DialogFragment {
+    private static final String TAG = "AddMemberDialogFragment";
 
     private TextInputEditText textInputEditTextFirstName;
     private TextInputEditText textInputEditTextLastName;
@@ -25,6 +27,17 @@ public class AddMemberDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        final Bundle args = getArguments();
+        final String smartcardId = args.getString("smartcard_id", null);
+        Log.d(TAG, "onCreateDialog: args smartcard " + args.getString("smartcard_id"));
+
+        String message = "Please enter member details";
+
+        if (smartcardId != null) {
+            message = message + " for smart card " + smartcardId;
+        }
+
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View form = inflater.inflate(R.layout.fragment_add_member_dialog,null);
         textInputEditTextFirstName = form.findViewById(R.id.firstName);
@@ -81,7 +94,7 @@ public class AddMemberDialogFragment extends DialogFragment {
                 // set Dialog Title
                 .setTitle("Add a member")
                 // Set Dialog Message
-                .setMessage("Please enter member details")
+                .setMessage(message)
 
                 // positive button
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -91,7 +104,7 @@ public class AddMemberDialogFragment extends DialogFragment {
                         String email = textInputEditTextEmail.getText().toString();
                         boolean mailingList = checkBoxMailingList.isChecked();
 
-                        listener.applyNewMemberData(firstName, lastName, email, mailingList);
+                        listener.applyNewMemberData(firstName, lastName, email, mailingList, smartcardId);
 
                         Toast.makeText(getActivity(), "Adding new member", Toast.LENGTH_SHORT).show();
                     }
@@ -130,7 +143,7 @@ public class AddMemberDialogFragment extends DialogFragment {
     }
 
     public interface AddMemberDialogListener {
-        void applyNewMemberData(String firstName, String lastName, String email, boolean mailingList);
+        void applyNewMemberData(String firstName, String lastName, String email, boolean mailingList, String smartcardId);
     }
 
 }
