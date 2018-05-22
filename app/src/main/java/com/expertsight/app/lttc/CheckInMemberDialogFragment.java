@@ -25,7 +25,6 @@ public class CheckInMemberDialogFragment extends DialogFragment {
     private RadioGroup radioPayment;
     private CheckBox checkKeepChange;
     private CheckInMemberDialogListener listener;
-    private static final float FEE_PER_DAY = 5f;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -37,7 +36,7 @@ public class CheckInMemberDialogFragment extends DialogFragment {
         radioPayment = form.findViewById(R.id.radioPayment);
         checkKeepChange = form.findViewById(R.id.cbKeepChange);
 
-        tvFee.setText("The fee for playing today is $" + FEE_PER_DAY + ".");
+        tvFee.setText("The fee for playing today is $" + CheckInActivity.FEE_PER_DAY + ".");
         tvMemberBalance.setText("Your balance is $" + args.getFloat("member_balance"));
 
         AlertDialog.Builder builder =  new AlertDialog.Builder(getActivity())
@@ -69,7 +68,7 @@ public class CheckInMemberDialogFragment extends DialogFragment {
 
                         listener.applyCheckInData(args.getString("member_id"), payment, keepChange);
 
-                        Toast.makeText(getActivity(), "Pressed OK ", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getActivity(), "Pressed OK ", Toast.LENGTH_SHORT).show();
                     }
                 })
                 // negative button

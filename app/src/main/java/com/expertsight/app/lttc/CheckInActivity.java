@@ -34,6 +34,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -44,6 +45,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.Date;
@@ -60,6 +62,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     private Context context = CheckInActivity.this;
 
     public static final String MIME_TEXT_PLAIN = "text/plain";
+    public static final float FEE_PER_DAY = 5f;
 
 
     private NfcAdapter mNfcAdapter = null;
@@ -136,7 +139,8 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Member member = (Member) parent.getAdapter().getItem(position);
-                Toast.makeText(context, "You clicked on " + member.getFullName() +" " + member.getId(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "You clicked on " + member.getFullName() +" " + member.getId(), Toast.LENGTH_SHORT).show();
+                showCheckInMemberDialog(member);
                 autoCompleteTextView.setText("");
                 autoCompleteTextView.clearFocus();
             }
@@ -190,7 +194,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         Log.d(TAG, "showCheckInMemberDialog: Member");
 
         if (member.isPlayingToday()) {
-            Toast.makeText(context, "This member already checked in today.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "This member already checked in today", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -321,7 +325,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         public void onClick(View v) {
             int adapterPos = getAdapterPosition();
             Member member = (Member) dbAdapterAllMembers.getItem(adapterPos);
-            Toast.makeText(context, "clicked on " + member.getId(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, "clicked on " + member.getId(), Toast.LENGTH_SHORT).show();
             showCheckInMemberDialog(member);
         }
     }
@@ -534,8 +538,48 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     }
 
     @Override
-    public void applyCheckInData(String memberId, float payment, boolean keepChange) {
+    public void applyCheckInData(final String memberId, final float payment, boolean keepChange) {
         Log.d(TAG, "applyCheckInMemberData: memberId: " + memberId + " payment" + payment + " keepChange " +keepChange);
+
+        //load latest data, even if its in local cache
+        final DocumentReference memberRef = db.collection("members").document(memberId);
+        memberRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "onComplete:  DocumentSnapshot data: " + document.getData());
+                        Member member = document.toObject(Member.class).withId(document.getId());
+                        float newBalance = member.getBalance() - CheckInActivity.FEE_PER_DAY + payment;
+                        Log.d(TAG, "onComplete: calculating new member balance as $" + newBalance);
+                        member.setBalance(newBalance);
+                        member.setLastCheckIn(new Date());
+                        memberRef.set(member, SetOptions.merge())
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error writing document", e);
+                                    }
+                                });
+
+                    } else {
+                        Log.d(TAG, "No such document");
+                        Toast.makeText(context, "Error while checking in member " + memberId, Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                    Toast.makeText(context, "Error while checking in member " + memberId, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
 /*        Member newMember = new Member();
         newMember.setFirstName(firstName);
         newMember.setLastName(lastName);
