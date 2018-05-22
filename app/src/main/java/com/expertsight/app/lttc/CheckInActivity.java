@@ -1,6 +1,7 @@
 package com.expertsight.app.lttc;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.PendingIntent;
@@ -232,7 +233,6 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         CheckInMemberDialogFragment checkInMemberDialogFragment = new CheckInMemberDialogFragment();
         checkInMemberDialogFragment.setArguments(args);
         checkInMemberDialogFragment.show(manager, "fragment_check_in_member_dialog");
-
     }
 
     private void setupMemberListView() {

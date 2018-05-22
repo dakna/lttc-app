@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
@@ -29,6 +31,49 @@ public class AddMemberDialogFragment extends DialogFragment {
         textInputEditTextLastName = form.findViewById(R.id.lastName);
         textInputEditTextEmail = form.findViewById(R.id.email);
         checkBoxMailingList = form.findViewById(R.id.mailingList);
+
+        textInputEditTextFirstName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                AlertDialog dialog = (AlertDialog) getDialog();
+                if((s.length() > 1) && (textInputEditTextLastName.getText().length() > 1)) {
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                } else {
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        textInputEditTextLastName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                AlertDialog dialog = (AlertDialog) getDialog();
+                if((s.length() > 1) && (textInputEditTextFirstName.getText().length() > 1)) {
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                } else {
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
         AlertDialog.Builder builder =  new AlertDialog.Builder(getActivity())
                 .setView(form)
                 // set dialog icon
@@ -73,6 +118,15 @@ public class AddMemberDialogFragment extends DialogFragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + "mus implement AddMemberDialogListener");
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // disable positive button by default
+        AlertDialog dialog = (AlertDialog) getDialog();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
     }
 
     public interface AddMemberDialogListener {

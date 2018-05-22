@@ -39,6 +39,15 @@ public class CheckInMemberDialogFragment extends DialogFragment {
         tvFee.setText("The fee for playing today is $" + CheckInActivity.FEE_PER_DAY + ".");
         tvMemberBalance.setText("Your balance is $" + args.getFloat("member_balance"));
 
+        // you have to select a payment to continue
+        radioPayment.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                AlertDialog dialog = (AlertDialog) getDialog();
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+            }
+        });
+
         AlertDialog.Builder builder =  new AlertDialog.Builder(getActivity())
                 .setView(form)
                 // set dialog icon
@@ -89,6 +98,15 @@ public class CheckInMemberDialogFragment extends DialogFragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + "mus implement CheckInMemberDialogListener");
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // disable positive button by default
+        AlertDialog dialog = (AlertDialog) getDialog();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
     }
 
     public interface CheckInMemberDialogListener {
