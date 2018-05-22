@@ -10,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,21 +24,28 @@ public class CheckInMemberDialogFragment extends DialogFragment {
     private TextView tvFee;
     private TextView tvMemberBalance;
     private RadioGroup radioPayment;
+    private RadioButton radioButtonZero;
     private CheckBox checkKeepChange;
     private CheckInMemberDialogListener listener;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Bundle args = getArguments();
+        float balance = args.getFloat("member_balance");
+
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View form = inflater.inflate(R.layout.fragment_check_in_member_dialog,null);
         tvFee = form.findViewById(R.id.tvFee);
         tvMemberBalance = form.findViewById(R.id.tvMemberBalance);
         radioPayment = form.findViewById(R.id.radioPayment);
+        radioButtonZero = form.findViewById(R.id.radioPayZero);
         checkKeepChange = form.findViewById(R.id.cbKeepChange);
-
         tvFee.setText("The fee for playing today is $" + CheckInActivity.FEE_PER_DAY + ".");
-        tvMemberBalance.setText("Your balance is $" + args.getFloat("member_balance"));
+        tvMemberBalance.setText("Your balance is $" + balance);
+
+        if (balance < CheckInActivity.FEE_PER_DAY) {
+            radioButtonZero.setVisibility(View.GONE);
+        }
 
         // you have to select a payment to continue
         radioPayment.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -65,7 +73,9 @@ public class CheckInMemberDialogFragment extends DialogFragment {
                         int radioButtonId = radioPayment.getCheckedRadioButtonId();
                         float payment = 0f;
 
-                        if(radioButtonId == R.id.radioPayFive) {
+                        if(radioButtonId == R.id.radioPayZero) {
+                            payment = 0f;
+                        } else if(radioButtonId == R.id.radioPayFive) {
                             payment = 5f;
                         } else if (radioButtonId == R.id.radioPayTen) {
                             payment = 10f;

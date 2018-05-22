@@ -54,6 +54,13 @@
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/tvPaymentQuestion">
         <RadioButton
+            android:id="@+id/radioPayZero"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:text="$0" />
+        <RadioButton
             android:id="@+id/radioPayFive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
