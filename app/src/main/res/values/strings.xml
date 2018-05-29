@@ -5,7 +5,7 @@
     <string name="btn_add_member">Add Member</string>
     <string name="headline_member_list">All Members</string>
     <string name="headline_current_member">Member</string>
-    <string name="headline_member_checked_in_list">Playing Today</string>
+    <string name="headline_member_checked_in_list">Playing This Week</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

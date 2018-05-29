@@ -156,6 +156,18 @@ public class FirebaseHelper {
         return calendar.getTime();
     }
 
+    public static Date getStartOfWeek(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        Log.d(TAG, "getStartOfWeek: " + calendar.getTime());
+        return calendar.getTime();
+    }
+
 }
 
 

@@ -21,6 +21,7 @@ import java.util.Date;
 
 public class CheckInMemberDialogFragment extends DialogFragment {
 
+    private TextView tvMemberFullName;
     private TextView tvFee;
     private TextView tvMemberBalance;
     private RadioGroup radioPayment;
@@ -35,11 +36,15 @@ public class CheckInMemberDialogFragment extends DialogFragment {
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View form = inflater.inflate(R.layout.fragment_check_in_member_dialog,null);
+        tvMemberFullName = form.findViewById(R.id.tvMemberFullName);
         tvFee = form.findViewById(R.id.tvFee);
         tvMemberBalance = form.findViewById(R.id.tvMemberBalance);
         radioPayment = form.findViewById(R.id.radioPayment);
         radioButtonZero = form.findViewById(R.id.radioPayZero);
         checkKeepChange = form.findViewById(R.id.cbKeepChange);
+
+
+        tvMemberFullName.setText(args.getString("member_fullname"));
         tvFee.setText("The fee for playing today is $" + CheckInActivity.FEE_PER_DAY + ".");
         tvMemberBalance.setText("Your balance is $" + balance);
 
@@ -70,7 +75,7 @@ public class CheckInMemberDialogFragment extends DialogFragment {
                 // set Dialog Title
                 .setTitle("Club Check-In " + new SimpleDateFormat("MM/dd/yyyy").format(new Date()))
                 // Set Dialog Message
-                .setMessage("Welcome " + args.getString("member_fullname") + "! ")
+                //.setMessage("Welcome ")
 
                 // positive button
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {

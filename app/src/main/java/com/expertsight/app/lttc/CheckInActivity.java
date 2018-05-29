@@ -342,7 +342,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         dbAdapterMembersCheckedIn.stopListening();
     }
 
-    public class MemberViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class MemberViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         public TextView fullName;
         public TextView email;
         public TextView balance;
@@ -350,6 +350,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         public MemberViewHolder(View view) {
             super(view);
             view.setOnClickListener(this);
+            view.setOnLongClickListener(this);
             fullName = view.findViewById(R.id.tvFullName);
             email = view.findViewById(R.id.tvEmail);
             balance = view.findViewById(R.id.tvMemberBalance);
@@ -361,6 +362,14 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
             Member member = (Member) dbAdapterAllMembers.getItem(adapterPos);
             //Toast.makeText(context, "clicked on " + member.getId(), Toast.LENGTH_SHORT).show();
             showCheckInMemberDialog(member);
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            int adapterPos = getAdapterPosition();
+            Member member = (Member) dbAdapterAllMembers.getItem(adapterPos);
+            Toast.makeText(context, "long clicked on " + member.getId(), Toast.LENGTH_SHORT).show();
+            return true;
         }
     }
 
@@ -377,11 +386,11 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
     private void setupMemberCheckedInListView() {
 
-        Date startOfToday = FirebaseHelper.getStartOfDay(new Date());
+        Date startOfThisWeek = FirebaseHelper.getStartOfWeek(new Date());
 
         final CollectionReference membersRef = db.collection("/members/");
         final Query query = membersRef
-                            .whereGreaterThanOrEqualTo("lastCheckIn", startOfToday)
+                            .whereGreaterThanOrEqualTo("lastCheckIn", startOfThisWeek)
                             .orderBy("lastCheckIn")
                             .orderBy("firstName");
 
@@ -409,7 +418,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                 Log.d(TAG, "onBindViewHolder: Member CheckedIn ID " + member.getId() + " lastCheckIn " + member.getLastCheckIn());
                 holder.fullName.setText(member.getFullName());
                 // TODO: 5/22/2018 use string resource
-                holder.time.setText("Checked in at " + new SimpleDateFormat("HH:mm").format(member.getLastCheckIn()));
+                holder.time.setText("Checked in " + new SimpleDateFormat("mm/dd 'at' HH:mm").format(member.getLastCheckIn()));
 
             }
 

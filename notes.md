@@ -114,4 +114,15 @@ add checks for dialogs so you have to fill in fields . set OK to disabled
 
 fix bug on orientation change dialog pop ups again.
 
+dedicated payment table so you can do accounting
+
+name in checkin dialog bigger
+
+admin logins, if auth then special functions
+make member records editable for public
+if auth then decide when card is scanned: assign card to member or check in
+or can you scan a card with a special intent to assign it.
+
+play this week instead of today
+
 

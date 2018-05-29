@@ -6,27 +6,37 @@
     android:id="@+id/addMemberDialog"
     tools:context="com.expertsight.app.lttc.CheckInMemberDialogFragment">
 
+    <TextView
+        android:id="@+id/tvMemberFullName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Member"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvFee"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Fee"
-        android:textStyle="bold"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/tvMemberFullName" />
 
     <TextView
         android:id="@+id/tvMemberBalance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Balance"
-        android:textStyle="bold"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvFee" />

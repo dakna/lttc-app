@@ -13,14 +13,14 @@
         android:layout_width="1dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.45"/>
+        app:layout_constraintGuide_percent="0.48"/>
 
     <android.support.constraint.Guideline
         android:id="@+id/guidelineVertical2"
         android:layout_width="wrap_content"
         android:layout_height="1dp"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.55"/>
+        app:layout_constraintGuide_percent="0.52"/>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/tilMembers"
@@ -139,7 +139,7 @@
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="16dp"
             android:background="@color/material_gray_300"
             />
     </ScrollView>
