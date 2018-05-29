@@ -9,7 +9,7 @@ import com.google.firebase.firestore.IgnoreExtraProperties;
 @IgnoreExtraProperties
 public class FirestoreModel {
 
-    @Exclude
+
     private String id;
 
     public <T extends FirestoreModel> T withId(@NonNull final String id) {
@@ -17,6 +17,7 @@ public class FirestoreModel {
         return (T) this;
     }
 
+    @Exclude
     public String getId() {
         return id;
     }

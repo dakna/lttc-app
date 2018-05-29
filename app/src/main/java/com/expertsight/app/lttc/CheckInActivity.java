@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.expertsight.app.lttc.model.Member;
+import com.expertsight.app.lttc.model.Transaction;
 import com.expertsight.app.lttc.util.FirebaseHelper;
 import com.expertsight.app.lttc.util.MifareHelper;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -604,10 +605,12 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         Log.d(TAG, "onComplete:  DocumentSnapshot data: " + document.getData());
-                        Member member = document.toObject(Member.class).withId(document.getId());
+                        final Member member = document.toObject(Member.class).withId(document.getId());
                         float newBalance = member.getBalance() - CheckInActivity.FEE_PER_DAY + payment;
                         Log.d(TAG, "onComplete: calculating new member balance as $" + newBalance);
                         member.setBalance(newBalance);
+
+                        //no server timestamp so it works offline
                         member.setLastCheckIn(new Date());
                         memberRef.set(member, SetOptions.merge())
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -622,6 +625,30 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                                         Log.w(TAG, "Error writing document", e);
                                     }
                                 });
+
+
+                        Transaction newTransaction = new Transaction();
+                        newTransaction.setAmount(payment);
+                        newTransaction.setMemberRef(memberRef);
+                        newTransaction.setSubject(getString(R.string.transaction_subject_member_fee));
+                        //no server timestamp so it works offline
+                        newTransaction.setTimestamp(new Date());
+
+                        CollectionReference transactions = db.collection("transactions");
+                        transactions.add(newTransaction).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentReference> task) {
+                                if(task.isSuccessful()) {
+                                    DocumentReference memberRef = task.getResult();
+                                    Log.d(TAG, "onComplete: new transaction added with ID " + memberRef.getId());
+                                    Toast.makeText(context, "Added new transaction: " + payment + " from " + member.getFullName(), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Log.d(TAG, "onComplete: error adding new transaction");
+                                    Toast.makeText(context, "Unknown Error: Couldn't add new transaction", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
 
                     } else {
                         Log.d(TAG, "No such document");
@@ -658,15 +685,15 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
     private void toastTotalBalance() {
         Log.d(TAG, "toastTotalBalance: start");
-        CollectionReference members = db.collection("members");
+        CollectionReference members = db.collection("transactions");
 
         members.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 float totalBalance = 0;
-                for(DocumentSnapshot memberDoc: queryDocumentSnapshots) {
-                    Member member = memberDoc.toObject(Member.class).withId(memberDoc.getId());
-                    totalBalance = totalBalance + member.getBalance();
+                for(DocumentSnapshot transactionDoc: queryDocumentSnapshots) {
+                    Transaction transaction = transactionDoc.toObject(Transaction.class).withId(transactionDoc.getId());
+                    totalBalance = totalBalance + transaction.getAmount();
                 }
                 Toast.makeText(context, "Hello admin! Total balance is " + totalBalance, Toast.LENGTH_LONG).show();
             }

@@ -123,6 +123,12 @@ make member records editable for public
 if auth then decide when card is scanned: assign card to member or check in
 or can you scan a card with a special intent to assign it.
 
-play this week instead of today
+OK play this week instead of today
+
+no auth when offline, use smartcard as auth. if card member is admin, show bottomdialofgsheet to select what to do
+view and edit member list
+show transactions and total balance
+enter transaction with description, plus and minus so admin can put in money
+
 
 
