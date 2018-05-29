@@ -488,6 +488,9 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
 
 
+            //clear itent because it will re-run on orientation change. card should be scanned only once
+            intent.setAction("");
+
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             Log.d(TAG, "handleIntent: tag" + tag);
 

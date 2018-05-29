@@ -130,5 +130,7 @@ view and edit member list
 show transactions and total balance
 enter transaction with description, plus and minus so admin can put in money
 
+next: add bottom sheet dialog
+
 
 
