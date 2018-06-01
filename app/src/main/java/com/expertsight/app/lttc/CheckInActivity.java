@@ -239,13 +239,11 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         checkInMemberDialogFragment.show(manager, "fragment_check_in_member_dialog");
     }
 
-    public void showAdminDialog(String hexId) {
-        Log.d(TAG, "showAdminDialog: start " + hexId);
+    public void showAdminDialog(Member member) {
+        Log.d(TAG, "showAdminDialog: start ");
 
         Bundle args = new Bundle();
-        if (hexId != null) {
-            args.putString("smartcard_id", hexId);
-        }
+        args.putString("member_id", member.getId());
 
         FragmentManager manager = getSupportFragmentManager();
         Fragment frag = manager.findFragmentByTag("fragment_admin_dialog");
@@ -537,8 +535,10 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                         if (member.getIsAdmin() == true) {
                             Log.d(TAG, "onComplete: member is admin");
                             toastTotalBalance();
+                            showAdminDialog(member);
+                        } else {
+                            showCheckInMemberDialog(member);
                         }
-                        showCheckInMemberDialog(member);
                     } else if (queryDocumentSnapshots.size() > 1){
                         Toast.makeText(context, "Error: The smartcard ID " + hexId + " is assigned to more than one member", Toast.LENGTH_LONG).show();
                     } else {
