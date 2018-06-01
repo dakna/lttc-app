@@ -61,7 +61,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class CheckInActivity extends AppCompatActivity implements AddMemberDialogFragment.AddMemberDialogListener, CheckInMemberDialogFragment.CheckInMemberDialogListener{
+public class CheckInActivity extends AppCompatActivity implements AddMemberDialogFragment.AddMemberDialogListener, CheckInMemberDialogFragment.CheckInMemberDialogListener, AdminBottomSheetDialogFragment.AdminBottomSheetDialogListener {
 
     private static final String TAG = "CheckInActivity";
     private static final int ACTIVITY_NUM = 1;
@@ -685,26 +685,31 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
             }
         });
 
-/*        Member newMember = new Member();
-        newMember.setFirstName(firstName);
-        newMember.setLastName(lastName);
-        newMember.setEmail(email);
-        newMember.setMailingSubscriber(mailingList);
+    }
 
-        CollectionReference members = db.collection("members");
-        members.add(newMember).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentReference> task) {
-                if(task.isSuccessful()) {
-                    DocumentReference memberRef = task.getResult();
-                    Log.d(TAG, "onComplete: new member added with ID " + memberRef.getId());
-                    Toast.makeText(context, "Added new member: " + firstName + " " + lastName, Toast.LENGTH_SHORT).show();
-                } else {
-                    Log.d(TAG, "onComplete: error adding new member");
-                    Toast.makeText(context, "Unknown Error: Couldn't add new member", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });*/
+    @Override
+    public void applyAdminDialogData(String memberId, int buttonSelection) {
+        if(buttonSelection == R.id.btnCheckIn) {
+
+            final DocumentReference memberRef = db.collection("members").document(memberId);
+            memberRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                  @Override
+                  public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                      if (task.isSuccessful()) {
+                          DocumentSnapshot document = task.getResult();
+                          if (document.exists()) {
+                              Log.d(TAG, "onComplete:  DocumentSnapshot data: " + document.getData());
+                              final Member member = document.toObject(Member.class).withId(document.getId());
+                              showCheckInMemberDialog(member);
+                          }
+                      }
+                  }
+              });
+
+
+
+
+        }
     }
 
     private void toastTotalBalance() {
