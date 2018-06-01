@@ -2,8 +2,6 @@ package com.expertsight.app.lttc;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +10,8 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -204,7 +204,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
             args.putString("smartcard_id", hexId);
         }
 
-        FragmentManager manager = getFragmentManager();
+        FragmentManager manager = getSupportFragmentManager();
         Fragment frag = manager.findFragmentByTag("fragment_add_member_dialog");
         if (frag != null) {
             manager.beginTransaction().remove(frag).commit();
@@ -229,7 +229,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         args.putString("member_fullname", member.getFullName());
         args.putFloat("member_balance", member.getBalance());
 
-        FragmentManager manager = getFragmentManager();
+        FragmentManager manager = getSupportFragmentManager();
         Fragment frag = manager.findFragmentByTag("fragment_check_in_member_dialog");
         if (frag != null) {
             manager.beginTransaction().remove(frag).commit();
@@ -238,6 +238,27 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         checkInMemberDialogFragment.setArguments(args);
         checkInMemberDialogFragment.show(manager, "fragment_check_in_member_dialog");
     }
+
+    public void showAdminDialog(String hexId) {
+        Log.d(TAG, "showAdminDialog: start " + hexId);
+
+        Bundle args = new Bundle();
+        if (hexId != null) {
+            args.putString("smartcard_id", hexId);
+        }
+
+        FragmentManager manager = getSupportFragmentManager();
+        Fragment frag = manager.findFragmentByTag("fragment_admin_dialog");
+        if (frag != null) {
+            manager.beginTransaction().remove(frag).commit();
+        }
+        AdminBottomSheetDialogFragment adminDialogFragment = new AdminBottomSheetDialogFragment();
+        adminDialogFragment.setArguments(args);
+        adminDialogFragment.show(manager, "fragment_admin_dialog");
+
+    }
+
+
 
     private void setupMemberListView() {
 
