@@ -9,7 +9,7 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.expertsight.app.lttc.MainActivity;
-import com.expertsight.app.lttc.MemberActivity;
+import com.expertsight.app.lttc.AdminActivity;
 import com.expertsight.app.lttc.HistoryActivity;
 import com.expertsight.app.lttc.CheckInActivity;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
@@ -48,7 +48,7 @@ public class BottomNavigationViewHelper {
                         break;
 
                     case R.id.ic_member:
-                        Intent intent3 = new Intent(context, MemberActivity.class);//ACTIVITY_NUM = 2
+                        Intent intent3 = new Intent(context, AdminActivity.class);//ACTIVITY_NUM = 2
                         context.startActivity(intent3);
                         callingActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                         break;

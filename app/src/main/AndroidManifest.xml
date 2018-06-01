@@ -19,7 +19,7 @@
         <activity android:name=".MainActivity">
 
         </activity>
-        <activity android:name=".MemberActivity" />
+        <activity android:name=".AdminActivity" />
         <activity android:name=".HistoryActivity" />
         <activity android:name=".CheckInActivity">
             <intent-filter>

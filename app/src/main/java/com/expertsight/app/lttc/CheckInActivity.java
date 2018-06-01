@@ -93,14 +93,9 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        db = FirebaseFirestore.getInstance();
-
         setContentView(R.layout.activity_check_in);
 
-
-
-
+        db = FirebaseFirestore.getInstance();
 
         ButterKnife.bind(this);
         //setupBottomNavigationView();
@@ -166,27 +161,6 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                 }
             }
         });
-
-        /*
-        This loads member value into adapter only on load without updates. and since we pass the member object from the adapter to the dialog without any further updates, it can be stale data and not updated.
-        So we use snapshot listener on every update instead , see above
-
-        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                                Member member = document.toObject(Member.class).withId(document.getId());
-                                adapter.add(member);
-                            }
-                        } else {
-                            Log.d(TAG, "Error getting members: ", task.getException());
-                        }
-                    }
-                })
-        */;
-
 
     }
 
@@ -264,20 +238,6 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         final Query query = membersRef.orderBy("firstName");
 
         Log.d(TAG, "starting to get Member list");
-/*
-
-        query.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "size of the snapshots after get and result " + String.valueOf(task.getResult().size()));
-                        }
-                    }
-                });
-*/
-
-
 
         FirestoreRecyclerOptions<Member> response = new FirestoreRecyclerOptions.Builder<Member>()
                 .setQuery(query, Member.class)
@@ -438,7 +398,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                 Log.d(TAG, "onBindViewHolder: Member CheckedIn ID " + member.getId() + " lastCheckIn " + member.getLastCheckIn());
                 holder.fullName.setText(member.getFullName());
                 // TODO: 5/22/2018 use string resource
-                holder.time.setText("Checked in " + new SimpleDateFormat("mm/dd 'at' HH:mm").format(member.getLastCheckIn()));
+                holder.time.setText("Checked in " + new SimpleDateFormat("MM/dd 'at' HH:mm").format(member.getLastCheckIn()));
 
             }
 
@@ -534,7 +494,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                         Log.d(TAG, "onSuccess getting member by smartcard id " + member.getSmartcardId() + ": " + member.toString());
                         if (member.getIsAdmin() == true) {
                             Log.d(TAG, "onComplete: member is admin");
-                            toastTotalBalance();
+                            //toastTotalBalance();
                             showAdminDialog(member);
                         } else {
                             showCheckInMemberDialog(member);
@@ -580,15 +540,6 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     }
 
 
-/*    private void setupBottomNavigationView() {
-        Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");
-        BottomNavigationViewEx bottomNavigationViewEx = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
-        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(context, this, bottomNavigationViewEx);
-        Menu menu = bottomNavigationViewEx.getMenu();
-        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
-        menuItem.setChecked(true);
-    }*/
 
     @Override
     public void applyNewMemberData(final String firstName, final String lastName, String email, boolean mailingList, String smartcardId) {
@@ -689,7 +640,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
     @Override
     public void applyAdminDialogData(String memberId, int buttonSelection) {
-        if(buttonSelection == R.id.btnCheckIn) {
+        if (buttonSelection == R.id.btnCheckIn) {
 
             final DocumentReference memberRef = db.collection("members").document(memberId);
             memberRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -709,23 +660,11 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
 
 
+        } else if (buttonSelection == R.id.btnAdmin) {
+            Intent Intent = new Intent(context, AdminActivity.class);
+            startActivity(Intent);
         }
     }
 
-    private void toastTotalBalance() {
-        Log.d(TAG, "toastTotalBalance: start");
-        CollectionReference members = db.collection("transactions");
 
-        members.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                float totalBalance = 0;
-                for(DocumentSnapshot transactionDoc: queryDocumentSnapshots) {
-                    Transaction transaction = transactionDoc.toObject(Transaction.class).withId(transactionDoc.getId());
-                    totalBalance = totalBalance + transaction.getAmount();
-                }
-                Toast.makeText(context, "Hello admin! Total balance is " + totalBalance, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
 }

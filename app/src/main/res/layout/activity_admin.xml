@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    tools:context="com.expertsight.app.lttc.CheckInActivity">
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelineVertical"
+        android:layout_width="1dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.48"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelineVertical2"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.52"/>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/tilMembers"
+        android:layout_width="0dp"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineVertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="20dp"
+        >
+        <android.support.v7.widget.AppCompatAutoCompleteTextView
+            android:id="@+id/actvMembers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:completionThreshold="1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:hint="@string/member_completion_hint"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.design.widget.TextInputLayout>
+
+
+
+
+
+    <TextView
+        android:id="@+id/tvMemberListHeadline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        style="@style/TextAppearance.AppCompat.Large"
+        android:text="@string/headline_member_list"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/tilMembers"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+
+
+
+    <ScrollView
+        android:id="@+id/scrollMembers"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/tvMemberListHeadline"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineVertical">
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvMembers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:background="@color/material_gray_300"
+            />
+
+    </ScrollView>
+
+
+    <TextView
+        android:id="@+id/tvTotalBalanceHeadline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="20dp"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:text="Total Balance"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/guidelineVertical2"
+        app:layout_constraintBottom_toBottomOf="@id/tilMembers"
+        />
+
+    <TextView
+        android:id="@+id/tvTotalBalance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="20dp"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:text="$"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/tilMembers"
+        />
+
+    <TextView
+        android:id="@+id/tvTransactionListHeadline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        style="@style/TextAppearance.AppCompat.Large"
+        android:text="@string/headline_transaction_list"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/guidelineVertical2"
+        app:layout_constraintTop_toBottomOf="@+id/tilMembers" />
+
+    <Button
+        android:id="@+id/btnAddTransaction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_add_transaction"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/tilMembers"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="135dp" />
+
+
+
+    <ScrollView
+        android:id="@+id/scrollTransaction"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/tvTransactionListHeadline"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/guidelineVertical2"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="24dp" >
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvTransactions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="16dp"
+            android:background="@color/material_gray_300"
+            />
+    </ScrollView>
+
+
+
+</android.support.constraint.ConstraintLayout>
