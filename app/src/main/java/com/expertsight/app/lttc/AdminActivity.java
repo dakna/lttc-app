@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -52,8 +54,9 @@ import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class AdminActivity extends AppCompatActivity {
+public class AdminActivity extends AppCompatActivity implements AddTransactionDialogFragment.AddTransactionDialogListener{
 
     private static final String TAG = "AdminActivity";
     private static final int ACTIVITY_NUM = 2;
@@ -378,4 +381,29 @@ public class AdminActivity extends AppCompatActivity {
             }
         });
     }
+
+    @OnClick(R.id.btnAddTransaction)
+    public void onClickAddTransaction() {
+        showAddTransactionDialog();
+    }
+
+    public void showAddTransactionDialog() {
+
+        Bundle args = new Bundle();
+
+        FragmentManager manager = getSupportFragmentManager();
+        Fragment frag = manager.findFragmentByTag("fragment_add_transaction_dialog");
+        if (frag != null) {
+            manager.beginTransaction().remove(frag).commit();
+        }
+        AddTransactionDialogFragment addTransactionDialogFragment = new AddTransactionDialogFragment();
+        addTransactionDialogFragment.setArguments(args);
+        addTransactionDialogFragment.show(manager, "fragment_add_transaction_dialog");
+
+    }
+
+    @Override
+    public void applyNewTransactionData(String subject, float amount) {
+        Log.d(TAG, "applyNewTransactionData: " + subject + " " + amount);
+    }    
 }
