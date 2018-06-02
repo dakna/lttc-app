@@ -36,6 +36,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -249,7 +250,7 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
                 Log.d(TAG, "onBindViewHolder: Transaction ID " + transaction.getId() + " amount " + transaction.getAmount());
                 holder.subject.setText(transaction.getSubject());
 
-                float amount = transaction.getAmount();
+                double amount = transaction.getAmount();
                 holder.amount.setText("$" + amount);
                 if (amount > 0) {
                     holder.amount.setTextColor(ContextCompat.getColor(context, R.color.darkGreen));
@@ -362,10 +363,12 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
         Log.d(TAG, "setTotalBalance: start");
         CollectionReference members = db.collection("transactions");
 
+        // TODO: 6/2/2018 needs a listener for changes 
+
         members.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                float totalBalance = 0;
+                double totalBalance = 0;
                 for(DocumentSnapshot transactionDoc: queryDocumentSnapshots) {
                     Transaction transaction = transactionDoc.toObject(Transaction.class).withId(transactionDoc.getId());
                     totalBalance = totalBalance + transaction.getAmount();
@@ -403,7 +406,28 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
     }
 
     @Override
-    public void applyNewTransactionData(String subject, float amount) {
+    public void applyNewTransactionData(final String subject, final double amount) {
         Log.d(TAG, "applyNewTransactionData: " + subject + " " + amount);
+        Transaction newTransaction = new Transaction();
+        newTransaction.setSubject(subject);
+        newTransaction.setAmount(amount);
+        newTransaction.setTimestamp(new Date());
+
+        // TODO: 6/2/2018 add member ref to transaction, member id needs to be passed along with intent to start activity and stored in member
+
+        CollectionReference transactions = db.collection("transactions");
+        transactions.add(newTransaction).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentReference> task) {
+                if(task.isSuccessful()) {
+                    DocumentReference transactionRef = task.getResult();
+                    Log.d(TAG, "onComplete: new transaction added with ID " + transactionRef.getId());
+                    Toast.makeText(context, "Added new transaction: " + subject + " " + amount, Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.d(TAG, "onComplete: error adding new transaction");
+                    Toast.makeText(context, "Unknown Error: Couldn't add new transaction", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }    
 }

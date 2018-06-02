@@ -7,18 +7,18 @@ import java.util.Date;
 
 public class Transaction extends FirestoreModel{
 
-    private float amount;
+    private double amount;
     private DocumentReference memberRef;
     private String subject;
     private Date timestamp;
 
     public Transaction() {}
 
-    public float getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(float amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 

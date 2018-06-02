@@ -90,10 +90,9 @@ public class AddTransactionDialogFragment extends DialogFragment {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         String subject = textInputEditSubject.getText().toString();
-                        float amount = Float.valueOf(textInputEditAmount.getText().toString());
+                        double amount = Double.valueOf(textInputEditAmount.getText().toString());
 
                         listener.applyNewTransactionData(subject, amount);
-
                         Toast.makeText(getActivity(), "Adding new transaction", Toast.LENGTH_SHORT).show();
                     }
                 })
@@ -131,7 +130,7 @@ public class AddTransactionDialogFragment extends DialogFragment {
     }
 
     public interface AddTransactionDialogListener {
-        void applyNewTransactionData(String subject, float amount);
+        void applyNewTransactionData(String subject, double amount);
     }
 
 }
