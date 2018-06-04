@@ -57,7 +57,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class AdminActivity extends AppCompatActivity implements AddTransactionDialogFragment.AddTransactionDialogListener{
+public class AdminActivity extends AppCompatActivity implements AddTransactionDialogFragment.AddTransactionDialogListener, EditMemberDialogFragment.EditMemberDialogListener{
 
     private static final String TAG = "AdminActivity";
     private static final int ACTIVITY_NUM = 2;
@@ -109,7 +109,7 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Member member = (Member) parent.getAdapter().getItem(position);
                 //Toast.makeText(context, "You clicked on " + member.getFullName() +" " + member.getId(), Toast.LENGTH_SHORT).show();
-                //showCheckInMemberDialog(member);
+                showEditMemberDialog(member);
                 autoCompleteTextView.setText("");
                 autoCompleteTextView.clearFocus();
             }
@@ -314,6 +314,7 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
         dbAdapterAllMembers.stopListening();
         dbAdapterAllTransactions.stopListening();
     }
+    
 
     public class MemberViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         public TextView fullName;
@@ -334,7 +335,7 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
             int adapterPos = getAdapterPosition();
             Member member = (Member) dbAdapterAllMembers.getItem(adapterPos);
             //Toast.makeText(context, "clicked on " + member.getId(), Toast.LENGTH_SHORT).show();
-            //showCheckInMemberDialog(member);
+            showEditMemberDialog(member);
         }
 
         @Override
@@ -363,13 +364,15 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
         Log.d(TAG, "setTotalBalance: start");
         CollectionReference members = db.collection("transactions");
 
-        // TODO: 6/2/2018 needs a listener for changes 
-
-        members.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        members.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed for transactions.", e);
+                    return;
+                }
                 double totalBalance = 0;
-                for(DocumentSnapshot transactionDoc: queryDocumentSnapshots) {
+                for (QueryDocumentSnapshot transactionDoc: queryDocumentSnapshots) {
                     Transaction transaction = transactionDoc.toObject(Transaction.class).withId(transactionDoc.getId());
                     totalBalance = totalBalance + transaction.getAmount();
                 }
@@ -380,7 +383,6 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
                 if (totalBalance < 0) {
                     tvTotalBalance.setTextColor(ContextCompat.getColor(context, R.color.darkRed));
                 }
-                //Toast.makeText(context, "Hello admin! Total balance is " + totalBalance, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -429,5 +431,39 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
                 }
             }
         });
+    }
+
+    public void showEditMemberDialog(Member member) {
+        Log.d(TAG, "showEditMemberDialog: start " + member.getFullName());
+
+        Bundle args = new Bundle();
+
+        args.putString("member_id", member.getId());
+        args.putString("member_firstname", member.getFirstName());
+        args.putString("member_lastname", member.getLastName());
+        // TODO: 6/2/2018 change float to double when refactoring
+        args.putFloat("member_balance", member.getBalance());
+        args.putString("member_email", member.getEmail());
+        args.putBoolean("member_mailinglist", member.getIsMailingSubscriber());
+        args.putString("member_smartcard_id", member.getSmartcardId());
+        args.putString("member_last_check_in", member.getLastCheckIn().toString());
+        args.putBoolean("member_is_admin", member.getIsAdmin());
+        args.putBoolean("member_is_active", member.getIsActive());
+
+
+        FragmentManager manager = getSupportFragmentManager();
+        Fragment frag = manager.findFragmentByTag("fragment_edit_member_dialog");
+        if (frag != null) {
+            manager.beginTransaction().remove(frag).commit();
+        }
+        EditMemberDialogFragment editMemberDialogFragment = new EditMemberDialogFragment();
+        editMemberDialogFragment.setArguments(args);
+        editMemberDialogFragment.show(manager, "fragment_edit_member_dialog");
+
+    }
+
+    @Override
+    public void applyEditMemberData(String firstName, String lastName, String email, boolean mailingList, String smartcardId) {
+        Log.d(TAG, "applyEditMemberData: " + firstName + " " + lastName + " " + email + " " + mailingList + " " + smartcardId);
     }    
 }

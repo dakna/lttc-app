@@ -21,6 +21,8 @@ public class Member extends FirestoreModel {
     private boolean isMailingSubscriber;
     private boolean isActive;
     private boolean isAdmin;
+
+    // TODO: 6/2/2018 refactor float to double
     private float balance;
     private Date lastCheckIn;
 
@@ -71,7 +73,7 @@ public class Member extends FirestoreModel {
         isMailingSubscriber = mailingSubscriber;
     }
 
-    public boolean isActive() {
+    public boolean getIsActive() {
         return isActive;
     }
 
@@ -85,7 +87,7 @@ public class Member extends FirestoreModel {
         isAdmin = admin;
     }
 
-    public void setActive(boolean active) {
+    public void setIsActive(boolean active) {
         isActive = active;
     }
 

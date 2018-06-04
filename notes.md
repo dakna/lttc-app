@@ -133,5 +133,11 @@ enter transaction with description, plus and minus so admin can put in money
 next: add bottom sheet dialog
 waiver signed boolean for member
 
+assign scanned card to member. needs a selection dialog if add member or assign member, just like admin
+
+isActive field never used
+
+in checkin only active members, in admin list all members
+
 
 
