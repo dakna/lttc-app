@@ -135,9 +135,10 @@ waiver signed boolean for member
 
 assign scanned card to member. needs a selection dialog if add member or assign member, just like admin
 
-isActive field never used
+isActive field never used, should restrict checkin list member
 
 in checkin only active members, in admin list all members
+
 
 
 

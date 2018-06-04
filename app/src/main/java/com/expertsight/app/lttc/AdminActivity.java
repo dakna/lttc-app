@@ -31,6 +31,7 @@ import com.expertsight.app.lttc.util.FirebaseHelper;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,12 +45,14 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.expertsight.app.lttc.model.Member;
 
 import com.expertsight.app.lttc.ui.BottomNavigationViewHelper;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -446,7 +449,13 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
         args.putString("member_email", member.getEmail());
         args.putBoolean("member_mailinglist", member.getIsMailingSubscriber());
         args.putString("member_smartcard_id", member.getSmartcardId());
-        args.putString("member_last_check_in", member.getLastCheckIn().toString());
+
+        Date lastCheckIn = member.getLastCheckIn();
+        if (lastCheckIn != null) {
+            String dateString = new SimpleDateFormat("MM/dd/yyyy hh:mm").format(lastCheckIn);
+            args.putString("member_last_check_in", dateString);
+        }
+
         args.putBoolean("member_is_admin", member.getIsAdmin());
         args.putBoolean("member_is_active", member.getIsActive());
 
@@ -463,7 +472,60 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
     }
 
     @Override
-    public void applyEditMemberData(String firstName, String lastName, String email, boolean mailingList, String smartcardId) {
-        Log.d(TAG, "applyEditMemberData: " + firstName + " " + lastName + " " + email + " " + mailingList + " " + smartcardId);
+    public void applyEditMemberData(final String memberId, final String firstName, final String lastName, final String email, final boolean mailingList, final String smartcardId, final boolean isAdmin, final String lastCheckIn, final boolean isActive) {
+        Log.d(TAG, "applyEditMemberData: " + memberId + " " + firstName + " " + lastName + " " + email + " " + mailingList + " " + smartcardId + " " + isAdmin + " " + lastCheckIn + " " + isActive);
+
+        final DocumentReference memberRef = db.collection("members").document(memberId);
+        memberRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "onComplete:  DocumentSnapshot data: " + document.getData());
+                        final Member member = document.toObject(Member.class).withId(document.getId());
+
+                        member.setFirstName(firstName);
+                        member.setLastName(lastName);
+                        member.setEmail(email);
+                        member.setIsMailingSubscriber(mailingList);
+                        member.setSmartcardId(smartcardId);
+                        member.setIsAdmin(isAdmin);
+                        try {
+                            //Log.d(TAG, "onComplete: last CheckIn " + lastCheckIn);
+                            Date lastCheckInDate = new SimpleDateFormat("MM/dd/yyyy hh:mm").parse(lastCheckIn);
+                            //Log.d(TAG, "onComplete: last CheckIn Date " + lastCheckInDate);
+                            member.setLastCheckIn(lastCheckInDate);
+                            //Log.d(TAG, "onComplete: member getLastCheckIn " + member.getLastCheckIn());
+                        } catch (ParseException e) {
+                            Log.e(TAG, "Error parsing date string  " + lastCheckIn, e);
+                            Toast.makeText(context, "Last Check-In Date not updated because " + lastCheckIn + " couldn't be parsed into Date", Toast.LENGTH_SHORT).show();
+                        }
+                        member.setIsActive(isActive);
+
+                        memberRef.set(member, SetOptions.merge())
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error writing document", e);
+                                    }
+                                });
+
+                    } else {
+                        Log.d(TAG, "No such document");
+                        Toast.makeText(context, "Error while checking in member " + memberId, Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                    Toast.makeText(context, "Error while checking in member " + memberId, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }    
 }

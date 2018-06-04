@@ -34,7 +34,8 @@ public class EditMemberDialogFragment extends DialogFragment {
 
         final Bundle args = getArguments();
 
-        String message = "Please edit member details for ID " + args.getString("member_id");
+        final String memberId = args.getString("member_id");
+        String message = "Please edit member details for ID " + memberId ;
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View form = inflater.inflate(R.layout.fragment_edit_member_dialog,null);
@@ -55,8 +56,8 @@ public class EditMemberDialogFragment extends DialogFragment {
         textInputEditTextEmail.setText(args.getString("member_email"));
         checkBoxMailingList.setChecked(args.getBoolean("member_mailinglist"));
         textInputEditTextSmartcardId.setText(args.getString("member_smartcard_id"));
-        textInputEditTextLastCheckIn.setText(args.getString("member_last_check_in"));
         checkBoxAdmin.setChecked(args.getBoolean("member_is_admin"));
+        textInputEditTextLastCheckIn.setText(args.getString("member_last_check_in"));
         checkBoxActive.setChecked(args.getBoolean("member_is_active"));
 
 
@@ -123,10 +124,14 @@ public class EditMemberDialogFragment extends DialogFragment {
                         String email = textInputEditTextEmail.getText().toString();
                         boolean mailingList = checkBoxMailingList.isChecked();
                         String smartcardId = textInputEditTextSmartcardId.getText().toString();
+                        boolean isAdmin = checkBoxAdmin.isChecked();
+                        // TODO: 6/4/2018 lastCheckIn should be a date picker and converted to Date
+                        String lastCheckIn = textInputEditTextLastCheckIn.getText().toString();
+                        boolean isActive = checkBoxActive.isChecked();
 
-                        listener.applyEditMemberData(firstName, lastName, email, mailingList, smartcardId);
+                        listener.applyEditMemberData(memberId, firstName, lastName, email, mailingList, smartcardId, isAdmin, lastCheckIn, isActive);
 
-                        Toast.makeText(getActivity(), "Adding new member", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Editing member", Toast.LENGTH_SHORT).show();
                     }
                 })
                 // negative button
@@ -163,7 +168,7 @@ public class EditMemberDialogFragment extends DialogFragment {
     }
 
     public interface EditMemberDialogListener {
-        void applyEditMemberData(String firstName, String lastName, String email, boolean mailingList, String smartcardId);
+        void applyEditMemberData(String memberId, String firstName, String lastName, String email, boolean mailingList, String smartcardId, boolean isAdmin, String lastCheckIn, boolean isActive);
     }
 
 }
