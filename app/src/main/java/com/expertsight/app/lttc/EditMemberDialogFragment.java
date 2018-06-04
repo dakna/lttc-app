@@ -28,6 +28,7 @@ public class EditMemberDialogFragment extends DialogFragment {
     private EditMemberDialogListener listener;
     private CheckBox checkBoxAdmin;
     private CheckBox checkBoxActive;
+    private TextInputEditText textInputEditTextBalance;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -47,22 +48,18 @@ public class EditMemberDialogFragment extends DialogFragment {
         textInputEditTextLastCheckIn = form.findViewById(R.id.lastCheckIn);
         checkBoxAdmin = form.findViewById(R.id.isAdmin);
         checkBoxActive = form.findViewById(R.id.isActive);
+        textInputEditTextBalance = form.findViewById(R.id.balance);
 
 
         textInputEditTextFirstName.setText(args.getString("member_firstname"));
         textInputEditTextLastName.setText(args.getString("member_lastname"));
-        // TODO: 6/2/2018 change float to double when refactoring
-        //args.putFloat("member_balance", member.getBalance());
         textInputEditTextEmail.setText(args.getString("member_email"));
         checkBoxMailingList.setChecked(args.getBoolean("member_mailinglist"));
         textInputEditTextSmartcardId.setText(args.getString("member_smartcard_id"));
         checkBoxAdmin.setChecked(args.getBoolean("member_is_admin"));
         textInputEditTextLastCheckIn.setText(args.getString("member_last_check_in"));
         checkBoxActive.setChecked(args.getBoolean("member_is_active"));
-
-
-
-
+        textInputEditTextBalance.setText(String.valueOf(args.getDouble("member_balance")));
 
         textInputEditTextFirstName.addTextChangedListener(new TextWatcher() {
             @Override
@@ -129,7 +126,9 @@ public class EditMemberDialogFragment extends DialogFragment {
                         String lastCheckIn = textInputEditTextLastCheckIn.getText().toString();
                         boolean isActive = checkBoxActive.isChecked();
 
-                        listener.applyEditMemberData(memberId, firstName, lastName, email, mailingList, smartcardId, isAdmin, lastCheckIn, isActive);
+                        String balance = textInputEditTextBalance.getText().toString();
+
+                        listener.applyEditMemberData(memberId, firstName, lastName, email, mailingList, smartcardId, isAdmin, lastCheckIn, isActive, balance);
 
                         Toast.makeText(getActivity(), "Editing member", Toast.LENGTH_SHORT).show();
                     }
@@ -168,7 +167,7 @@ public class EditMemberDialogFragment extends DialogFragment {
     }
 
     public interface EditMemberDialogListener {
-        void applyEditMemberData(String memberId, String firstName, String lastName, String email, boolean mailingList, String smartcardId, boolean isAdmin, String lastCheckIn, boolean isActive);
+        void applyEditMemberData(String memberId, String firstName, String lastName, String email, boolean mailingList, String smartcardId, boolean isAdmin, String lastCheckIn, boolean isActive, String balance);
     }
 
 }

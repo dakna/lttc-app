@@ -3,9 +3,7 @@ package com.expertsight.app.lttc.model;
 import android.util.Log;
 
 import com.expertsight.app.lttc.util.FirebaseHelper;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Exclude;
-import com.google.firebase.firestore.IgnoreExtraProperties;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -22,9 +20,7 @@ public class Member extends FirestoreModel {
     private boolean isActive;
     private boolean isAdmin;
     private boolean hasSignedWaiver;
-
-    // TODO: 6/2/2018 refactor float to double
-    private float balance;
+    private double balance;
     private Date lastCheckIn;
 
 
@@ -91,11 +87,11 @@ public class Member extends FirestoreModel {
         isActive = active;
     }
 
-    public float getBalance() {
+    public double getBalance() {
         return balance;
     }
 
-    public void setBalance(float balance) {
+    public void setBalance(double balance) {
         this.balance = balance;
     }
 

@@ -11,18 +11,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,8 +30,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -47,10 +41,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
-import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.expertsight.app.lttc.model.Member;
-
-import com.expertsight.app.lttc.ui.BottomNavigationViewHelper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -173,7 +164,7 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
             protected void onBindViewHolder(AdminActivity.MemberViewHolder holder, int position, final Member member) {
                 //Log.d(TAG, "onBindViewHolder: Member " + member.toStringIncludingAllProperties());
                 holder.fullName.setText(member.getFullName());
-                float balance = member.getBalance();
+                double balance = member.getBalance();
                 holder.balance.setText("$" + String.valueOf(balance));
                 holder.email.setText(member.getEmail());
 
@@ -223,7 +214,7 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
 
         final CollectionReference membersRef = db.collection("/transactions/");
         final Query query = membersRef
-                .orderBy("timestamp");
+                .orderBy("timestamp", Query.Direction.DESCENDING);
 
         Log.d(TAG, "starting to get Transaction list" );
 
@@ -448,8 +439,7 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
         args.putString("member_id", member.getId());
         args.putString("member_firstname", member.getFirstName());
         args.putString("member_lastname", member.getLastName());
-        // TODO: 6/2/2018 change float to double when refactoring
-        args.putFloat("member_balance", member.getBalance());
+        args.putDouble("member_balance", member.getBalance());
         args.putString("member_email", member.getEmail());
         args.putBoolean("member_mailinglist", member.getIsMailingSubscriber());
         args.putString("member_smartcard_id", member.getSmartcardId());
@@ -476,7 +466,7 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
     }
 
     @Override
-    public void applyEditMemberData(final String memberId, final String firstName, final String lastName, final String email, final boolean mailingList, final String smartcardId, final boolean isAdmin, final String lastCheckIn, final boolean isActive) {
+    public void applyEditMemberData(final String memberId, final String firstName, final String lastName, final String email, final boolean mailingList, final String smartcardId, final boolean isAdmin, final String lastCheckIn, final boolean isActive, final String balance) {
         Log.d(TAG, "applyEditMemberData: " + memberId + " " + firstName + " " + lastName + " " + email + " " + mailingList + " " + smartcardId + " " + isAdmin + " " + lastCheckIn + " " + isActive);
 
         final DocumentReference memberRef = db.collection("members").document(memberId);
@@ -495,17 +485,32 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
                         member.setIsMailingSubscriber(mailingList);
                         member.setSmartcardId(smartcardId);
                         member.setIsAdmin(isAdmin);
-                        try {
-                            //Log.d(TAG, "onComplete: last CheckIn " + lastCheckIn);
-                            Date lastCheckInDate = new SimpleDateFormat("MM/dd/yyyy hh:mm").parse(lastCheckIn);
-                            //Log.d(TAG, "onComplete: last CheckIn Date " + lastCheckInDate);
-                            member.setLastCheckIn(lastCheckInDate);
-                            //Log.d(TAG, "onComplete: member getLastCheckIn " + member.getLastCheckIn());
-                        } catch (ParseException e) {
-                            Log.e(TAG, "Error parsing date string  " + lastCheckIn, e);
-                            Toast.makeText(context, "Last Check-In Date not updated because " + lastCheckIn + " couldn't be parsed into Date", Toast.LENGTH_SHORT).show();
+                        if (lastCheckIn.length() > 0) {
+                            try {
+                                Date lastCheckInDate = new SimpleDateFormat("MM/dd/yyyy hh:mm").parse(lastCheckIn);
+                                member.setLastCheckIn(lastCheckInDate);
+                            } catch (ParseException e) {
+                                Log.e(TAG, "Error parsing date string  " + lastCheckIn, e);
+                                Toast.makeText(context, "Last Check-In Date not updated because " + lastCheckIn + " couldn't be parsed into Date", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                          member.setLastCheckIn(null);
                         }
+
                         member.setIsActive(isActive);
+
+                        if (balance.length() > 0) {
+                            try {
+                                double balanceDouble = Double.valueOf(balance);
+                                member.setBalance(balanceDouble);
+                            } catch (NumberFormatException e) {
+                                Log.e(TAG, "Error parsing balance string to float" + balance, e);
+                                Toast.makeText(context, "Balance not updated because " + balance + " couldn't be parsed into Double", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            member.setBalance(0d);
+                        }
+
 
                         memberRef.set(member, SetOptions.merge())
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {

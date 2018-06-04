@@ -1,7 +1,6 @@
 package com.expertsight.app.lttc;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -68,7 +67,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     private Context context = CheckInActivity.this;
 
     public static final String MIME_TEXT_PLAIN = "text/plain";
-    public static final float FEE_PER_DAY = 5f;
+    public static final double FEE_PER_DAY = 5f;
 
 
     private NfcAdapter mNfcAdapter = null;
@@ -201,7 +200,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         Bundle args = new Bundle();
         args.putString("member_id", member.getId());
         args.putString("member_fullname", member.getFullName());
-        args.putFloat("member_balance", member.getBalance());
+        args.putDouble("member_balance", member.getBalance());
 
         FragmentManager manager = getSupportFragmentManager();
         Fragment frag = manager.findFragmentByTag("fragment_check_in_member_dialog");
@@ -261,7 +260,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
             protected void onBindViewHolder(MemberViewHolder holder, int position, final Member member) {
                 Log.d(TAG, "onBindViewHolder: Member ID " + member.getId());
                 holder.fullName.setText(member.getFullName());
-                float balance = member.getBalance();
+                double balance = member.getBalance();
                 holder.balance.setText("$" + String.valueOf(balance));
                 holder.email.setText(member.getEmail());
 
@@ -572,7 +571,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     }
 
     @Override
-    public void applyCheckInData(final String memberId, final float payment, boolean keepChange) {
+    public void applyCheckInData(final String memberId, final double payment, boolean keepChange) {
         Log.d(TAG, "applyCheckInMemberData: memberId: " + memberId + " payment" + payment + " keepChange " +keepChange);
 
         //load latest data, even if its in local cache
@@ -585,7 +584,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                     if (document.exists()) {
                         Log.d(TAG, "onComplete:  DocumentSnapshot data: " + document.getData());
                         final Member member = document.toObject(Member.class).withId(document.getId());
-                        float newBalance = member.getBalance() - CheckInActivity.FEE_PER_DAY + payment;
+                        double newBalance = member.getBalance() - CheckInActivity.FEE_PER_DAY + payment;
                         Log.d(TAG, "onComplete: calculating new member balance as $" + newBalance);
                         member.setBalance(newBalance);
 
@@ -605,29 +604,30 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                                     }
                                 });
 
+                        // no $0 transactions if member uses his balance, because he prepaid
+                        if (payment != 0) {
+                            Transaction newTransaction = new Transaction();
+                            newTransaction.setAmount(payment);
+                            newTransaction.setMemberRef(memberRef);
+                            newTransaction.setSubject(getString(R.string.transaction_subject_member_fee));
+                            //no server timestamp so it works offline
+                            newTransaction.setTimestamp(new Date());
 
-                        Transaction newTransaction = new Transaction();
-                        newTransaction.setAmount(payment);
-                        newTransaction.setMemberRef(memberRef);
-                        newTransaction.setSubject(getString(R.string.transaction_subject_member_fee));
-                        //no server timestamp so it works offline
-                        newTransaction.setTimestamp(new Date());
-
-                        CollectionReference transactions = db.collection("transactions");
-                        transactions.add(newTransaction).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentReference> task) {
-                                if(task.isSuccessful()) {
-                                    DocumentReference memberRef = task.getResult();
-                                    Log.d(TAG, "onComplete: new transaction added with ID " + memberRef.getId());
-                                    Toast.makeText(context, "Added new transaction: " + payment + " from " + member.getFullName(), Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Log.d(TAG, "onComplete: error adding new transaction");
-                                    Toast.makeText(context, "Unknown Error: Couldn't add new transaction", Toast.LENGTH_SHORT).show();
+                            CollectionReference transactions = db.collection("transactions");
+                            transactions.add(newTransaction).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentReference> task) {
+                                    if(task.isSuccessful()) {
+                                        DocumentReference memberRef = task.getResult();
+                                        Log.d(TAG, "onComplete: new transaction added with ID " + memberRef.getId());
+                                        Toast.makeText(context, "Added new transaction: " + payment + " from " + member.getFullName(), Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Log.d(TAG, "onComplete: error adding new transaction");
+                                        Toast.makeText(context, "Unknown Error: Couldn't add new transaction", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
-                            }
-                        });
-
+                            });
+                        }
 
                     } else {
                         Log.d(TAG, "No such document");

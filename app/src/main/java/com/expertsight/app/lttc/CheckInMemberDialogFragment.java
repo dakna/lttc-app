@@ -32,7 +32,7 @@ public class CheckInMemberDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Bundle args = getArguments();
-        float balance = args.getFloat("member_balance");
+        double balance = args.getDouble("member_balance");
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View form = inflater.inflate(R.layout.fragment_check_in_member_dialog,null);
@@ -83,7 +83,7 @@ public class CheckInMemberDialogFragment extends DialogFragment {
 
                         //test data
                         int radioButtonId = radioPayment.getCheckedRadioButtonId();
-                        float payment = 0f;
+                        double payment = 0f;
 
                         if(radioButtonId == R.id.radioPayZero) {
                             payment = 0f;
@@ -132,7 +132,7 @@ public class CheckInMemberDialogFragment extends DialogFragment {
     }
 
     public interface CheckInMemberDialogListener {
-        void applyCheckInData(String memberId, float payment, boolean keepChange);
+        void applyCheckInData(String memberId, double payment, boolean keepChange);
     }
 
 }
