@@ -4,7 +4,7 @@
     <string name="member_completion_hint">Search</string>
     <string name="btn_add_member">Add Member</string>
     <string name="btn_add_transaction">Add Transaction</string>
-    <string name="headline_member_list">All Members</string>
+    <string name="headline_member_list">Active Members</string>
     <string name="headline_current_member">Member</string>
     <string name="headline_member_checked_in_list">Playing This Week</string>
     <string name="transaction_subject_member_fee">Member fee</string>

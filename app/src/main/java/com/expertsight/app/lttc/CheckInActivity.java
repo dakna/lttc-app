@@ -75,7 +75,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
     private FirebaseFirestore db;
     private FirebaseStorage storage;
-    private FirestoreRecyclerAdapter dbAdapterAllMembers, dbAdapterMembersCheckedIn;
+    private FirestoreRecyclerAdapter dbAdapterActiveMembers, dbAdapterMembersCheckedIn;
 
     @BindView(R.id.actvMembers)
     AutoCompleteTextView autoCompleteTextView;
@@ -100,7 +100,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         ButterKnife.bind(this);
         //setupBottomNavigationView();
         setupAutoCompleteView();
-        setupMemberListView();
+        setupMemberActiveListView();
         setupMemberCheckedInListView();
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -232,10 +232,12 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
 
 
-    private void setupMemberListView() {
+    private void setupMemberActiveListView() {
 
         final CollectionReference membersRef = db.collection("/members/");
-        final Query query = membersRef.orderBy("firstName");
+        final Query query = membersRef
+                .whereEqualTo("isActive", true)
+                .orderBy("firstName");
 
         Log.d(TAG, "starting to get Member list");
 
@@ -244,7 +246,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                 .build();
 
 
-        dbAdapterAllMembers = new FirestoreRecyclerAdapter<Member, MemberViewHolder>(response) {
+        dbAdapterActiveMembers = new FirestoreRecyclerAdapter<Member, MemberViewHolder>(response) {
 
 
             @Override
@@ -301,8 +303,8 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
         };
 
-        dbAdapterAllMembers.notifyDataSetChanged();
-        rvMembers.setAdapter(dbAdapterAllMembers);
+        dbAdapterActiveMembers.notifyDataSetChanged();
+        rvMembers.setAdapter(dbAdapterActiveMembers);
         rvMembers.setLayoutManager(new LinearLayoutManager(context));
         rvMembers.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
     }
@@ -311,14 +313,14 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     @Override
     public void onStart() {
         super.onStart();
-        dbAdapterAllMembers.startListening();
+        dbAdapterActiveMembers.startListening();
         dbAdapterMembersCheckedIn.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        dbAdapterAllMembers.stopListening();
+        dbAdapterActiveMembers.stopListening();
         dbAdapterMembersCheckedIn.stopListening();
     }
 
@@ -339,7 +341,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         @Override
         public void onClick(View v) {
             int adapterPos = getAdapterPosition();
-            Member member = (Member) dbAdapterAllMembers.getItem(adapterPos);
+            Member member = (Member) dbAdapterActiveMembers.getItem(adapterPos);
             //Toast.makeText(context, "clicked on " + member.getId(), Toast.LENGTH_SHORT).show();
             showCheckInMemberDialog(member);
         }
@@ -347,7 +349,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         @Override
         public boolean onLongClick(View v) {
             int adapterPos = getAdapterPosition();
-            Member member = (Member) dbAdapterAllMembers.getItem(adapterPos);
+            Member member = (Member) dbAdapterActiveMembers.getItem(adapterPos);
             Toast.makeText(context, "long clicked on " + member.getId(), Toast.LENGTH_SHORT).show();
             return true;
         }
