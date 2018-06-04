@@ -137,7 +137,9 @@ assign scanned card to member. needs a selection dialog if add member or assign 
 
 isActive field never used, should restrict checkin list member
 
-in checkin only active members, in admin list all members
+OK in checkin only active members, in admin list all members
+
+
 
 
 

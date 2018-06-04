@@ -552,6 +552,10 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         newMember.setEmail(email);
         newMember.setIsMailingSubscriber(mailingList);
         newMember.setSmartcardId(smartcardId);
+        //all new members should be active
+        newMember.setIsActive(true);
+        newMember.setIsAdmin(false);
+        newMember.setBalance(0f);
 
         CollectionReference members = db.collection("members");
         members.add(newMember).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
