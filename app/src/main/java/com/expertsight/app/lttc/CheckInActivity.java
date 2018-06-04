@@ -193,8 +193,8 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     public void showCheckInMemberDialog(Member member) {
         Log.d(TAG, "showCheckInMemberDialog: Member");
 
-        if (member.isPlayingToday()) {
-            Toast.makeText(context, "This member already checked in today", Toast.LENGTH_SHORT).show();
+        if (member.isPlayingThisWeek()) {
+            Toast.makeText(context, "This member already checked in this week", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -234,7 +234,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
     private void setupMemberActiveListView() {
 
-        final CollectionReference membersRef = db.collection("/members/");
+        final CollectionReference membersRef = db.collection("/members");
         final Query query = membersRef
                 .whereEqualTo("isActive", true)
                 .orderBy("firstName");
@@ -261,12 +261,10 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
             protected void onBindViewHolder(MemberViewHolder holder, int position, final Member member) {
                 Log.d(TAG, "onBindViewHolder: Member ID " + member.getId());
                 holder.fullName.setText(member.getFullName());
-                String email = member.getEmail();
                 float balance = member.getBalance();
                 holder.balance.setText("$" + String.valueOf(balance));
-                if (!email.isEmpty()) {
-                    holder.email.setText(member.getEmail());
-                }
+                holder.email.setText(member.getEmail());
+
                 if (balance > 0) {
                     holder.balance.setTextColor(ContextCompat.getColor(context, R.color.darkGreen));
                 }

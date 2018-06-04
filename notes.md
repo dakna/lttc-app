@@ -131,13 +131,16 @@ show transactions and total balance
 enter transaction with description, plus and minus so admin can put in money
 
 next: add bottom sheet dialog
-waiver signed boolean for member
+OK waiver signed boolean for member
 
-assign scanned card to member. needs a selection dialog if add member or assign member, just like admin
+assign scanned card to member. needs a selection dialog if add member or assign member, just like admin. that means it available for all members without scan of an admin card
 
-isActive field never used, should restrict checkin list member
+OK isActive field never used, should restrict checkin list member
 
 OK in checkin only active members, in admin list all members
+
+balance field in edit member settings. could trigger a dialog if you want to add a transaction for the difference new/old balance...
+waiver field for members also in edit dialog
 
 
 

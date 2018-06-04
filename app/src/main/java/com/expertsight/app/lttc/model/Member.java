@@ -21,6 +21,7 @@ public class Member extends FirestoreModel {
     private boolean isMailingSubscriber;
     private boolean isActive;
     private boolean isAdmin;
+    private boolean hasSignedWaiver;
 
     // TODO: 6/2/2018 refactor float to double
     private float balance;
@@ -79,7 +80,6 @@ public class Member extends FirestoreModel {
 
     // firestore POJO mapper needs the exact fieldname as getter and ignores the convention for boolean fields
     public boolean getIsAdmin() {
-        Log.d(TAG, "isAdmin: ");
         return isAdmin;
     }
 
@@ -105,6 +105,13 @@ public class Member extends FirestoreModel {
         this.lastCheckIn = lastCheckIn;
     }
 
+    public boolean getHasSignedWaiver() {
+        return hasSignedWaiver;
+    }
+
+    public void setHasSignedWaiver(boolean hasSignedWaiver) {
+        this.hasSignedWaiver = hasSignedWaiver;
+    }
 
     @Exclude
     public boolean isPlayingToday() {
@@ -157,10 +164,23 @@ public class Member extends FirestoreModel {
         return firstName + " " + lastName;
     }
 
-
-
     @Override
     public String toString() {
         return getFullName();
+    }
+
+    public String toStringIncludingAllProperties() {
+        return "Member{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", smartcardId='" + smartcardId + '\'' +
+                ", isMailingSubscriber=" + isMailingSubscriber +
+                ", isActive=" + isActive +
+                ", isAdmin=" + isAdmin +
+                ", balance=" + balance +
+                ", lastCheckIn=" + lastCheckIn +
+                ", hasSignedWaiver=" + hasSignedWaiver +
+                '}';
     }
 }

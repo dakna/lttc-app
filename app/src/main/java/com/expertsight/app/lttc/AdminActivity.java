@@ -148,7 +148,7 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
 
     private void setupMemberListView() {
 
-        final CollectionReference membersRef = db.collection("/members/");
+        final CollectionReference membersRef = db.collection("/members");
         final Query query = membersRef.orderBy("firstName");
 
         Log.d(TAG, "starting to get Member list");
@@ -171,14 +171,12 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
 
             @Override
             protected void onBindViewHolder(AdminActivity.MemberViewHolder holder, int position, final Member member) {
-                Log.d(TAG, "onBindViewHolder: Member ID " + member.getId());
+                //Log.d(TAG, "onBindViewHolder: Member " + member.toStringIncludingAllProperties());
                 holder.fullName.setText(member.getFullName());
-                String email = member.getEmail();
                 float balance = member.getBalance();
                 holder.balance.setText("$" + String.valueOf(balance));
-                if (!email.isEmpty()) {
-                    holder.email.setText(member.getEmail());
-                }
+                holder.email.setText(member.getEmail());
+
                 if (balance > 0) {
                     holder.balance.setTextColor(ContextCompat.getColor(context, R.color.darkGreen));
                 }
@@ -222,8 +220,6 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
     }
 
     private void setupTransactionListView() {
-
-        Date startOfThisWeek = FirebaseHelper.getStartOfWeek(new Date());
 
         final CollectionReference membersRef = db.collection("/transactions/");
         final Query query = membersRef
@@ -389,6 +385,14 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
             }
         });
     }
+
+    @OnClick(R.id.btnImportCSV)
+    public void onClickImportCSV() {
+        Log.d(TAG, "onClickImportCSV: start");
+        FirebaseHelper fbHelper = new FirebaseHelper(context);
+        fbHelper.importMemberDataFromCSV(true);
+    }
+
 
     @OnClick(R.id.btnAddTransaction)
     public void onClickAddTransaction() {
