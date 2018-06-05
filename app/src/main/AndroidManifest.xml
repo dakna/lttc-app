@@ -19,7 +19,11 @@
         <activity android:name=".MainActivity">
 
         </activity>
-        <activity android:name=".AdminActivity" />
+        <activity
+            android:name=".AdminActivity"
+            android:parentActivityName=".CheckInActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            />
         <activity android:name=".HistoryActivity" />
         <activity android:name=".CheckInActivity">
             <intent-filter>

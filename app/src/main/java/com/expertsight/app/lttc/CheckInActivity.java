@@ -192,7 +192,8 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     public void showCheckInMemberDialog(Member member) {
         Log.d(TAG, "showCheckInMemberDialog: Member");
 
-        if (member.isPlayingThisWeek()) {
+        //if (member.isPlayingThisWeek()) {
+        if (member.isPlayingToday()) {
             Toast.makeText(context, "This member already checked in this week", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -665,8 +666,9 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
 
         } else if (buttonSelection == R.id.btnAdmin) {
-            Intent Intent = new Intent(context, AdminActivity.class);
-            startActivity(Intent);
+            Intent intent = new Intent(context, AdminActivity.class);
+            intent.putExtra("memberId" , memberId);
+            startActivity(intent);
         }
     }
 

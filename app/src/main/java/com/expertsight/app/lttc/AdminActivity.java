@@ -19,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,17 +75,24 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
     @BindView(R.id.tvTotalBalance)
     TextView tvTotalBalance;
 
+    @BindView(R.id.btnImportCSV)
+    Button btnImportCSV;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
         getSupportActionBar().setTitle("Administration");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         db = FirebaseFirestore.getInstance();
 
         ButterKnife.bind(this);
-        //setupBottomNavigationView();
+
+        // all members imported for now, so we disable import button
+        btnImportCSV.setEnabled(false);
+
         setupAutoCompleteView();
         setupMemberListView();
         setupTransactionListView();

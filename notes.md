@@ -142,6 +142,9 @@ OK in checkin only active members, in admin list all members
 balance field in edit member settings. could trigger a dialog if you want to add a transaction for the difference new/old balance...
 waiver field for members also in edit dialog
 
+DK
+members/dPSiUYvkre4BfyKiHidf
+
 
 
 
