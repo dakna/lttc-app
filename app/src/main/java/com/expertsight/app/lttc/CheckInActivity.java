@@ -106,15 +106,18 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
         if (mNfcAdapter == null) {
             // Stop here, we definitely need NFC
-            Toast.makeText(this, "This device doesn't support NFC.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "This device doesn't support NFC smart cards", Toast.LENGTH_LONG).show();
+/*
             finish();
             return;
+*/
 
+        } else {
+            if (!mNfcAdapter.isEnabled()) {
+                Toast.makeText(this, "NFC is disabled, please enable to read smart cards", Toast.LENGTH_LONG).show();
+            }
         }
 
-        if (!mNfcAdapter.isEnabled()) {
-            Toast.makeText(this, "NFC is disabled, please enable to read smart cards", Toast.LENGTH_LONG).show();
-        }
 
         handleIntent(getIntent());
     }
@@ -398,7 +401,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                 Log.d(TAG, "onBindViewHolder: Member CheckedIn ID " + member.getId() + " lastCheckIn " + member.getLastCheckIn());
                 holder.fullName.setText(member.getFullName());
                 // TODO: 5/22/2018 use string resource
-                holder.time.setText("Checked in " + new SimpleDateFormat("MM/dd 'at' HH:mm").format(member.getLastCheckIn()));
+                holder.time.setText("Checked in " + new SimpleDateFormat("MM/dd 'at' hh:mm a").format(member.getLastCheckIn()));
 
             }
 
@@ -440,13 +443,18 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     protected void onResume() {
         super.onResume();
 
-        setupForegroundDispatch(this, mNfcAdapter);
+        if (mNfcAdapter != null) {
+            setupForegroundDispatch(this, mNfcAdapter);
+        }
+
     }
 
     @Override
     protected void onPause() {
 
-        stopForegroundDispatch(this, mNfcAdapter);
+        if (mNfcAdapter != null) {
+            stopForegroundDispatch(this, mNfcAdapter);
+        }
 
         super.onPause();
     }
