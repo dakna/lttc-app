@@ -63,6 +63,8 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
     private FirebaseStorage storage;
     private FirestoreRecyclerAdapter dbAdapterAllMembers, dbAdapterAllTransactions;
 
+    private String memberId;
+
     @BindView(R.id.actvMembers)
     AutoCompleteTextView autoCompleteTextView;
 
@@ -97,6 +99,8 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
         setupMemberListView();
         setupTransactionListView();
         setTotalBalance();
+        Log.d(TAG, "onCreate: Intent admin memberId " + getIntent().getStringExtra("memberId"));
+        memberId = getIntent().getStringExtra("memberId");
 
     }
 
@@ -420,6 +424,8 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
         newTransaction.setSubject(subject);
         newTransaction.setAmount(amount);
         newTransaction.setTimestamp(new Date());
+        DocumentReference memberRef = db.collection("members").document(memberId);
+        newTransaction.setMemberRef(memberRef);
 
         // TODO: 6/2/2018 add member ref to transaction, member id needs to be passed along with intent to start activity and stored in member
 
