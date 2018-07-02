@@ -52,6 +52,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -118,7 +119,8 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
             }
         }
 
-
+        // this is Daniel Knapp's id
+        testAdminDialog("dPSiUYvkre4BfyKiHidf");
         handleIntent(getIntent());
     }
 
@@ -248,6 +250,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                 .setQuery(query, Member.class)
                 .build();
 
+        int defaultTextColor = 0;
 
         dbAdapterActiveMembers = new FirestoreRecyclerAdapter<Member, MemberViewHolder>(response) {
 
@@ -264,15 +267,22 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
             protected void onBindViewHolder(MemberViewHolder holder, int position, final Member member) {
                 Log.d(TAG, "onBindViewHolder: Member ID " + member.getId());
                 holder.fullName.setText(member.getFullName());
-                double balance = member.getBalance();
+                BigDecimal balance = new BigDecimal(member.getBalance());
+                Log.d(TAG, "onBindViewHolder: balance " + balance);
                 holder.balance.setText("$" + String.valueOf(balance));
+
+
                 holder.email.setText(member.getEmail());
 
-                if (balance > 0) {
+                // BigDecimal test
+                int compareZeroPlus = balance.compareTo(new BigDecimal("0.0"));
+                int compareZeroMinus = balance.compareTo(new BigDecimal("-0.0"));
+                if (compareZeroPlus > 0) {
                     holder.balance.setTextColor(ContextCompat.getColor(context, R.color.darkGreen));
-                }
-                if (balance < 0) {
+                } else if (compareZeroMinus < 0) {
                     holder.balance.setTextColor(ContextCompat.getColor(context, R.color.darkRed));
+                } else {
+                    holder.balance.setTextColor(ContextCompat.getColor(context, R.color.grey));
                 }
 
             }
@@ -681,4 +691,20 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     }
 
 
+    public void testAdminDialog(String memberId) {
+        final DocumentReference memberRef = db.collection("members").document(memberId);
+        memberRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "onComplete:  DocumentSnapshot data: " + document.getData());
+                        final Member member = document.toObject(Member.class).withId(document.getId());
+                        showAdminDialog(member);
+                    }
+                }
+            }
+        });
+    }
 }

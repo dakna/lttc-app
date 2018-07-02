@@ -182,9 +182,10 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
 
                 if (balance > 0) {
                     holder.balance.setTextColor(ContextCompat.getColor(context, R.color.darkGreen));
-                }
-                if (balance < 0) {
+                } else if (balance < 0) {
                     holder.balance.setTextColor(ContextCompat.getColor(context, R.color.darkRed));
+                } else {
+                    holder.balance.setTextColor(ContextCompat.getColor(context, R.color.grey));
                 }
 
             }
@@ -256,9 +257,10 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
                 holder.amount.setText("$" + amount);
                 if (amount > 0) {
                     holder.amount.setTextColor(ContextCompat.getColor(context, R.color.darkGreen));
-                }
-                if (amount < 0) {
+                } else if (amount < 0) {
                     holder.amount.setTextColor(ContextCompat.getColor(context, R.color.darkRed));
+                } else {
+                    holder.amount.setTextColor(ContextCompat.getColor(context, R.color.grey));
                 }
 
                 // TODO: 5/22/2018 use string resource
