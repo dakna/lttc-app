@@ -48,10 +48,6 @@ public class CheckInMemberDialogFragment extends DialogFragment {
         tvFee.setText("The fee for playing today is $" + CheckInActivity.FEE_PER_DAY + ".");
         tvMemberBalance.setText("Your balance is $" + balance);
 
-        if (balance < CheckInActivity.FEE_PER_DAY) {
-            radioButtonZero.setVisibility(View.GONE);
-        }
-
         checkKeepChange.setEnabled(false);
         // you have to select a payment to continue
         radioPayment.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
