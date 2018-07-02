@@ -44,7 +44,7 @@ public class AddTransactionDialogFragment extends DialogFragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
                 AlertDialog dialog = (AlertDialog) getDialog();
-                if((s.length() > 1) && (textInputEditAmount.getText().length() > 1)) {
+                if((s.length() > 0) && (textInputEditAmount.getText().length() > 0)) {
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
                 } else {
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
@@ -65,7 +65,7 @@ public class AddTransactionDialogFragment extends DialogFragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
                 AlertDialog dialog = (AlertDialog) getDialog();
-                if((s.length() > 1) && (textInputEditSubject.getText().length() > 1)) {
+                if((s.length() > 0) && (textInputEditSubject.getText().length() > 0)) {
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
                 } else {
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
