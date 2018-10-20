@@ -120,7 +120,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         }
 
         // this is Daniel Knapp's id
-        testAdminDialog("dPSiUYvkre4BfyKiHidf");
+        //testAdminDialog("dPSiUYvkre4BfyKiHidf");
         handleIntent(getIntent());
     }
 
