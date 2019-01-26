@@ -177,7 +177,7 @@ public class FirebaseHelper {
         return calendar.getTime();
     }
 
-
+        // todo: stil using firestore
     public void importMemberDataFromCSV(boolean skipFirstLine) {
         InputStream is = context.getResources().openRawResource(R.raw.contactsbadge);
         BufferedReader reader = new BufferedReader(

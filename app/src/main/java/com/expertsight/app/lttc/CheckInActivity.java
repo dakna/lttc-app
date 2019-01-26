@@ -33,13 +33,21 @@ import com.expertsight.app.lttc.model.Member;
 import com.expertsight.app.lttc.model.Transaction;
 import com.expertsight.app.lttc.util.FirebaseHelper;
 import com.expertsight.app.lttc.util.MifareHelper;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseException;
+import com.google.firebase.Timestamp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+/*
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -50,6 +58,13 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+*/
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.math.BigDecimal;
@@ -73,9 +88,9 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
     private NfcAdapter mNfcAdapter = null;
 
-    private FirebaseFirestore db;
+    private FirebaseDatabase db;
     private FirebaseStorage storage;
-    private FirestoreRecyclerAdapter dbAdapterActiveMembers, dbAdapterMembersCheckedIn;
+    private FirebaseRecyclerAdapter dbAdapterActiveMembers, dbAdapterMembersCheckedIn;
 
     @BindView(R.id.actvMembers)
     AutoCompleteTextView autoCompleteTextView;
@@ -95,7 +110,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_in);
 
-        db = FirebaseFirestore.getInstance();
+        db = FirebaseDatabase.getInstance();
 
         ButterKnife.bind(this);
         //setupBottomNavigationView();
@@ -119,13 +134,15 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
             }
         }
 
-        // this is Daniel Knapp's id
+        // this is Daniel Knapp's id in firestore in clubs db
         //testAdminDialog("dPSiUYvkre4BfyKiHidf");
+
+        // this is Daniel Knapp's id in realtime database on expertsight
+        testAdminDialog("tYPrlEVr5UmoqfvJiCz6");
         handleIntent(getIntent());
     }
 
     private void setupAutoCompleteView() {
-
         final ArrayAdapter<Member> adapter = new ArrayAdapter<Member>(this, android.R.layout.simple_dropdown_item_1line);
         autoCompleteTextView.setAdapter(adapter);
 
@@ -149,20 +166,23 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         });
 
 
-        CollectionReference members = db.collection("members");
-        members.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        DatabaseReference members = db.getReference("members");
+        members.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen failed.", e);
-                    return;
-                }
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            
                 adapter.clear();
-                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                    Log.d(TAG, document.getId() + " => " + document.getData());
-                    Member member = document.toObject(Member.class).withId(document.getId());
+                for (DataSnapshot memberSnapshot : dataSnapshot.getChildren()) {
+                    Log.d(TAG, memberSnapshot.getKey() + " => " + memberSnapshot.getValue());
+                    Member member = memberSnapshot.getValue(Member.class);
                     adapter.add(member);
                 }
+                
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "onCancelled: no members in list");
             }
         });
 
@@ -239,32 +259,32 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
     private void setupMemberActiveListView() {
 
-        final CollectionReference membersRef = db.collection("/members");
-        final Query query = membersRef
-                .whereEqualTo("isActive", true)
-                .orderBy("firstName");
+        //final CollectionReference membersRef = db.collection("/members");
+        final Query query = db.getReference("members")
+                //.equalTo("isActive", "true")
+                .orderByChild("firstName");
 
         Log.d(TAG, "starting to get Member list");
 
-        FirestoreRecyclerOptions<Member> response = new FirestoreRecyclerOptions.Builder<Member>()
+        FirebaseRecyclerOptions<Member> response = new FirebaseRecyclerOptions.Builder<Member>()
                 .setQuery(query, Member.class)
                 .build();
 
         int defaultTextColor = 0;
 
-        dbAdapterActiveMembers = new FirestoreRecyclerAdapter<Member, MemberViewHolder>(response) {
+        dbAdapterActiveMembers = new FirebaseRecyclerAdapter<Member, MemberViewHolder>(response) {
 
 
             @Override
             public Member getItem(int position) {
                 Member member = super.getItem(position);
                 // fill id into local POJO so we can pass it on when clicked
-                member.setId(this.getSnapshots().getSnapshot(position).getId());
+                member.setId(this.getSnapshots().getSnapshot(position).getKey());
                 return member;
             }
 
             @Override
-            protected void onBindViewHolder(MemberViewHolder holder, int position, final Member member) {
+            protected void onBindViewHolder(MemberViewHolder holder, int position, Member member) {
                 Log.d(TAG, "onBindViewHolder: Member ID " + member.getId());
                 holder.fullName.setText(member.getFullName());
                 BigDecimal balance = new BigDecimal(member.getBalance());
@@ -296,10 +316,6 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                 return new MemberViewHolder(view);
             }
 
-            @Override
-            public void onError(FirebaseFirestoreException e) {
-                Log.e("onError : error ", e.getMessage());
-            }
 
             @Override
             public void onDataChanged() {
@@ -381,28 +397,30 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
         Date startOfThisWeek = FirebaseHelper.getStartOfWeek(new Date());
 
-        final CollectionReference membersRef = db.collection("/members/");
-        final Query query = membersRef
-                            .whereGreaterThanOrEqualTo("lastCheckIn", startOfThisWeek)
-                            .orderBy("lastCheckIn")
-                            .orderBy("firstName");
+        //final CollectionReference membersRef = db.collection("/members/");
+        final Query query = db.getReference("/members/")
+                            .orderByChild("lastCheckIn")
+                            .startAt(startOfThisWeek.getTime());
+                            //.whereGreaterThanOrEqualTo("lastCheckIn", startOfThisWeek)
+                            //.orderBy("lastCheckIn")
+                            //.orderBy("firstName");
 
         Log.d(TAG, "starting to get Member list checked in for " + new Date());
 
 
-        FirestoreRecyclerOptions<Member> response = new FirestoreRecyclerOptions.Builder<Member>()
+        FirebaseRecyclerOptions<Member> response = new FirebaseRecyclerOptions.Builder<Member>()
                 .setQuery(query, Member.class)
                 .build();
 
 
-        dbAdapterMembersCheckedIn = new FirestoreRecyclerAdapter<Member, MemberCheckedInViewHolder>(response) {
+        dbAdapterMembersCheckedIn = new FirebaseRecyclerAdapter<Member, MemberCheckedInViewHolder>(response) {
 
 
             @Override
             public Member getItem(int position) {
                 Member member = super.getItem(position);
                 // fill id into local POJO so we can pass it on when clicked
-                member.setId(this.getSnapshots().getSnapshot(position).getId());
+                member.setId(this.getSnapshots().getSnapshot(position).getKey());
                 return member;
             }
 
@@ -411,7 +429,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                 Log.d(TAG, "onBindViewHolder: Member CheckedIn ID " + member.getId() + " lastCheckIn " + member.getLastCheckIn());
                 holder.fullName.setText(member.getFullName());
                 // TODO: 5/22/2018 use string resource
-                holder.time.setText("Checked in " + new SimpleDateFormat("MM/dd 'at' hh:mm a").format(member.getLastCheckIn()));
+                holder.time.setText("Checked in " + new SimpleDateFormat("MM/dd 'at' hh:mm a").format(new Date(member.getLastCheckIn())));
 
             }
 
@@ -425,8 +443,9 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
             }
 
             @Override
-            public void onError(FirebaseFirestoreException e) {
-                Log.e("onError : error ", e.getMessage());
+            public void onError(@NonNull DatabaseError error) {
+                Log.d(TAG, "onError: ");
+                super.onError(error);
             }
 
             @Override
@@ -499,15 +518,19 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
 
             //member lookup
-            CollectionReference membersRef = db.collection("/members/");
-            final Query query = membersRef.whereEqualTo("smartcardId", hexId);
+            //CollectionReference membersRef = db.collection("/members/");
+            final Query query = db.getReference("/members/")
+                    .equalTo("smartcardId", hexId);
 
-            query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            query.addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                    if (queryDocumentSnapshots.size() == 1) {
-                        DocumentSnapshot memberDoc = queryDocumentSnapshots.getDocuments().get(0);
-                        Member member = memberDoc.toObject(Member.class).withId(memberDoc.getId());
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getChildrenCount() == 1) {
+                        Member member = new Member();
+                        for (DataSnapshot memberSnapshot: dataSnapshot.getChildren()) {
+                            member = memberSnapshot.getValue(Member.class);
+                            member.setId(memberSnapshot.getKey());
+                        }
 
                         Log.d(TAG, "onSuccess getting member by smartcard id " + member.getSmartcardId() + ": " + member.toString());
                         if (member.getIsAdmin() == true) {
@@ -517,12 +540,17 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                         } else {
                             showCheckInMemberDialog(member);
                         }
-                    } else if (queryDocumentSnapshots.size() > 1){
+                    } else if (dataSnapshot.getChildrenCount()  > 1){
                         Toast.makeText(context, "Error: The smartcard ID " + hexId + " is assigned to more than one member", Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(context, "Couldn't find a member with the smartcard ID " + hexId, Toast.LENGTH_LONG).show();
                         showAddMemberDialog(hexId);
                     }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.d(TAG, "onCancelled: " + databaseError.toException());
                 }
             });
 
@@ -573,20 +601,20 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         newMember.setIsAdmin(false);
         newMember.setBalance(0f);
 
-        CollectionReference members = db.collection("members");
-        members.add(newMember).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentReference> task) {
-                if(task.isSuccessful()) {
-                    DocumentReference memberRef = task.getResult();
-                    Log.d(TAG, "onComplete: new member added with ID " + memberRef.getId());
-                    Toast.makeText(context, "Added new member: " + firstName + " " + lastName, Toast.LENGTH_SHORT).show();
-                } else {
-                    Log.d(TAG, "onComplete: error adding new member");
-                    Toast.makeText(context, "Unknown Error: Couldn't add new member", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        db.getReference("members")
+                .push()
+                .setValue(newMember)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(context, "Added new member: " + firstName + " " + lastName, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.d(TAG, "onComplete: error adding new member");
+                            Toast.makeText(context, "Unknown Error: Couldn't add new member", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     @Override
@@ -594,22 +622,21 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         Log.d(TAG, "applyCheckInMemberData: memberId: " + memberId + " payment" + payment + " keepChange " +keepChange);
 
         //load latest data, even if its in local cache
-        final DocumentReference memberRef = db.collection("members").document(memberId);
-        memberRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d(TAG, "onComplete:  DocumentSnapshot data: " + document.getData());
-                        final Member member = document.toObject(Member.class).withId(document.getId());
+        final DatabaseReference memberRef = db.getReference("members").child(memberId);
+
+        memberRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        final Member member = dataSnapshot.getValue(Member.class);
+                        member.setId(dataSnapshot.getKey());
                         double newBalance = member.getBalance() - CheckInActivity.FEE_PER_DAY + payment;
                         Log.d(TAG, "onComplete: calculating new member balance as $" + newBalance);
                         member.setBalance(newBalance);
 
                         //no server timestamp so it works offline
-                        member.setLastCheckIn(new Date());
-                        memberRef.set(member, SetOptions.merge())
+                        member.setLastCheckIn(new Date().getTime());
+                        memberRef.setValue(member)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
@@ -627,57 +654,62 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                         if (payment != 0) {
                             Transaction newTransaction = new Transaction();
                             newTransaction.setAmount(payment);
-                            newTransaction.setMemberRef(memberRef);
+                            newTransaction.setMemberRef(memberRef.toString());
                             newTransaction.setSubject(getString(R.string.transaction_subject_member_fee));
                             //no server timestamp so it works offline
-                            newTransaction.setTimestamp(new Date());
+                            newTransaction.setTimestamp(new Date().getTime());
 
-                            CollectionReference transactions = db.collection("transactions");
-                            transactions.add(newTransaction).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentReference> task) {
-                                    if(task.isSuccessful()) {
-                                        DocumentReference memberRef = task.getResult();
-                                        Log.d(TAG, "onComplete: new transaction added with ID " + memberRef.getId());
-                                        Toast.makeText(context, "Added new transaction: " + payment + " from " + member.getFullName(), Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        Log.d(TAG, "onComplete: error adding new transaction");
-                                        Toast.makeText(context, "Unknown Error: Couldn't add new transaction", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
+                            DatabaseReference transactions = db.getReference("transactions");
+                            transactions.push()
+                                    .setValue(newTransaction)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if(task.isSuccessful()) {
+
+                                                Log.d(TAG, "onComplete: new transaction added ");
+                                                Toast.makeText(context, "Added new transaction: " + payment + " from " + member.getFullName(), Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Log.d(TAG, "onComplete: error adding new transaction");
+                                                Toast.makeText(context, "Unknown Error: Couldn't add new transaction", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
                             });
                         }
-
                     } else {
                         Log.d(TAG, "No such document");
                         Toast.makeText(context, "Error while checking in member " + memberId, Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                    Toast.makeText(context, "Error while checking in member " + memberId, Toast.LENGTH_SHORT).show();
                 }
-            }
-        });
 
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.d(TAG, "get failed with ", databaseError.toException());
+                    Toast.makeText(context, "Error while checking in member " + memberId, Toast.LENGTH_SHORT).show();
+
+                }
+        });
     }
 
     @Override
     public void applyAdminDialogData(String memberId, int buttonSelection) {
         if (buttonSelection == R.id.btnCheckIn) {
 
-            final DocumentReference memberRef = db.collection("members").document(memberId);
-            memberRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                  @Override
-                  public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                      if (task.isSuccessful()) {
-                          DocumentSnapshot document = task.getResult();
-                          if (document.exists()) {
-                              Log.d(TAG, "onComplete:  DocumentSnapshot data: " + document.getData());
-                              final Member member = document.toObject(Member.class).withId(document.getId());
-                              showCheckInMemberDialog(member);
-                          }
-                      }
-                  }
+            final DatabaseReference memberRef = db.getReference("members").child(memberId);
+            memberRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        Log.d(TAG, "onComplete:  DocumentSnapshot data: " + dataSnapshot.getValue());
+                        final Member member = dataSnapshot.getValue(Member.class);
+                        showCheckInMemberDialog(member);
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.d(TAG, "onCancelled: " + databaseError.toException());
+                }
               });
 
 
@@ -692,19 +724,22 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
 
     public void testAdminDialog(String memberId) {
-        final DocumentReference memberRef = db.collection("members").document(memberId);
-        memberRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        final DatabaseReference memberRef = db.getReference("members").child(memberId);
+        memberRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d(TAG, "onComplete:  DocumentSnapshot data: " + document.getData());
-                        final Member member = document.toObject(Member.class).withId(document.getId());
-                        showAdminDialog(member);
-                    }
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Log.d(TAG, "onComplete:  DocumentSnapshot data: " + dataSnapshot.getValue());
+                    final Member member = dataSnapshot.getValue(Member.class);
+                    showAdminDialog(member);
                 }
             }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
         });
+
     }
 }

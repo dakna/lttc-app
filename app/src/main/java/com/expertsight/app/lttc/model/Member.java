@@ -3,11 +3,14 @@ package com.expertsight.app.lttc.model;
 import android.util.Log;
 
 import com.expertsight.app.lttc.util.FirebaseHelper;
+import com.google.firebase.Timestamp;
+import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.firestore.Exclude;
 
 import java.util.Calendar;
 import java.util.Date;
 
+@IgnoreExtraProperties
 public class Member extends FirestoreModel {
 
     private static final String TAG = "Member";
@@ -21,7 +24,7 @@ public class Member extends FirestoreModel {
     private boolean isAdmin;
     private boolean hasSignedWaiver;
     private double balance;
-    private Date lastCheckIn;
+    private long lastCheckIn; //todo: set date as string in firebase
 
 
     // maybe just authID and that is the check if you are an admin? instead of extra user object. we could keep the username in firebase auth
@@ -95,9 +98,9 @@ public class Member extends FirestoreModel {
         this.balance = balance;
     }
 
-    public Date getLastCheckIn() { return lastCheckIn; }
+    public long getLastCheckIn() { return lastCheckIn; }
 
-    public void setLastCheckIn(Date lastCheckIn) {
+    public void setLastCheckIn(long lastCheckIn) {
         this.lastCheckIn = lastCheckIn;
     }
 
@@ -111,8 +114,8 @@ public class Member extends FirestoreModel {
 
     @Exclude
     public boolean isPlayingToday() {
-        Date lastCheckIn = getLastCheckIn();
-        if (lastCheckIn == null) return false;
+        if (lastCheckIn == 0) return false;
+        Date lastCheckIn = new Date(getLastCheckIn());
 
         Date startOfToday = FirebaseHelper.getStartOfDay(new Date());
 
@@ -134,8 +137,8 @@ public class Member extends FirestoreModel {
 
     @Exclude
     public boolean isPlayingThisWeek() {
-        Date lastCheckIn = getLastCheckIn();
-        if (lastCheckIn == null) return false;
+        if (lastCheckIn == 0) return false;
+        Date lastCheckIn = new Date(getLastCheckIn());
 
         Date startOfWeek= FirebaseHelper.getStartOfWeek(new Date());
 

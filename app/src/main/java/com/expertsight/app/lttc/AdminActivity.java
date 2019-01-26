@@ -25,22 +25,19 @@ import android.widget.Toast;
 
 import com.expertsight.app.lttc.model.Transaction;
 import com.expertsight.app.lttc.util.FirebaseHelper;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
 import com.google.firebase.storage.FirebaseStorage;
 import com.expertsight.app.lttc.model.Member;
 
@@ -59,9 +56,9 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
     private Context context = AdminActivity.this;
 
 
-    private FirebaseFirestore db;
+    private FirebaseDatabase db;
     private FirebaseStorage storage;
-    private FirestoreRecyclerAdapter dbAdapterAllMembers, dbAdapterAllTransactions;
+    private FirebaseRecyclerAdapter dbAdapterAllMembers, dbAdapterAllTransactions;
 
     private String memberId;
 
@@ -88,7 +85,7 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
         getSupportActionBar().setTitle("Administration");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        db = FirebaseFirestore.getInstance();
+        db = FirebaseDatabase.getInstance();
 
         ButterKnife.bind(this);
 
@@ -130,45 +127,48 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
         });
 
 
-        CollectionReference members = db.collection("members");
-        members.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        DatabaseReference members = db.getReference("members");
+        members.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen failed.", e);
-                    return;
-                }
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                 adapter.clear();
-                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                    Log.d(TAG, document.getId() + " => " + document.getData());
-                    Member member = document.toObject(Member.class).withId(document.getId());
+                for (DataSnapshot memberSnapshot : dataSnapshot.getChildren()) {
+                    Log.d(TAG, memberSnapshot.getKey() + " => " + memberSnapshot.getValue());
+                    Member member = memberSnapshot.getValue(Member.class);
                     adapter.add(member);
                 }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "onCancelled: no members in list");
             }
         });
-
     }
 
     private void setupMemberListView() {
 
-        final CollectionReference membersRef = db.collection("/members");
-        final Query query = membersRef.orderBy("firstName");
+        //final CollectionReference membersRef = db.collection("/members");
+        final Query query = db.getReference("members")
+                .orderByChild("firstName");
 
         Log.d(TAG, "starting to get Member list");
 
-        FirestoreRecyclerOptions<Member> response = new FirestoreRecyclerOptions.Builder<Member>()
+        FirebaseRecyclerOptions<Member> response = new FirebaseRecyclerOptions.Builder<Member>()
                 .setQuery(query, Member.class)
                 .build();
 
 
-        dbAdapterAllMembers = new FirestoreRecyclerAdapter<Member, AdminActivity.MemberViewHolder>(response) {
+        dbAdapterAllMembers = new FirebaseRecyclerAdapter<Member, AdminActivity.MemberViewHolder>(response) {
 
 
             @Override
             public Member getItem(int position) {
                 Member member = super.getItem(position);
                 // fill id into local POJO so we can pass it on when clicked
-                member.setId(this.getSnapshots().getSnapshot(position).getId());
+                member.setId(this.getSnapshots().getSnapshot(position).getKey());
                 return member;
             }
 
@@ -200,11 +200,6 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
             }
 
             @Override
-            public void onError(FirebaseFirestoreException e) {
-                Log.e("onError : error ", e.getMessage());
-            }
-
-            @Override
             public void onDataChanged() {
                 super.onDataChanged();
                 Log.d(TAG,"on Data changed");
@@ -225,26 +220,26 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
 
     private void setupTransactionListView() {
 
-        final CollectionReference membersRef = db.collection("/transactions/");
-        final Query query = membersRef
-                .orderBy("timestamp", Query.Direction.DESCENDING);
+        //final CollectionReference membersRef = db.collection("/transactions/");
+        final Query query = db.getReference("/transactions")
+                .orderByChild("timestamp");
 
         Log.d(TAG, "starting to get Transaction list" );
 
 
-        FirestoreRecyclerOptions<Transaction> response = new FirestoreRecyclerOptions.Builder<Transaction>()
+        FirebaseRecyclerOptions<Transaction> response = new FirebaseRecyclerOptions.Builder<Transaction>()
                 .setQuery(query, Transaction.class)
                 .build();
 
 
-        dbAdapterAllTransactions = new FirestoreRecyclerAdapter<Transaction, AdminActivity.TransactionViewHolder>(response) {
+        dbAdapterAllTransactions = new FirebaseRecyclerAdapter<Transaction, AdminActivity.TransactionViewHolder>(response) {
 
 
             @Override
             public Transaction getItem(int position) {
                 Transaction transaction = super.getItem(position);
                 // fill id into local POJO so we can pass it on when clicked
-                transaction.setId(this.getSnapshots().getSnapshot(position).getId());
+                transaction.setId(this.getSnapshots().getSnapshot(position).getKey());
                 return transaction;
             }
 
@@ -264,7 +259,7 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
                 }
 
                 // TODO: 5/22/2018 use string resource
-                holder.time.setText("Paid on " + new SimpleDateFormat("MM/dd 'at' HH:mm").format(transaction.getTimestamp()));
+                holder.time.setText("Paid on " + new SimpleDateFormat("MM/dd 'at' HH:mm").format(new Date(transaction.getTimestamp())));
 
             }
 
@@ -275,11 +270,6 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
                         .inflate(R.layout.layout_transaction_list, parent, false);
 
                 return new AdminActivity.TransactionViewHolder (view);
-            }
-
-            @Override
-            public void onError(FirebaseFirestoreException e) {
-                Log.e("onError : error ", e.getMessage());
             }
 
             @Override
@@ -366,18 +356,15 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
 
     private void setTotalBalance() {
         Log.d(TAG, "setTotalBalance: start");
-        CollectionReference members = db.collection("transactions");
+        DatabaseReference members = db.getReference("transactions");
 
-        members.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        members.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen failed for transactions.", e);
-                    return;
-                }
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 double totalBalance = 0;
-                for (QueryDocumentSnapshot transactionDoc: queryDocumentSnapshots) {
-                    Transaction transaction = transactionDoc.toObject(Transaction.class).withId(transactionDoc.getId());
+                for (DataSnapshot transactionSnapshot: dataSnapshot.getChildren()) {
+                    Transaction transaction = transactionSnapshot.getValue(Transaction.class);
+                    transaction.setId(transactionSnapshot.getKey());
                     totalBalance = totalBalance + transaction.getAmount();
                 }
                 tvTotalBalance.setText("$" + totalBalance);
@@ -388,7 +375,13 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
                     tvTotalBalance.setTextColor(ContextCompat.getColor(context, R.color.darkRed));
                 }
             }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
         });
+
     }
 
     @OnClick(R.id.btnImportCSV)
@@ -425,26 +418,27 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
         Transaction newTransaction = new Transaction();
         newTransaction.setSubject(subject);
         newTransaction.setAmount(amount);
-        newTransaction.setTimestamp(new Date());
-        DocumentReference memberRef = db.collection("members").document(memberId);
-        newTransaction.setMemberRef(memberRef);
+        newTransaction.setTimestamp(new Date().getTime());
+        DatabaseReference memberRef = db.getReference("members").child(memberId);
+        newTransaction.setMemberRef(memberRef.toString());
 
         // TODO: 6/2/2018 add member ref to transaction, member id needs to be passed along with intent to start activity and stored in member
 
-        CollectionReference transactions = db.collection("transactions");
-        transactions.add(newTransaction).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentReference> task) {
-                if(task.isSuccessful()) {
-                    DocumentReference transactionRef = task.getResult();
-                    Log.d(TAG, "onComplete: new transaction added with ID " + transactionRef.getId());
-                    Toast.makeText(context, "Added new transaction: " + subject + " " + amount, Toast.LENGTH_SHORT).show();
-                } else {
-                    Log.d(TAG, "onComplete: error adding new transaction");
-                    Toast.makeText(context, "Unknown Error: Couldn't add new transaction", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        DatabaseReference transactions = db.getReference("transactions");
+        transactions.push()
+                .setValue(newTransaction)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()) {
+                            Log.d(TAG, "onComplete: new transaction added");
+                            Toast.makeText(context, "Added new transaction: " + subject + " " + amount, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.d(TAG, "onComplete: error adding new transaction");
+                            Toast.makeText(context, "Unknown Error: Couldn't add new transaction", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     public void showEditMemberDialog(Member member) {
@@ -460,8 +454,9 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
         args.putBoolean("member_mailinglist", member.getIsMailingSubscriber());
         args.putString("member_smartcard_id", member.getSmartcardId());
 
-        Date lastCheckIn = member.getLastCheckIn();
-        if (lastCheckIn != null) {
+
+        if (member.getLastCheckIn() != 0) {
+            Date lastCheckIn = new Date(member.getLastCheckIn());
             String dateString = new SimpleDateFormat("MM/dd/yyyy hh:mm").format(lastCheckIn);
             args.putString("member_last_check_in", dateString);
         }
@@ -485,15 +480,15 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
     public void applyEditMemberData(final String memberId, final String firstName, final String lastName, final String email, final boolean mailingList, final String smartcardId, final boolean isAdmin, final String lastCheckIn, final boolean isActive, final String balance) {
         Log.d(TAG, "applyEditMemberData: " + memberId + " " + firstName + " " + lastName + " " + email + " " + mailingList + " " + smartcardId + " " + isAdmin + " " + lastCheckIn + " " + isActive);
 
-        final DocumentReference memberRef = db.collection("members").document(memberId);
-        memberRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d(TAG, "onComplete:  DocumentSnapshot data: " + document.getData());
-                        final Member member = document.toObject(Member.class).withId(document.getId());
+        final DatabaseReference memberRef = db.getReference("members").child(memberId);
+        memberRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+
+                        Log.d(TAG, "onComplete:  DocumentSnapshot data: " + dataSnapshot.getValue());
+                        final Member member = dataSnapshot.getValue(Member.class);
+                        member.setId(dataSnapshot.getKey());
 
                         member.setFirstName(firstName);
                         member.setLastName(lastName);
@@ -504,13 +499,13 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
                         if (lastCheckIn.length() > 0) {
                             try {
                                 Date lastCheckInDate = new SimpleDateFormat("MM/dd/yyyy hh:mm").parse(lastCheckIn);
-                                member.setLastCheckIn(lastCheckInDate);
+                                member.setLastCheckIn(lastCheckInDate.getTime());
                             } catch (ParseException e) {
                                 Log.e(TAG, "Error parsing date string  " + lastCheckIn, e);
                                 Toast.makeText(context, "Last Check-In Date not updated because " + lastCheckIn + " couldn't be parsed into Date", Toast.LENGTH_SHORT).show();
                             }
                         } else {
-                          member.setLastCheckIn(null);
+                            member.setLastCheckIn(0);
                         }
 
                         member.setIsActive(isActive);
@@ -528,7 +523,7 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
                         }
 
 
-                        memberRef.set(member, SetOptions.merge())
+                        memberRef.setValue(member)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
@@ -546,11 +541,13 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
                         Log.d(TAG, "No such document");
                         Toast.makeText(context, "Error while checking in member " + memberId, Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.d(TAG, "get failed with ", databaseError.toException());
                     Toast.makeText(context, "Error while checking in member " + memberId, Toast.LENGTH_SHORT).show();
                 }
-            }
         });
     }    
 }

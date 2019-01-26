@@ -1,16 +1,20 @@
 package com.expertsight.app.lttc.model;
 
 
+import com.google.firebase.Timestamp;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.firestore.DocumentReference;
 
 import java.util.Date;
 
+@IgnoreExtraProperties
 public class Transaction extends FirestoreModel{
 
     private double amount;
-    private DocumentReference memberRef;
+    private String memberRef;
     private String subject;
-    private Date timestamp;
+    private long timestamp;
 
     public Transaction() {}
 
@@ -22,11 +26,11 @@ public class Transaction extends FirestoreModel{
         this.amount = amount;
     }
 
-    public DocumentReference getMemberRef() {
+    public String getMemberRef() {
         return memberRef;
     }
 
-    public void setMemberRef(DocumentReference memberRef) {
+    public void setMemberRef(String memberRef) {
         this.memberRef = memberRef;
     }
 
@@ -38,11 +42,11 @@ public class Transaction extends FirestoreModel{
         this.subject = subject;
     }
 
-    public Date getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 
