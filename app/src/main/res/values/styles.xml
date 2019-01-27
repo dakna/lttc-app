@@ -17,4 +17,20 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="AppTheme.TextAppearance.Small" parent="TextAppearance.AppCompat.Small" >
+        <item name="android:textSize">@dimen/text_size_small</item>"
+    </style>
+
+    <style name="AppTheme.TextAppearance.Medium" parent="TextAppearance.AppCompat.Medium" >
+        <item name="android:textSize">@dimen/text_size_medium</item>"
+    </style>
+
+    <style name="AppTheme.TextAppearance.Large" parent="TextAppearance.AppCompat.Large" >
+        <item name="android:textSize">@dimen/text_size_large</item>"
+    </style>
+
+    <style name="AppTheme.TextAppearance.Design.Tab" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">@dimen/text_size_small</item>"
+    </style>
+
 </resources>

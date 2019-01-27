@@ -3,4 +3,7 @@
     <dimen name="activity_horizontal_margin">56dp</dimen>
     <dimen name="fab_margin_bottom">96dp</dimen>
     <dimen name="bottom_nav_height">80dp</dimen>
+    <dimen name="text_size_small">24sp</dimen>
+    <dimen name="text_size_medium">28sp</dimen>
+    <dimen name="text_size_large">32sp</dimen>
 </resources>

@@ -119,7 +119,6 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         db = FirebaseDatabase.getInstance();
 
         ButterKnife.bind(this);
-        //setupBottomNavigationView();
         setupAutoCompleteView();
         setupMemberActiveListView();
         setupMemberCheckedInListView();
@@ -630,6 +629,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                 });
     }
 
+    // moved to Play
     @Override
     public void applyCheckInData(final String memberId, final double payment, boolean keepChange) {
         Log.d(TAG, "applyCheckInMemberData: memberId: " + memberId + " payment" + payment + " keepChange " +keepChange);

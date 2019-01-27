@@ -114,7 +114,7 @@ public class CheckInMemberDialogFragment extends DialogFragment {
         try {
             listener =  (CheckInMemberDialogListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + "mus implement CheckInMemberDialogListener");
+            throw new ClassCastException(context.toString() + "must implement CheckInMemberDialogListener");
         }
     }
 
