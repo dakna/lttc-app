@@ -26,4 +26,10 @@
         android:title="">
     </item>
 
+    <item
+        android:id="@+id/ic_play"
+        android:icon="@drawable/ic_today"
+        android:title="">
+    </item>
+
 </menu>

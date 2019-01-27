@@ -144,7 +144,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         //testAdminDialog("dPSiUYvkre4BfyKiHidf");
 
         // this is Daniel Knapp's id in realtime database on expertsight
-        testAdminDialog("tYPrlEVr5UmoqfvJiCz6");
+        //testAdminDialog("tYPrlEVr5UmoqfvJiCz6");
         handleIntent(getIntent());
     }
 

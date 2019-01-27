@@ -12,6 +12,7 @@ import com.expertsight.app.lttc.MainActivity;
 import com.expertsight.app.lttc.AdminActivity;
 import com.expertsight.app.lttc.HistoryActivity;
 import com.expertsight.app.lttc.CheckInActivity;
+import com.expertsight.app.lttc.PlayActivity;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.expertsight.app.lttc.R;
 
@@ -27,9 +28,18 @@ public class BottomNavigationViewHelper {
         bottomNavigationViewEx.enableItemShiftingMode(false);
         bottomNavigationViewEx.enableShiftingMode(false);
         bottomNavigationViewEx.setTextVisibility(false);
+        //bottomNavigationViewEx.setIconSize(R.dimen.bottom_nav_iconsize, R.dimen.bottom_nav_iconsize);
+
+        Log.d(TAG, "setupBottomNavigationView: icon measured height" + bottomNavigationViewEx.getIconAt(1).getMeasuredHeight());
+        //bottomNavigationViewEx.setItemHeight(150);
     }
 
     public static void enableNavigation(final Context context, final Activity callingActivity, BottomNavigationViewEx view){
+
+        float iconSize = context.getResources().getInteger(R.integer.bottom_nav_iconsize);
+        view.setIconSize(iconSize, iconSize);
+        view.setItemHeight(BottomNavigationViewEx.dp2px(context,iconSize + 10));
+
         view.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -56,6 +66,12 @@ public class BottomNavigationViewHelper {
                     case R.id.ic_history:
                         Intent intent4 = new Intent(context, HistoryActivity.class);//ACTIVITY_NUM = 3
                         context.startActivity(intent4);
+                        callingActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                        break;
+
+                    case R.id.ic_play:
+                        Intent intent5 = new Intent(context, PlayActivity.class);//ACTIVITY_NUM = 4
+                        context.startActivity(intent5);
                         callingActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                         break;
 
