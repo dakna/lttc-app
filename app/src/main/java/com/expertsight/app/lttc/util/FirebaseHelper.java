@@ -168,7 +168,7 @@ public class FirebaseHelper {
     public static Date getStartOfWeek(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        calendar.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY);
+        calendar.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
