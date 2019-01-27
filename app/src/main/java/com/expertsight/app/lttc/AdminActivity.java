@@ -13,6 +13,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -20,10 +22,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.expertsight.app.lttc.model.Transaction;
+import com.expertsight.app.lttc.ui.BottomNavigationViewHelper;
 import com.expertsight.app.lttc.util.FirebaseHelper;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -40,6 +44,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.expertsight.app.lttc.model.Member;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -84,6 +89,7 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
         setContentView(R.layout.activity_admin);
         getSupportActionBar().setTitle("Administration");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setupBottomNavigationView();
 
         db = FirebaseDatabase.getInstance();
 
@@ -187,7 +193,11 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
                 } else {
                     holder.balance.setTextColor(ContextCompat.getColor(context, R.color.grey));
                 }
-
+                if (member.isPlayingToday()) {
+                    holder.playingToday.setVisibility(View.VISIBLE);
+                } else {
+                    holder.playingToday.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -314,6 +324,7 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
         public TextView fullName;
         public TextView email;
         public TextView balance;
+        public ImageView playingToday;
 
         public MemberViewHolder(View view) {
             super(view);
@@ -322,6 +333,7 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
             fullName = view.findViewById(R.id.tvFullName);
             email = view.findViewById(R.id.tvEmail);
             balance = view.findViewById(R.id.tvMemberBalance);
+            playingToday = view.findViewById(R.id.ivPlayingToday);
         }
 
         @Override
@@ -549,5 +561,15 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
                     Toast.makeText(context, "Error while checking in member " + memberId, Toast.LENGTH_SHORT).show();
                 }
         });
-    }    
+    }
+
+    private void setupBottomNavigationView() {
+        Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");
+        BottomNavigationViewEx bottomNavigationViewEx = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
+        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(context, this, bottomNavigationViewEx);
+        Menu menu = bottomNavigationViewEx.getMenu();
+        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
+        menuItem.setChecked(true);
+    }
 }

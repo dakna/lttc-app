@@ -19,6 +19,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -26,11 +28,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.expertsight.app.lttc.model.Member;
 import com.expertsight.app.lttc.model.Transaction;
+import com.expertsight.app.lttc.ui.BottomNavigationViewHelper;
 import com.expertsight.app.lttc.util.FirebaseHelper;
 import com.expertsight.app.lttc.util.MifareHelper;
 
@@ -66,6 +70,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -109,6 +114,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_in);
+        setupBottomNavigationView();
 
         db = FirebaseDatabase.getInstance();
 
@@ -304,6 +310,11 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                 } else {
                     holder.balance.setTextColor(ContextCompat.getColor(context, R.color.grey));
                 }
+                if (member.isPlayingToday()) {
+                    holder.playingToday.setVisibility(View.VISIBLE);
+                } else {
+                    holder.playingToday.setVisibility(View.GONE);
+                }
 
             }
 
@@ -355,6 +366,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         public TextView fullName;
         public TextView email;
         public TextView balance;
+        public ImageView playingToday;
 
         public MemberViewHolder(View view) {
             super(view);
@@ -363,6 +375,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
             fullName = view.findViewById(R.id.tvFullName);
             email = view.findViewById(R.id.tvEmail);
             balance = view.findViewById(R.id.tvMemberBalance);
+            playingToday = view.findViewById(R.id.ivPlayingToday);
         }
 
         @Override
@@ -398,14 +411,14 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         Date startOfThisWeek = FirebaseHelper.getStartOfWeek(new Date());
 
         //final CollectionReference membersRef = db.collection("/members/");
-        final Query query = db.getReference("/members/")
+        final Query query = db.getReference("/members")
                             .orderByChild("lastCheckIn")
                             .startAt(startOfThisWeek.getTime());
                             //.whereGreaterThanOrEqualTo("lastCheckIn", startOfThisWeek)
                             //.orderBy("lastCheckIn")
                             //.orderBy("firstName");
 
-        Log.d(TAG, "starting to get Member list checked in for " + new Date());
+        Log.d(TAG, "starting to get Member list checked in for " + new Date().getTime() + "in week starting at " + startOfThisWeek.getTime());
 
 
         FirebaseRecyclerOptions<Member> response = new FirebaseRecyclerOptions.Builder<Member>()
@@ -741,5 +754,15 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
             }
         });
 
+    }
+
+    private void setupBottomNavigationView() {
+        Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");
+        BottomNavigationViewEx bottomNavigationViewEx = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
+        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(context, this, bottomNavigationViewEx);
+        Menu menu = bottomNavigationViewEx.getMenu();
+        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
+        menuItem.setChecked(true);
     }
 }
