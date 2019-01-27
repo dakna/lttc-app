@@ -598,7 +598,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     }
 
 
-
+    // moved to play
     @Override
     public void applyNewMemberData(final String firstName, final String lastName, String email, boolean mailingList, String smartcardId) {
         Log.d(TAG, "applyMemberData: " + firstName + " " + lastName + " " + email + " " + mailingList + " " + smartcardId);

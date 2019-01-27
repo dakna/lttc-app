@@ -40,7 +40,9 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.Date;
 
-public class PlayActivity extends AppCompatActivity implements CheckInFragment.OnFragmentInteractionListener, CheckInMemberDialogFragment.CheckInMemberDialogListener {
+public class PlayActivity extends AppCompatActivity
+        implements CheckInFragment.OnFragmentInteractionListener,
+        CheckInMemberDialogFragment.CheckInMemberDialogListener, AddMemberDialogFragment.AddMemberDialogListener {
 
     private static final String TAG = "PlayActivity";
     private static final int ACTIVITY_NUM = 4;
@@ -178,6 +180,35 @@ public class PlayActivity extends AppCompatActivity implements CheckInFragment.O
         }
     }
 
+    @Override
+    public void applyNewMemberData(final String firstName, final String lastName, String email, boolean mailingList, String smartcardId) {
+        Log.d(TAG, "applyMemberData: " + firstName + " " + lastName + " " + email + " " + mailingList + " " + smartcardId);
+        Member newMember = new Member();
+        newMember.setFirstName(firstName);
+        newMember.setLastName(lastName);
+        newMember.setEmail(email);
+        newMember.setIsMailingSubscriber(mailingList);
+        newMember.setSmartcardId(smartcardId);
+        //all new members should be active
+        newMember.setIsActive(true);
+        newMember.setIsAdmin(false);
+        newMember.setBalance(0f);
+
+        db.getReference("members")
+                .push()
+                .setValue(newMember)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(context, "Added new member: " + firstName + " " + lastName, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.d(TAG, "onComplete: error adding new member");
+                            Toast.makeText(context, "Unknown Error: Couldn't add new member", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
 
 
     @Override
