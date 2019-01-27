@@ -3,7 +3,7 @@ package com.expertsight.app.lttc.model;
 
 import android.support.annotation.NonNull;
 
-import com.google.firebase.firestore.Exclude;
+import com.google.firebase.database.Exclude;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
 @IgnoreExtraProperties

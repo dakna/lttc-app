@@ -1,12 +1,8 @@
 package com.expertsight.app.lttc.model;
 
 
-import com.google.firebase.Timestamp;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.IgnoreExtraProperties;
-import com.google.firebase.firestore.DocumentReference;
 
-import java.util.Date;
+import com.google.firebase.database.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
 public class Transaction extends FirestoreModel{

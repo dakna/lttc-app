@@ -3,9 +3,9 @@ package com.expertsight.app.lttc.model;
 import android.util.Log;
 
 import com.expertsight.app.lttc.util.FirebaseHelper;
-import com.google.firebase.Timestamp;
+import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
-import com.google.firebase.firestore.Exclude;
+
 
 import java.util.Calendar;
 import java.util.Date;
