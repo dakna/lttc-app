@@ -41,7 +41,7 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import java.util.Date;
 
 public class PlayActivity extends AppCompatActivity
-        implements CheckInFragment.OnFragmentInteractionListener,
+        implements CheckInFragment.OnFragmentInteractionListener, CurrentWeekFragment.OnFragmentInteractionListener,
         CheckInMemberDialogFragment.CheckInMemberDialogListener, AddMemberDialogFragment.AddMemberDialogListener {
 
     private static final String TAG = "PlayActivity";
@@ -166,8 +166,11 @@ public class PlayActivity extends AppCompatActivity
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
 
+            // todo: remove unneeded params on fragments
             if (position == 0) {
                 return CheckInFragment.newInstance("test", "test2");
+            } else if(position ==1){
+                return CurrentWeekFragment.newInstance("test", "test2");
             } else {
                 return PlaceholderFragment.newInstance(position + 1);
             }
