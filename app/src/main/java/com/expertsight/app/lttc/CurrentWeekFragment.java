@@ -5,10 +5,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +52,18 @@ public class CurrentWeekFragment extends Fragment {
     RecyclerView rvMembersCheckedIn;
 
 
+    // Start is left, End is right
+    @BindView(R.id.tvPlayer1)
+    TextView tvPlayer1;
+
+    Member player1;
+
+    @BindView(R.id.tvPlayer2)
+    TextView tvPlayer2;
+
+    Member player2;
+    @BindView(R.id.fabMatch)
+    FloatingActionButton fabMatch;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -100,6 +114,44 @@ public class CurrentWeekFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         setupMemberCheckedInListView();
+        setupMatchView();
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            // Called when a user swipes left or right on a ViewHolder
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+
+                Log.d(TAG, "onSwiped: " + viewHolder.getAdapterPosition());
+                player1 = (Member) dbAdapterMembersCheckedIn.getItem(viewHolder.getAdapterPosition());
+                setupMatchView();
+                rvMembersCheckedIn.getAdapter().notifyDataSetChanged();
+
+            }
+        }).attachToRecyclerView(rvMembersCheckedIn);
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            // Called when a user swipes left or right on a ViewHolder
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+
+                Log.d(TAG, "onSwiped: " + viewHolder.getAdapterPosition());
+                player2 = (Member) dbAdapterMembersCheckedIn.getItem(viewHolder.getAdapterPosition());
+                setupMatchView();
+                rvMembersCheckedIn.getAdapter().notifyDataSetChanged();
+
+            }
+        }).attachToRecyclerView(rvMembersCheckedIn);
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -140,6 +192,28 @@ public class CurrentWeekFragment extends Fragment {
     }
 
 
+    private void setupMatchView() {
+        if (player1 != null) {
+            tvPlayer1.setText(player1.getFullName());
+        } else {
+            tvPlayer1.setText("Add Player 1");
+        }
+
+        if (player2 != null) {
+            tvPlayer2.setText(player2.getFullName());
+        } else {
+            tvPlayer2.setText("Add Player 2");
+        }
+
+        if ((player1 != null) && (player2 != null)) {
+            fabMatch.setVisibility(View.VISIBLE);
+
+        } else {
+            fabMatch.setVisibility(View.INVISIBLE);
+        }
+
+
+    }
 
     private void setupMemberCheckedInListView() {
 
@@ -215,6 +289,19 @@ public class CurrentWeekFragment extends Fragment {
         rvMembersCheckedIn.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
     }
 
+    @OnClick(R.id.fabMatch)
+    public void onClickFabMatch() {
+        if ((player1 != null) && (player2 != null)) {
+            addMatch(player1, player2);
+            player1 = null;
+            player2 = null;
+            setupMatchView();
+        }
+    }
+
+    public void addMatch(Member player1, Member player2) {
+        Log.d(TAG, "addMatch: ");
+    }
 
     public class MemberCheckedInViewHolder extends RecyclerView.ViewHolder {
         public TextView fullName;
