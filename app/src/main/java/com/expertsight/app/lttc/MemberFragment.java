@@ -36,25 +36,24 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class CheckInFragment extends Fragment {
+public class MemberFragment extends Fragment {
 
-    private static final String TAG = "ActiveMemberListFragmen";
+    private static final String TAG = "MemberFragment";
 
     private FirebaseDatabase db;
-    private FirebaseStorage storage;
-    private FirebaseRecyclerAdapter dbAdapterActiveMembers;
+    private FirebaseRecyclerAdapter dbAdapterAllMembers;
 
     @BindView(R.id.actvMembers)
     AutoCompleteTextView autoCompleteTextView;
 
-    @BindView(R.id.btnAddMember)
-    Button btnAddMember;
 
     @BindView(R.id.rvMembers)
     RecyclerView rvMembers;
@@ -72,13 +71,13 @@ public class CheckInFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public CheckInFragment() {
+    public MemberFragment() {
         // Required empty public constructor
     }
 
     // TODO: Rename and change types and number of parameters
-    public static CheckInFragment newInstance(String param1, String param2) {
-        CheckInFragment fragment = new CheckInFragment();
+    public static MemberFragment newInstance(String param1, String param2) {
+        MemberFragment fragment = new MemberFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -100,7 +99,7 @@ public class CheckInFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_check_in, container, false);
+        View view = inflater.inflate(R.layout.fragment_member, container, false);
         ButterKnife.bind(this, view);
         return view;
     }
@@ -110,7 +109,7 @@ public class CheckInFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         setupAutoCompleteView();
-        setupMemberActiveListView();
+        setupMemberListView();
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -135,13 +134,13 @@ public class CheckInFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        dbAdapterActiveMembers.startListening();
+        dbAdapterAllMembers.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        dbAdapterActiveMembers.stopListening();
+        dbAdapterAllMembers.stopListening();
     }
 
     @Override
@@ -158,8 +157,8 @@ public class CheckInFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Member member = (Member) parent.getAdapter().getItem(position);
-                //Toast.makeText(context, "You clicked on " + member.getFullName() +" " + member.getId(), Toast.LENGTH_SHORT).show();
-                showCheckInMemberDialog(member);
+                Toast.makeText(getContext(), "You clicked on " + member.getFullName() +" " + member.getId(), Toast.LENGTH_SHORT).show();
+                showEditMemberDialog(member);
                 autoCompleteTextView.setText("");
                 autoCompleteTextView.clearFocus();
             }
@@ -197,63 +196,10 @@ public class CheckInFragment extends Fragment {
 
     }
 
-    @OnClick(R.id.btnAddMember)
-    public void onClickAddMember() {
-        showAddMemberDialog(null);
-    }
-
-
-    public void showAddMemberDialog(String hexId) {
-        Log.d(TAG, "showAddMemberDialog: start " + hexId);
-
-        Bundle args = new Bundle();
-        if (hexId != null) {
-            args.putString("smartcard_id", hexId);
-        }
-
-        FragmentManager manager = getActivity().getSupportFragmentManager();
-        Fragment frag = manager.findFragmentByTag("fragment_add_member_dialog");
-        if (frag != null) {
-            manager.beginTransaction().remove(frag).commit();
-        }
-        AddMemberDialogFragment addMemberDialogFragment = new AddMemberDialogFragment();
-        addMemberDialogFragment.setArguments(args);
-        addMemberDialogFragment.show(manager, "fragment_add_member_dialog");
-
-    }
-
-
-    public void showCheckInMemberDialog(Member member) {
-        Log.d(TAG, "showCheckInMemberDialog: Member");
-
-        if (member.isPlayingThisWeek()) {
-        //if (member.isPlayingToday()) {
-            Toast.makeText(getContext(), "This member already checked in this week", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Bundle args = new Bundle();
-        args.putString("member_id", member.getId());
-        args.putString("member_fullname", member.getFullName());
-        args.putDouble("member_balance", member.getBalance());
-
-        FragmentManager manager = getActivity().getSupportFragmentManager();
-        Fragment frag = manager.findFragmentByTag("fragment_check_in_member_dialog");
-        if (frag != null) {
-            manager.beginTransaction().remove(frag).commit();
-        }
-        CheckInMemberDialogFragment checkInMemberDialogFragment = new CheckInMemberDialogFragment();
-        checkInMemberDialogFragment.setArguments(args);
-        checkInMemberDialogFragment.show(manager, "fragment_check_in_member_dialog");
-    }
-
-
-
-    private void setupMemberActiveListView() {
+    private void setupMemberListView() {
 
         //final CollectionReference membersRef = db.collection("/members");
         final Query query = db.getReference("members")
-                //.equalTo("isActive", "true")
                 .orderByChild("firstName");
 
         Log.d(TAG, "starting to get Member list");
@@ -262,9 +208,8 @@ public class CheckInFragment extends Fragment {
                 .setQuery(query, Member.class)
                 .build();
 
-        int defaultTextColor = 0;
 
-        dbAdapterActiveMembers = new FirebaseRecyclerAdapter<Member, CheckInFragment.MemberViewHolder>(response) {
+        dbAdapterAllMembers = new FirebaseRecyclerAdapter<Member, MemberFragment.MemberViewHolder>(response) {
 
 
             @Override
@@ -276,24 +221,16 @@ public class CheckInFragment extends Fragment {
             }
 
             @Override
-            protected void onBindViewHolder(CheckInFragment.MemberViewHolder holder, int position, Member member) {
-                Log.d(TAG, "onBindViewHolder: Member ID " + member.getId());
+            protected void onBindViewHolder(MemberFragment.MemberViewHolder holder, int position, final Member member) {
+                //Log.d(TAG, "onBindViewHolder: Member " + member.toStringIncludingAllProperties());
                 holder.fullName.setText(member.getFullName());
-                Log.d(TAG, "onBindViewHolder: fullname textsize" + holder.fullName.getTextSize());
-                BigDecimal balance = new BigDecimal(member.getBalance());
-                Log.d(TAG, "onBindViewHolder: balance " + balance);
+                double balance = member.getBalance();
                 holder.balance.setText("$" + String.valueOf(balance));
-
-
                 holder.email.setText(member.getEmail());
-                Log.d(TAG, "onBindViewHolder: email textsize" + holder.email.getTextSize());
 
-                // BigDecimal test
-                int compareZeroPlus = balance.compareTo(new BigDecimal("0.0"));
-                int compareZeroMinus = balance.compareTo(new BigDecimal("-0.0"));
-                if (compareZeroPlus > 0) {
+                if (balance > 0) {
                     holder.balance.setTextColor(ContextCompat.getColor(getContext(), R.color.darkGreen));
-                } else if (compareZeroMinus < 0) {
+                } else if (balance < 0) {
                     holder.balance.setTextColor(ContextCompat.getColor(getContext(), R.color.darkRed));
                 } else {
                     holder.balance.setTextColor(ContextCompat.getColor(getContext(), R.color.grey));
@@ -303,18 +240,16 @@ public class CheckInFragment extends Fragment {
                 } else {
                     holder.playingToday.setVisibility(View.GONE);
                 }
-
             }
 
             @Override
-            public CheckInFragment.MemberViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            public MemberFragment.MemberViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.layout_member_list, parent, false);
 
-                return new CheckInFragment.MemberViewHolder(view);
+                return new MemberFragment.MemberViewHolder(view);
             }
-
 
             @Override
             public void onDataChanged() {
@@ -329,11 +264,12 @@ public class CheckInFragment extends Fragment {
 
         };
 
-        dbAdapterActiveMembers.notifyDataSetChanged();
-        rvMembers.setAdapter(dbAdapterActiveMembers);
+        dbAdapterAllMembers.notifyDataSetChanged();
+        rvMembers.setAdapter(dbAdapterAllMembers);
         rvMembers.setLayoutManager(new LinearLayoutManager(getContext()));
         rvMembers.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
     }
+
 
     public class MemberViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView fullName;
@@ -353,10 +289,45 @@ public class CheckInFragment extends Fragment {
         @Override
         public void onClick(View v) {
             int adapterPos = getAdapterPosition();
-            Member member = (Member) dbAdapterActiveMembers.getItem(adapterPos);
+            Member member = (Member) dbAdapterAllMembers.getItem(adapterPos);
             //Toast.makeText(context, "clicked on " + member.getId(), Toast.LENGTH_SHORT).show();
-            showCheckInMemberDialog(member);
+            showEditMemberDialog(member);
         }
+    }
+
+    public void showEditMemberDialog(Member member) {
+        Log.d(TAG, "showEditMemberDialog: start " + member.getFullName());
+
+        Bundle args = new Bundle();
+
+        args.putString("member_id", member.getId());
+        args.putString("member_firstname", member.getFirstName());
+        args.putString("member_lastname", member.getLastName());
+        args.putDouble("member_balance", member.getBalance());
+        args.putString("member_email", member.getEmail());
+        args.putBoolean("member_mailinglist", member.getIsMailingSubscriber());
+        args.putString("member_smartcard_id", member.getSmartcardId());
+
+
+        if (member.getLastCheckIn() != 0) {
+            Date lastCheckIn = new Date(member.getLastCheckIn());
+            String dateString = new SimpleDateFormat("MM/dd/yyyy hh:mm").format(lastCheckIn);
+            args.putString("member_last_check_in", dateString);
+        }
+
+        args.putBoolean("member_is_admin", member.getIsAdmin());
+        args.putBoolean("member_is_active", member.getIsActive());
+
+
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        Fragment frag = manager.findFragmentByTag("fragment_edit_member_dialog");
+        if (frag != null) {
+            manager.beginTransaction().remove(frag).commit();
+        }
+        EditMemberDialogFragment editMemberDialogFragment = new EditMemberDialogFragment();
+        editMemberDialogFragment.setArguments(args);
+        editMemberDialogFragment.show(manager, "fragment_edit_member_dialog");
+
     }
 
     public interface OnFragmentInteractionListener {

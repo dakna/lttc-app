@@ -724,7 +724,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
 
         } else if (buttonSelection == R.id.btnAdmin) {
-            Intent intent = new Intent(context, AdminActivity.class);
+            Intent intent = new Intent(context, AdminOldActivity.class);
             intent.putExtra("memberId" , memberId);
             startActivity(intent);
         }

@@ -149,7 +149,7 @@ public class Member extends FirestoreModel {
 
         if (cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) &&
                 cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)) {
+                cal1.get(Calendar.WEEK_OF_YEAR) == cal2.get(Calendar.WEEK_OF_YEAR)) {
             Log.d(TAG, "isPlayingThisWeek: true");
             return true;
         }
