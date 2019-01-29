@@ -8,7 +8,7 @@ import com.google.firebase.database.IgnoreExtraProperties;
 public class Transaction extends FirestoreModel{
 
     private double amount;
-    private String memberRef;
+    private String memberId;
     private String subject;
     private long timestamp;
 
@@ -22,12 +22,12 @@ public class Transaction extends FirestoreModel{
         this.amount = amount;
     }
 
-    public String getMemberRef() {
-        return memberRef;
+    public String getMemberId() {
+        return memberId;
     }
 
-    public void setMemberRef(String memberRef) {
-        this.memberRef = memberRef;
+    public void setMemberId(String memberRef) {
+        this.memberId = memberId;
     }
 
     public String getSubject() {
@@ -50,7 +50,7 @@ public class Transaction extends FirestoreModel{
     public String toString() {
         return "Transaction{" +
                 "amount=" + amount +
-                ", memberRef=" + memberRef +
+                ", memberRef=" + memberId +
                 ", subject='" + subject + '\'' +
                 ", timestamp=" + timestamp +
                 '}';

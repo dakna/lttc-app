@@ -3,7 +3,6 @@ package com.expertsight.app.lttc;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -432,7 +431,7 @@ public class AdminActivity extends AppCompatActivity implements AddTransactionDi
         newTransaction.setAmount(amount);
         newTransaction.setTimestamp(new Date().getTime());
         DatabaseReference memberRef = db.getReference("members").child(memberId);
-        newTransaction.setMemberRef(memberRef.toString());
+        newTransaction.setMemberId(memberRef.toString());
 
         // TODO: 6/2/2018 add member ref to transaction, member id needs to be passed along with intent to start activity and stored in member
 

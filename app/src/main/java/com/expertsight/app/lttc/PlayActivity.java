@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.expertsight.app.lttc.model.Match;
 import com.expertsight.app.lttc.model.Member;
 import com.expertsight.app.lttc.model.Transaction;
 import com.expertsight.app.lttc.ui.BottomNavigationViewHelper;
@@ -41,8 +42,8 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import java.util.Date;
 
 public class PlayActivity extends AppCompatActivity
-        implements CheckInFragment.OnFragmentInteractionListener, CurrentWeekFragment.OnFragmentInteractionListener,
-        CheckInMemberDialogFragment.CheckInMemberDialogListener, AddMemberDialogFragment.AddMemberDialogListener {
+        implements CheckInFragment.OnFragmentInteractionListener, CurrentWeekFragment.OnFragmentInteractionListener, MatchFragment.OnFragmentInteractionListener,
+        CheckInMemberDialogFragment.CheckInMemberDialogListener, AddMemberDialogFragment.AddMemberDialogListener, AddMatchScoreDialogFragment.AddMatchScoreDialogListener {
 
     private static final String TAG = "PlayActivity";
     private static final int ACTIVITY_NUM = 4;
@@ -75,15 +76,6 @@ public class PlayActivity extends AppCompatActivity
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         db = FirebaseDatabase.getInstance();
     }
@@ -171,6 +163,8 @@ public class PlayActivity extends AppCompatActivity
                 return CheckInFragment.newInstance("test", "test2");
             } else if(position ==1){
                 return CurrentWeekFragment.newInstance("test", "test2");
+            } else if(position ==2){
+                return MatchFragment.newInstance("test", "test2");
             } else {
                 return PlaceholderFragment.newInstance(position + 1);
             }
@@ -251,7 +245,7 @@ public class PlayActivity extends AppCompatActivity
                     if (payment != 0) {
                         Transaction newTransaction = new Transaction();
                         newTransaction.setAmount(payment);
-                        newTransaction.setMemberRef(memberRef.toString());
+                        newTransaction.setMemberId(member.getId());
                         newTransaction.setSubject(getString(R.string.transaction_subject_member_fee));
                         //no server timestamp so it works offline
                         newTransaction.setTimestamp(new Date().getTime());
@@ -287,6 +281,52 @@ public class PlayActivity extends AppCompatActivity
             }
         });
     }
+
+    @Override
+    public void applyMatchScoreData(final String matchId, final int player1Games, final int player2Games) {
+        Log.d(TAG, "applyMatchData: matchrId: " + matchId + " player1Games " + player1Games + " player2Games " + player2Games);
+
+        //load latest data, even if its in local cache
+        final DatabaseReference memberRef = db.getReference("matches").child(matchId);
+
+        memberRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    final Match match = dataSnapshot.getValue(Match.class);
+                    match.setId(dataSnapshot.getKey());
+
+                    match.setPlayer1Games(player1Games);
+                    match.setPlayer2Games(player2Games);
+                    memberRef.setValue(match)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d(TAG, "DocumentSnapshot successfully written!");
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.w(TAG, "Error writing document", e);
+                                }
+                            });
+
+               } else {
+                    Log.d(TAG, "No such document");
+                    Toast.makeText(context, "Error while checking in member " + matchId, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "get failed with ", databaseError.toException());
+                Toast.makeText(context, "Error while checking in member " + matchId, Toast.LENGTH_SHORT).show();
+
+            }
+        });
+    }
+
 
 
     private void setupBottomNavigationView() {

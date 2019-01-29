@@ -17,15 +17,21 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.TextView;
+import android.widget.Toast;
 
 
+import com.expertsight.app.lttc.model.Match;
 import com.expertsight.app.lttc.model.Member;
+import com.expertsight.app.lttc.model.Transaction;
 import com.expertsight.app.lttc.util.FirebaseHelper;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseError;
 
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
@@ -42,7 +48,7 @@ import butterknife.OnClick;
 
 public class CurrentWeekFragment extends Fragment {
 
-    private static final String TAG = "ActiveMemberListFragmen";
+    private static final String TAG = "CurrentWeekFragment";
 
     private FirebaseDatabase db;
     private FirebaseStorage storage;
@@ -299,8 +305,34 @@ public class CurrentWeekFragment extends Fragment {
         }
     }
 
-    public void addMatch(Member player1, Member player2) {
+    public void addMatch(final Member player1, final Member player2) {
         Log.d(TAG, "addMatch: ");
+
+        Match match = new Match();
+        match.setPlayer1Id(player1.getId());
+        match.setPlayer1FullName(player1.getFullName());
+
+        match.setPlayer2Id(player2.getId());
+        match.setPlayer2FullName(player2.getFullName());
+        //no server timestamp so it works offline
+        match.setTimestamp(new Date().getTime());
+
+        DatabaseReference matches = db.getReference("matches");
+        matches.push()
+                .setValue(match)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()) {
+
+                            Log.d(TAG, "onComplete: new match added ");
+                            Toast.makeText(getContext(), "Added match " + player1.getFullName() + " : " + player2.getFullName(), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.d(TAG, "onComplete: error adding new match");
+                            Toast.makeText(getContext(), "Unknown Error: Couldn't add new match", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     public class MemberCheckedInViewHolder extends RecyclerView.ViewHolder {

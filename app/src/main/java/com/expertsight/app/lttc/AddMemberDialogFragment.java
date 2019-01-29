@@ -92,7 +92,7 @@ public class AddMemberDialogFragment extends DialogFragment {
                 // set dialog icon
                 .setIcon(R.drawable.ic_person)
                 // set Dialog Title
-                .setTitle("Add a Member")
+                .setTitle("Add Member")
                 // Set Dialog Message
                 .setMessage(message)
 

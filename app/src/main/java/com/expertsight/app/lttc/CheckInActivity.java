@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -45,8 +44,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseException;
-import com.google.firebase.Timestamp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -67,8 +64,6 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 */
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
@@ -667,7 +662,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                         if (payment != 0) {
                             Transaction newTransaction = new Transaction();
                             newTransaction.setAmount(payment);
-                            newTransaction.setMemberRef(memberRef.toString());
+                            newTransaction.setMemberId(memberRef.toString());
                             newTransaction.setSubject(getString(R.string.transaction_subject_member_fee));
                             //no server timestamp so it works offline
                             newTransaction.setTimestamp(new Date().getTime());
