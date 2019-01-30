@@ -17,7 +17,7 @@ import java.util.List;
 public class MemberListWidgetProvider extends AppWidgetProvider {
     private static final String TAG = "MemberListWidgetProvide";
 
-    public static void updateMemberWidget(Context context, AppWidgetManager appWidgetManager, int recipeWidgetId) {
+    public static void updateMemberWidget(Context context, AppWidgetManager appWidgetManager, int widgetId) {
         Log.d(TAG, "updateMemberWidget: ");
         List<Member> memberList = Store.loadMemberList(context);
         if (memberList != null) {
@@ -32,11 +32,11 @@ public class MemberListWidgetProvider extends AppWidgetProvider {
             views.setOnClickPendingIntent(R.id.tv_widget_name, pendingIntent);
 
             Intent intent = new Intent(context, MemberListWidgetService.class);
-            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, recipeWidgetId);
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
             views.setRemoteAdapter(R.id.lv_widget, intent);
 
-            appWidgetManager.updateAppWidget(recipeWidgetId, views);
-            appWidgetManager.notifyAppWidgetViewDataChanged(recipeWidgetId, R.id.lv_widget);
+            appWidgetManager.updateAppWidget(widgetId, views);
+            appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, R.id.lv_widget);
         }
     }
 
