@@ -24,11 +24,13 @@ import com.expertsight.app.lttc.model.Match;
 import com.expertsight.app.lttc.model.Member;
 import com.expertsight.app.lttc.model.Transaction;
 import com.expertsight.app.lttc.util.FirebaseHelper;
+import com.expertsight.app.lttc.widget.MemberListWidgetService;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 
 import com.google.firebase.database.DatabaseReference;
@@ -39,7 +41,10 @@ import com.google.firebase.storage.FirebaseStorage;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -235,7 +240,7 @@ public class CurrentWeekFragment extends Fragment {
 
         Log.d(TAG, "starting to get Member list checked in for " + new Date().getTime() + "in week starting at " + startOfThisWeek.getTime());
 
-
+        
         FirebaseRecyclerOptions<Member> response = new FirebaseRecyclerOptions.Builder<Member>()
                 .setQuery(query, Member.class)
                 .build();
@@ -280,6 +285,7 @@ public class CurrentWeekFragment extends Fragment {
             public void onDataChanged() {
                 super.onDataChanged();
                 Log.d(TAG,"on Data changed for members checked in today");
+                updateWidget(this);
             }
 
             @Override
@@ -295,6 +301,18 @@ public class CurrentWeekFragment extends Fragment {
         rvMembersCheckedIn.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
     }
 
+    
+    private void updateWidget(FirebaseRecyclerAdapter adapter) {
+        List<Member> memberList = new ArrayList<>();
+
+        Iterator iterator = adapter.getSnapshots().listIterator();
+        while (iterator.hasNext()) {
+            memberList.add((Member) iterator.next());
+        }
+        MemberListWidgetService.updateWidget(getActivity(), memberList);
+    }
+    
+    
     @OnClick(R.id.fabMatch)
     public void onClickFabMatch() {
         if ((player1 != null) && (player2 != null)) {

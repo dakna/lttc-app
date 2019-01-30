@@ -1,6 +1,7 @@
 package com.expertsight.app.lttc;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -43,6 +44,11 @@ public class PlayActivity extends AppCompatActivity
         implements CheckInFragment.OnFragmentInteractionListener, CurrentWeekFragment.OnFragmentInteractionListener, MatchFragment.OnFragmentInteractionListener,
         CheckInMemberDialogFragment.CheckInMemberDialogListener, AddMemberDialogFragment.AddMemberDialogListener, AddMatchScoreDialogFragment.AddMatchScoreDialogListener {
 
+    // Position of fragment in view pager
+    public static final int FRAGMENT_CURRENT_WEEK = 1;
+    public static final int FRAGMENT_DEFAULT= 0;
+    public static final String FRAGMENT_SELECT = "selected_fragment";
+
     private static final String TAG = "PlayActivity";
     private static final int ACTIVITY_NUM = 4;
     private Context context = PlayActivity.this;
@@ -76,6 +82,13 @@ public class PlayActivity extends AppCompatActivity
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
 
         db = FirebaseDatabase.getInstance();
+
+        if (savedInstanceState == null) {
+            Intent i = getIntent();
+            int defaultPosition;
+            defaultPosition = i.getIntExtra(FRAGMENT_SELECT, FRAGMENT_DEFAULT);
+            viewPager.setCurrentItem(defaultPosition);
+        }
     }
 
 
