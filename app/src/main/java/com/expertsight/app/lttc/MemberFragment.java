@@ -1,5 +1,6 @@
 package com.expertsight.app.lttc;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -157,8 +158,11 @@ public class MemberFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Member member = (Member) parent.getAdapter().getItem(position);
-                Toast.makeText(getContext(), "You clicked on " + member.getFullName() +" " + member.getId(), Toast.LENGTH_SHORT).show();
-                showEditMemberDialog(member);
+                if (((AdminActivity) getActivity()).initializedByAdmin()) {
+                    showEditMemberDialog(member);
+                } else {
+                    Toast.makeText(getContext(), "Sorry, only admins can edit", Toast.LENGTH_SHORT).show();
+                }
                 autoCompleteTextView.setText("");
                 autoCompleteTextView.clearFocus();
             }
@@ -290,8 +294,13 @@ public class MemberFragment extends Fragment {
         public void onClick(View v) {
             int adapterPos = getAdapterPosition();
             Member member = (Member) dbAdapterAllMembers.getItem(adapterPos);
-            //Toast.makeText(context, "clicked on " + member.getId(), Toast.LENGTH_SHORT).show();
-            showEditMemberDialog(member);
+
+            if (((AdminActivity) getActivity()).initializedByAdmin()) {
+                showEditMemberDialog(member);
+            } else {
+                Toast.makeText(getContext(), "Sorry, only admins can edit", Toast.LENGTH_SHORT).show();
+            }
+
         }
     }
 

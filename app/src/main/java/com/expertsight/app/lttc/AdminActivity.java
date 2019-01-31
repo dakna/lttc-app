@@ -21,9 +21,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.expertsight.app.lttc.model.Member;
+import com.expertsight.app.lttc.model.Transaction;
 import com.expertsight.app.lttc.ui.BottomNavigationViewHelper;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,13 +38,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class AdminActivity extends AppCompatActivity implements MemberFragment.OnFragmentInteractionListener,
-        EditMemberDialogFragment.EditMemberDialogListener {
+public class AdminActivity extends AppCompatActivity implements MemberFragment.OnFragmentInteractionListener, TransactionFragment.OnFragmentInteractionListener,
+        EditMemberDialogFragment.EditMemberDialogListener, AddTransactionDialogFragment.AddTransactionDialogListener {
 
     private static final String TAG = "AdminActivity";
     private static final int ACTIVITY_NUM = 2;
     private Context context = AdminActivity.this;
 
+    private String adminMemberId;
 
     private FirebaseDatabase db;
 
@@ -71,6 +75,9 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
 
         db = FirebaseDatabase.getInstance();
+
+        Log.d(TAG, "onCreate: Intent admin adminMemberId " + getIntent().getStringExtra("adminMemberId"));
+        adminMemberId = getIntent().getStringExtra("adminMemberId");
     }
 
 
@@ -150,6 +157,8 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
             // todo: remove unneeded params on fragments
             if (position == 0) {
                 return MemberFragment.newInstance("test", "test2");
+            } else if (position == 1) {
+                    return TransactionFragment.newInstance("test", "test2");
             } else {
                 return PlaceholderFragment.newInstance(position + 1);
             }
@@ -160,35 +169,6 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
             return 2;
         }
     }
-
-/*    @Override
-    public void applyNewTransactionData(final String subject, final double amount) {
-        Log.d(TAG, "applyNewTransactionData: " + subject + " " + amount);
-        Transaction newTransaction = new Transaction();
-        newTransaction.setSubject(subject);
-        newTransaction.setAmount(amount);
-        newTransaction.setTimestamp(new Date().getTime());
-        DatabaseReference memberRef = db.getReference("members").child(memberId);
-        newTransaction.setMemberId(memberRef.toString());
-
-        // TODO: 6/2/2018 add member ref to transaction, member id needs to be passed along with intent to start activity and stored in member
-
-        DatabaseReference transactions = db.getReference("transactions");
-        transactions.push()
-                .setValue(newTransaction)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()) {
-                            Log.d(TAG, "onComplete: new transaction added");
-                            Toast.makeText(context, "Added new transaction: " + subject + " " + amount, Toast.LENGTH_SHORT).show();
-                        } else {
-                            Log.d(TAG, "onComplete: error adding new transaction");
-                            Toast.makeText(context, "Unknown Error: Couldn't add new transaction", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }*/
 
     @Override
     public void applyEditMemberData(final String memberId, final String firstName, final String lastName, final String email, final boolean mailingList, final String smartcardId, final boolean isAdmin, final String lastCheckIn, final boolean isActive, final String balance) {
@@ -265,7 +245,39 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
         });
     }
 
+    @Override
+    public void applyNewTransactionData(final String subject, final double amount) {
+        Log.d(TAG, "applyNewTransactionData: " + subject + " " + amount);
+        Transaction newTransaction = new Transaction();
+        newTransaction.setSubject(subject);
+        newTransaction.setAmount(amount);
+        newTransaction.setTimestamp(new Date().getTime());
+        if (initializedByAdmin()) {
+            DatabaseReference memberRef = db.getReference("members").child(adminMemberId);
+            newTransaction.setMemberId(memberRef.toString());
+        }
 
+        DatabaseReference transactions = db.getReference("transactions");
+        transactions.push()
+                .setValue(newTransaction)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()) {
+                            Log.d(TAG, "onComplete: new transaction added");
+                            Toast.makeText(context, "Added new transaction: " + subject + " " + amount, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.d(TAG, "onComplete: error adding new transaction");
+                            Toast.makeText(context, "Unknown Error: Couldn't add new transaction", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    public boolean initializedByAdmin() {
+        if ((adminMemberId != null) && (!adminMemberId.isEmpty())) return true;
+        return false;
+    }
 
     private void setupBottomNavigationView() {
         Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");

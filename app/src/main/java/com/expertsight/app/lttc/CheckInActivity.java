@@ -138,7 +138,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         //testAdminDialog("dPSiUYvkre4BfyKiHidf");
 
         // this is Daniel Knapp's id in realtime database on expertsight
-        //testAdminDialog("tYPrlEVr5UmoqfvJiCz6");
+        testAdminDialog("tYPrlEVr5UmoqfvJiCz6");
         handleIntent(getIntent());
     }
 
@@ -724,8 +724,9 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
 
         } else if (buttonSelection == R.id.btnAdmin) {
-            Intent intent = new Intent(context, AdminOldActivity.class);
-            intent.putExtra("memberId" , memberId);
+            Log.d(TAG, "applyAdminDialogData: memberId " + memberId);
+            Intent intent = new Intent(context, AdminActivity.class);
+            intent.putExtra("adminMemberId" , memberId);
             startActivity(intent);
         }
     }
@@ -739,6 +740,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                 if (dataSnapshot.exists()) {
                     Log.d(TAG, "onComplete:  DocumentSnapshot data: " + dataSnapshot.getValue());
                     final Member member = dataSnapshot.getValue(Member.class);
+                    member.setId(dataSnapshot.getKey());
                     showAdminDialog(member);
                 }
             }
