@@ -76,7 +76,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class CheckInActivity extends AppCompatActivity implements AddMemberDialogFragment.AddMemberDialogListener, CheckInMemberDialogFragment.CheckInMemberDialogListener, AdminBottomSheetDialogFragment.AdminBottomSheetDialogListener {
+public class CheckInActivity extends AppCompatActivity implements AdminBottomSheetDialogFragment.AdminBottomSheetDialogListener {
 
     private static final String TAG = "CheckInActivity";
     private static final int ACTIVITY_NUM = 1;
@@ -92,17 +92,11 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
     private FirebaseStorage storage;
     private FirebaseRecyclerAdapter dbAdapterActiveMembers, dbAdapterMembersCheckedIn;
 
-    @BindView(R.id.actvMembers)
-    AutoCompleteTextView autoCompleteTextView;
 
-    @BindView(R.id.btnAddMember)
-    Button btnAddMember;
+    @BindView(R.id.btnAdminCredential)
+    Button btnAdminCredential;
 
-    @BindView(R.id.rvMembers)
-    RecyclerView rvMembers;
 
-    @BindView(R.id.rvMembersCheckedIn)
-    RecyclerView rvMembersCheckedIn;
 
 
     @Override
@@ -114,19 +108,12 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         db = FirebaseDatabase.getInstance();
 
         ButterKnife.bind(this);
-        setupAutoCompleteView();
-        setupMemberActiveListView();
-        setupMemberCheckedInListView();
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
         if (mNfcAdapter == null) {
-            // Stop here, we definitely need NFC
+            // Give a warning
             Toast.makeText(this, "This device doesn't support NFC smart cards", Toast.LENGTH_LONG).show();
-/*
-            finish();
-            return;
-*/
 
         } else {
             if (!mNfcAdapter.isEnabled()) {
@@ -142,6 +129,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         handleIntent(getIntent());
     }
 
+/*
     private void setupAutoCompleteView() {
         final ArrayAdapter<Member> adapter = new ArrayAdapter<Member>(this, android.R.layout.simple_dropdown_item_1line);
         autoCompleteTextView.setAdapter(adapter);
@@ -187,6 +175,8 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         });
 
     }
+*/
+/*
 
     @OnClick(R.id.btnAddMember)
     public void onClickAddMember() {
@@ -237,6 +227,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         checkInMemberDialogFragment.setArguments(args);
         checkInMemberDialogFragment.show(manager, "fragment_check_in_member_dialog");
     }
+*/
 
     public void showAdminDialog(Member member) {
         Log.d(TAG, "showAdminDialog: start ");
@@ -255,6 +246,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
     }
 
+/*
 
 
     private void setupMemberActiveListView() {
@@ -474,6 +466,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         rvMembersCheckedIn.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
     }
 
+*/
 
     @Override
     protected void onResume() {
@@ -522,10 +515,6 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
             final String hexId = MifareHelper.getHexString(id, id.length);
             Log.d(TAG, "handleIntent: tag ID in HEX " + hexId);
 
-
-
-            //member lookup
-            //CollectionReference membersRef = db.collection("/members/");
             final Query query = db.getReference("/members/")
                     .equalTo("smartcardId", hexId);
 
@@ -545,13 +534,15 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                             //toastTotalBalance();
                             showAdminDialog(member);
                         } else {
-                            showCheckInMemberDialog(member);
+                            // TODO: INTENT TO LAUNCH FRAGMENT CHECKIN AND START DIALOG
+                            //showCheckInMemberDialog(member);
                         }
                     } else if (dataSnapshot.getChildrenCount()  > 1){
                         Toast.makeText(context, "Error: The smartcard ID " + hexId + " is assigned to more than one member", Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(context, "Couldn't find a member with the smartcard ID " + hexId, Toast.LENGTH_LONG).show();
-                        showAddMemberDialog(hexId);
+                        // TODO: INTENT TO LAUNCH FRAGMENT CHECKIN AND START DIALOG
+                        //showAddMemberDialog(hexId);
                     }
                 }
 
@@ -592,7 +583,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
         adapter.disableForegroundDispatch(activity);
     }
 
-
+/*
     // moved to play
     @Override
     public void applyNewMemberData(final String firstName, final String lastName, String email, boolean mailingList, String smartcardId) {
@@ -697,7 +688,7 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
 
                 }
         });
-    }
+    }*/
 
     @Override
     public void applyAdminDialogData(String memberId, int buttonSelection) {
@@ -711,7 +702,8 @@ public class CheckInActivity extends AppCompatActivity implements AddMemberDialo
                     if (dataSnapshot.exists()) {
                         Log.d(TAG, "onComplete:  DocumentSnapshot data: " + dataSnapshot.getValue());
                         final Member member = dataSnapshot.getValue(Member.class);
-                        showCheckInMemberDialog(member);
+                        // TODO: INTENT TO LAUNCH FRAGMENT CHECKIN AND START DIALOG
+                        //showCheckInMemberDialog(member);
                     }
                 }
                 @Override
