@@ -7,7 +7,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -34,6 +37,7 @@ import android.widget.Toast;
 import com.expertsight.app.lttc.model.Member;
 import com.expertsight.app.lttc.model.Transaction;
 import com.expertsight.app.lttc.ui.BottomNavigationViewHelper;
+import com.expertsight.app.lttc.util.CredentialCheckAsyncTask;
 import com.expertsight.app.lttc.util.FirebaseHelper;
 import com.expertsight.app.lttc.util.MifareHelper;
 
@@ -69,14 +73,16 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class CheckInActivity extends AppCompatActivity implements AdminBottomSheetDialogFragment.AdminBottomSheetDialogListener {
+public class CheckInActivity extends AppCompatActivity implements AdminBottomSheetDialogFragment.AdminBottomSheetDialogListener, CredentialCheckAsyncTask.CredentialCheckListener {
 
     private static final String TAG = "CheckInActivity";
     private static final int ACTIVITY_NUM = 1;
@@ -89,13 +95,12 @@ public class CheckInActivity extends AppCompatActivity implements AdminBottomShe
     private NfcAdapter mNfcAdapter = null;
 
     private FirebaseDatabase db;
-    private FirebaseStorage storage;
-    private FirebaseRecyclerAdapter dbAdapterActiveMembers, dbAdapterMembersCheckedIn;
+
+    private List<Member> adminList = new ArrayList<>();
 
 
     @BindView(R.id.btnAdminCredential)
     Button btnAdminCredential;
-
 
 
 
@@ -121,15 +126,64 @@ public class CheckInActivity extends AppCompatActivity implements AdminBottomShe
             }
         }
 
+        setupAdminList();
+
         // this is Daniel Knapp's id in firestore in clubs db
         //testAdminDialog("dPSiUYvkre4BfyKiHidf");
 
         // this is Daniel Knapp's id in realtime database on expertsight
-        testAdminDialog("tYPrlEVr5UmoqfvJiCz6");
+        //testAdminDialog("tYPrlEVr5UmoqfvJiCz6");
         handleIntent(getIntent());
     }
 
+    private void setupAdminList() {
+        DatabaseReference ref = db.getReference("members");
+        Query query = ref.orderByChild("isAdmin").equalTo(true);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                adminList.clear();
+                for (DataSnapshot memberSnapshot : dataSnapshot.getChildren()) {
+                    Log.d(TAG, memberSnapshot.getKey() + " => " + memberSnapshot.getValue());
+                    Member member = memberSnapshot.getValue(Member.class);
+                    member.setId(memberSnapshot.getKey());
+                    adminList.add(member);
+                    Log.d(TAG, "onDataChange: admin member " + member.getFullName());
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "onCancelled: no members in list");
+            }
+        });
+    }
+
+    @OnClick(R.id.btnAdminCredential)
+    public void validateAdminCredential() {
+        Log.d(TAG, "validateAdminCredential: adminList size " + adminList.size());
+        TextInputEditText etCredential = findViewById(R.id.etAdminCredential);
+        String credential = etCredential.getText().toString();
+
+        if (!credential.isEmpty()) {
+            new CredentialCheckAsyncTask(adminList, this).execute(credential);
+        }
+
+    }
+    
+    public void applyAdminValidation(Member admin) {
+        if (admin != null) {
+            showAdminDialog(admin);
+        } else {
+            Toast.makeText(context, "Sorry, credentials not valid", Toast.LENGTH_SHORT).show();
+        }
+    }
 /*
+
+    BD9D03FF
+
     private void setupAutoCompleteView() {
         final ArrayAdapter<Member> adapter = new ArrayAdapter<Member>(this, android.R.layout.simple_dropdown_item_1line);
         autoCompleteTextView.setAdapter(adapter);

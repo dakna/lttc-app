@@ -24,7 +24,8 @@ public class Member extends FirestoreModel {
     private boolean isAdmin;
     private boolean hasSignedWaiver;
     private double balance;
-    private long lastCheckIn; //todo: set date as string in firebase
+    private long lastCheckIn;
+    private int pin;
 
 
     // maybe just authID and that is the check if you are an admin? instead of extra user object. we could keep the username in firebase auth
@@ -103,6 +104,10 @@ public class Member extends FirestoreModel {
     public void setLastCheckIn(long lastCheckIn) {
         this.lastCheckIn = lastCheckIn;
     }
+
+    public int getPin() { return pin; }
+
+    public void setPin(int pin) { this.pin = pin; }
 
     public boolean getHasSignedWaiver() {
         return hasSignedWaiver;
