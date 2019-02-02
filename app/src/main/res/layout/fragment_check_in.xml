@@ -13,9 +13,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/tvMemberListHeadline" >
+        app:layout_constraintEnd_toStartOf="@id/btnAddMember" >
 
         <android.support.v7.widget.AppCompatAutoCompleteTextView
             android:id="@+id/actvMembers"
@@ -32,18 +33,6 @@
 
 
 
-    <TextView
-        android:id="@+id/tvMemberListHeadline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        style="@style/AppTheme.TextAppearance.Large"
-        android:text="@string/headline_member_list_active"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/tilMembers"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <Button
         android:id="@+id/btnAddMember"
         android:layout_width="wrap_content"
@@ -52,7 +41,7 @@
         android:layout_marginEnd="16dp"
         android:text="@string/btn_add_member"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tilMembers" />
+        app:layout_constraintTop_toTopOf="@+id/tilMembers" />
 
 
 
@@ -68,6 +57,6 @@
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
 
-        app:layout_constraintTop_toBottomOf="@+id/tvMemberListHeadline"/>
+        app:layout_constraintTop_toBottomOf="@+id/tilMembers"/>
 
 </android.support.constraint.ConstraintLayout>

@@ -50,7 +50,7 @@ public class PlayActivity extends AppCompatActivity
     public static final String FRAGMENT_SELECT = "selected_fragment";
 
     private static final String TAG = "PlayActivity";
-    private static final int ACTIVITY_NUM = 4;
+    private static final int ACTIVITY_NUM = 1;
     private Context context = PlayActivity.this;
 
 
@@ -91,28 +91,6 @@ public class PlayActivity extends AppCompatActivity
         }
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_play, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
@@ -228,7 +206,7 @@ public class PlayActivity extends AppCompatActivity
                 if (dataSnapshot.exists()) {
                     final Member member = dataSnapshot.getValue(Member.class);
                     member.setId(dataSnapshot.getKey());
-                    double newBalance = member.getBalance() - CheckInActivity.FEE_PER_DAY + payment;
+                    double newBalance = member.getBalance() - HomeActivity.FEE_PER_DAY + payment;
                     Log.d(TAG, "onComplete: calculating new member balance as $" + newBalance);
                     member.setBalance(newBalance);
 

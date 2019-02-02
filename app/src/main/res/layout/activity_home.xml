@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context="com.expertsight.app.lttc.CheckInActivity">
+    tools:context="com.expertsight.app.lttc.HomeActivity">
 
 
     <ImageView

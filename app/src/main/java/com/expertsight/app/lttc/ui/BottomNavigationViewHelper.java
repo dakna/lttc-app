@@ -11,7 +11,7 @@ import android.view.MenuItem;
 import com.expertsight.app.lttc.AdminActivity;
 import com.expertsight.app.lttc.MainActivity;
 import com.expertsight.app.lttc.HistoryActivity;
-import com.expertsight.app.lttc.CheckInActivity;
+import com.expertsight.app.lttc.HomeActivity;
 import com.expertsight.app.lttc.PlayActivity;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.expertsight.app.lttc.R;
@@ -43,39 +43,27 @@ public class BottomNavigationViewHelper {
         view.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                //default
+                Intent intent = new Intent(context, HomeActivity.class);
+
                 switch (item.getItemId()){
 
                     case R.id.ic_home:
-                        Intent intent1 = new Intent(context, MainActivity.class);//ACTIVITY_NUM = 0
-                        context.startActivity(intent1);
-                        callingActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                        break;
-
-                    case R.id.ic_checkin:
-                        Intent intent2 = new Intent(context, CheckInActivity.class);//ACTIVITY_NUM = 1
-                        context.startActivity(intent2);
-                        callingActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                        break;
-
-                    case R.id.ic_member:
-                        Intent intent3 = new Intent(context, AdminActivity.class);//ACTIVITY_NUM = 2
-                        context.startActivity(intent3);
-                        callingActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                        break;
-
-                    case R.id.ic_history:
-                        Intent intent4 = new Intent(context, HistoryActivity.class);//ACTIVITY_NUM = 3
-                        context.startActivity(intent4);
-                        callingActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                        intent = new Intent(context, HomeActivity.class);//ACTIVITY_NUM = 0
                         break;
 
                     case R.id.ic_play:
-                        Intent intent5 = new Intent(context, PlayActivity.class);//ACTIVITY_NUM = 4
-                        context.startActivity(intent5);
-                        callingActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                        intent = new Intent(context, PlayActivity.class);//ACTIVITY_NUM = 1
+                        break;
+
+                    case R.id.ic_member:
+                        intent = new Intent(context, AdminActivity.class);//ACTIVITY_NUM = 2
                         break;
 
                 }
+
+                context.startActivity(intent);
+                callingActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
 
                 return false;

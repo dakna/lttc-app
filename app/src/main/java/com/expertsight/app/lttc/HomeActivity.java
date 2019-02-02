@@ -7,31 +7,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -59,11 +45,11 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class CheckInActivity extends AppCompatActivity implements AdminBottomSheetDialogFragment.AdminBottomSheetDialogListener, CredentialCheckAsyncTask.CredentialCheckListener {
+public class HomeActivity extends AppCompatActivity implements AdminBottomSheetDialogFragment.AdminBottomSheetDialogListener, CredentialCheckAsyncTask.CredentialCheckListener {
 
-    private static final String TAG = "CheckInActivity";
-    private static final int ACTIVITY_NUM = 1;
-    private Context context = CheckInActivity.this;
+    private static final String TAG = "HomeActivity";
+    private static final int ACTIVITY_NUM = 0;
+    private Context context = HomeActivity.this;
 
     public static final String MIME_TEXT_PLAIN = "text/plain";
     public static final double FEE_PER_DAY = 5f;
@@ -86,7 +72,7 @@ public class CheckInActivity extends AppCompatActivity implements AdminBottomShe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_check_in);
+        setContentView(R.layout.activity_home);
         setupBottomNavigationView();
 
         db = FirebaseDatabase.getInstance();
@@ -666,7 +652,7 @@ public class CheckInActivity extends AppCompatActivity implements AdminBottomShe
                     if (dataSnapshot.exists()) {
                         final Member member = dataSnapshot.getValue(Member.class);
                         member.setId(dataSnapshot.getKey());
-                        double newBalance = member.getBalance() - CheckInActivity.FEE_PER_DAY + payment;
+                        double newBalance = member.getBalance() - HomeActivity.FEE_PER_DAY + payment;
                         Log.d(TAG, "onComplete: calculating new member balance as $" + newBalance);
                         member.setBalance(newBalance);
 

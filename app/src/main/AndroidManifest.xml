@@ -21,10 +21,10 @@
         <activity android:name=".MainActivity"></activity>
         <activity
             android:name=".AdminActivity"
-            android:parentActivityName=".CheckInActivity"
+            android:parentActivityName=".HomeActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".HistoryActivity" />
-        <activity android:name=".CheckInActivity">
+        <activity android:name=".HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

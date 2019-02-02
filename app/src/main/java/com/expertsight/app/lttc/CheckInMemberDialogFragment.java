@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -45,7 +44,7 @@ public class CheckInMemberDialogFragment extends DialogFragment {
 
 
         tvMemberFullName.setText(args.getString("member_fullname"));
-        tvFee.setText("The fee for playing today is $" + CheckInActivity.FEE_PER_DAY + ".");
+        tvFee.setText("The fee for playing today is $" + HomeActivity.FEE_PER_DAY + ".");
         tvMemberBalance.setText("Your balance is $" + balance);
 
         checkKeepChange.setEnabled(false);
