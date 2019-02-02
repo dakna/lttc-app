@@ -44,7 +44,7 @@ public class AddMatchScoreDialogFragment extends DialogFragment {
 
         final Bundle args = getArguments();
 
-        String message = "Please enter score (best of five):";
+        String message = "Please enter score (best 3 out of 5)";
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View form = inflater.inflate(R.layout.fragment_add_match_score_dialog,null);

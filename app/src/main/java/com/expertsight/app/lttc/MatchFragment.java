@@ -259,7 +259,6 @@ public class MatchFragment extends Fragment {
         public void onClick(View v) {
             int adapterPos = getAdapterPosition();
             Match match = (Match) dbAdapterMatches.getItem(adapterPos);
-            Toast.makeText(getContext(), "clicked on " + match.getId(), Toast.LENGTH_SHORT).show();
             showMatchScoreDialog(match);
         }
     }
@@ -270,7 +269,7 @@ public class MatchFragment extends Fragment {
         Bundle args = new Bundle();
         args.putString("match_id", match.getId());
         args.putString("player1_fullname", match.getPlayer1FullName());
-        args.putString("player1_fullname", match.getPlayer2FullName());
+        args.putString("player2_fullname", match.getPlayer2FullName());
 
         Log.d(TAG, "showMatchScoreDialog: player1_fullname " + match.getPlayer1FullName());
 
