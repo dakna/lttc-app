@@ -2,7 +2,7 @@ package com.expertsight.app.lttc.model;
 
 import android.util.Log;
 
-import com.expertsight.app.lttc.util.FirebaseHelper;
+import com.expertsight.app.lttc.util.DateHelper;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
@@ -11,7 +11,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 @IgnoreExtraProperties
-public class Member extends FirestoreModel {
+public class Member extends BaseModel {
 
     private static final String TAG = "Member";
 
@@ -122,7 +122,7 @@ public class Member extends FirestoreModel {
         if (lastCheckIn == 0) return false;
         Date lastCheckIn = new Date(getLastCheckIn());
 
-        Date startOfToday = FirebaseHelper.getStartOfDay(new Date());
+        Date startOfToday = DateHelper.getStartOfDay(new Date());
 
         Calendar cal1 = Calendar.getInstance();
         cal1.setTime(startOfToday);
@@ -145,7 +145,7 @@ public class Member extends FirestoreModel {
         if (lastCheckIn == 0) return false;
         Date lastCheckIn = new Date(getLastCheckIn());
 
-        Date startOfWeek= FirebaseHelper.getStartOfWeek(new Date());
+        Date startOfWeek= DateHelper.getStartOfWeek(new Date());
 
         Calendar cal1 = Calendar.getInstance();
         cal1.setTime(startOfWeek);

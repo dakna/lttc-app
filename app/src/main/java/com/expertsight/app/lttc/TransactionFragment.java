@@ -40,6 +40,7 @@ import java.util.Date;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Optional;
 
 
 public class TransactionFragment extends Fragment {
@@ -261,7 +262,6 @@ public class TransactionFragment extends Fragment {
         });
 
     }
-
 
     @OnClick(R.id.btnAddTransaction)
     public void onClickAddTransaction() {

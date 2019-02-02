@@ -5,7 +5,7 @@ package com.expertsight.app.lttc.model;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
-public class Match extends FirestoreModel{
+public class Match extends BaseModel {
 
     private String player1Id;
     private String player2Id;

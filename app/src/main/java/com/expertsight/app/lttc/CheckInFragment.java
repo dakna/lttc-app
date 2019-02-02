@@ -33,7 +33,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.math.BigDecimal;
 
@@ -47,7 +46,6 @@ public class CheckInFragment extends Fragment {
     private static final String TAG = "ActiveMemberListFragmen";
 
     private FirebaseDatabase db;
-    private FirebaseStorage storage;
     private FirebaseRecyclerAdapter dbAdapterActiveMembers;
 
     @BindView(R.id.actvMembers)

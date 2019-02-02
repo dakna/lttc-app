@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.expertsight.app.lttc.AdminActivity;
-import com.expertsight.app.lttc.AdminOldActivity;
 import com.expertsight.app.lttc.MainActivity;
 import com.expertsight.app.lttc.HistoryActivity;
 import com.expertsight.app.lttc.CheckInActivity;

@@ -5,13 +5,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,23 +20,17 @@ import android.widget.Toast;
 
 import com.expertsight.app.lttc.model.Match;
 import com.expertsight.app.lttc.model.Member;
-import com.expertsight.app.lttc.util.FirebaseHelper;
+import com.expertsight.app.lttc.util.DateHelper;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.storage.FirebaseStorage;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 
 public class MatchFragment extends Fragment {
@@ -45,7 +38,6 @@ public class MatchFragment extends Fragment {
     private static final String TAG = "MatchFragment";
 
     private FirebaseDatabase db;
-    private FirebaseStorage storage;
     private FirebaseRecyclerAdapter dbAdapterMatches;
 
     @BindView(R.id.rvMatches)
@@ -172,7 +164,7 @@ public class MatchFragment extends Fragment {
 
     private void setupMatchListView() {
 
-        Date startOfThisWeek = FirebaseHelper.getStartOfWeek(new Date());
+        Date startOfThisWeek = DateHelper.getStartOfWeek(new Date());
 
         final Query query = db.getReference("/matches")
                 .orderByChild("timestamp")
@@ -203,12 +195,12 @@ public class MatchFragment extends Fragment {
                 holder.player1.setText(match.getPlayer1FullName());
                 holder.player1Games.setText(String.valueOf(match.getPlayer1Games()));
                 if (match.getPlayer1Games() == 3) {
-                    holder.player1Games.setTextColor(getResources().getColor(R.color.darkGreen));
+                    holder.player1Games.setTextColor(ContextCompat.getColor(getContext(),R.color.darkGreen));
                 }
                 holder.player2.setText(match.getPlayer2FullName());
                 holder.player2Games.setText(String.valueOf(match.getPlayer2Games()));
                 if (match.getPlayer2Games() == 3) {
-                    holder.player2Games.setTextColor(getResources().getColor(R.color.darkGreen));
+                    holder.player2Games.setTextColor(ContextCompat.getColor(getContext(),R.color.darkGreen));
                 }
             }
 

@@ -13,7 +13,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:textStyle="bold"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textAppearance="@style/AppTheme.TextAppearance.Medium"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,6 +28,7 @@
         android:layout_marginBottom="8dp"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
+        android:textAppearance="@style/AppTheme.TextAppearance.Small"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvSubject"
         android:text="N/A"/>
@@ -40,6 +41,7 @@
         android:layout_marginBottom="8dp"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
+        android:textAppearance="@style/AppTheme.TextAppearance.Small"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:text="N/A"/>

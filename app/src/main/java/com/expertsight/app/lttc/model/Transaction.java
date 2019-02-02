@@ -5,7 +5,7 @@ package com.expertsight.app.lttc.model;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
-public class Transaction extends FirestoreModel{
+public class Transaction extends BaseModel {
 
     private double amount;
     private String memberId;

@@ -22,24 +22,19 @@ import android.widget.Toast;
 
 import com.expertsight.app.lttc.model.Match;
 import com.expertsight.app.lttc.model.Member;
-import com.expertsight.app.lttc.model.Transaction;
-import com.expertsight.app.lttc.util.FirebaseHelper;
+import com.expertsight.app.lttc.util.DateHelper;
 import com.expertsight.app.lttc.widget.MemberListWidgetService;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
-import com.google.firebase.storage.FirebaseStorage;
-
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -56,7 +51,6 @@ public class CurrentWeekFragment extends Fragment {
     private static final String TAG = "CurrentWeekFragment";
 
     private FirebaseDatabase db;
-    private FirebaseStorage storage;
     private FirebaseRecyclerAdapter dbAdapterMembersCheckedIn;
 
     @BindView(R.id.rvMembers)
@@ -228,7 +222,7 @@ public class CurrentWeekFragment extends Fragment {
 
     private void setupMemberCheckedInListView() {
 
-        Date startOfThisWeek = FirebaseHelper.getStartOfWeek(new Date());
+        Date startOfThisWeek = DateHelper.getStartOfWeek(new Date());
 
         //final CollectionReference membersRef = db.collection("/members/");
         final Query query = db.getReference("/members")

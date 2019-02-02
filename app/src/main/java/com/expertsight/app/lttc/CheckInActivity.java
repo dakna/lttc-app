@@ -35,46 +35,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.expertsight.app.lttc.model.Member;
-import com.expertsight.app.lttc.model.Transaction;
+
 import com.expertsight.app.lttc.ui.BottomNavigationViewHelper;
 import com.expertsight.app.lttc.util.CredentialCheckAsyncTask;
-import com.expertsight.app.lttc.util.FirebaseHelper;
+
 import com.expertsight.app.lttc.util.MifareHelper;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-/*
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.SetOptions;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-*/
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -448,7 +424,7 @@ public class CheckInActivity extends AppCompatActivity implements AdminBottomShe
 
     private void setupMemberCheckedInListView() {
 
-        Date startOfThisWeek = FirebaseHelper.getStartOfWeek(new Date());
+        Date startOfThisWeek = DateHelper.getStartOfWeek(new Date());
 
         //final CollectionReference membersRef = db.collection("/members/");
         final Query query = db.getReference("/members")

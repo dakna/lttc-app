@@ -4,18 +4,14 @@ package com.expertsight.app.lttc.model;
 import android.support.annotation.NonNull;
 
 import com.google.firebase.database.Exclude;
-import com.google.firebase.firestore.IgnoreExtraProperties;
+import com.google.firebase.database.IgnoreExtraProperties;
+
 
 @IgnoreExtraProperties
-public class FirestoreModel {
+public class BaseModel {
 
 
     private String id;
-
-    public <T extends FirestoreModel> T withId(@NonNull final String id) {
-        this.id = id;
-        return (T) this;
-    }
 
     @Exclude
     public String getId() {
