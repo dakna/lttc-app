@@ -42,6 +42,18 @@ public class DateHelper {
         return calendar.getTime();
     }
 
+    public static int getWeekNumber(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar.get(Calendar.WEEK_OF_YEAR);
+    }
+
+
+    public static int getYear(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar.get(Calendar.YEAR);
+    }
 }
 
 

@@ -61,6 +61,8 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        toolbar.setTitle("Club Administration");
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());

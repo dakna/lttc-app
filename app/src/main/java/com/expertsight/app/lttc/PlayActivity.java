@@ -27,6 +27,7 @@ import com.expertsight.app.lttc.model.Match;
 import com.expertsight.app.lttc.model.Member;
 import com.expertsight.app.lttc.model.Transaction;
 import com.expertsight.app.lttc.ui.BottomNavigationViewHelper;
+import com.expertsight.app.lttc.util.DateHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -68,6 +69,8 @@ public class PlayActivity extends AppCompatActivity
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        Date date = new Date();
+        toolbar.setTitle("Week " + DateHelper.getWeekNumber(date) + " of " + DateHelper.getYear(date));
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
