@@ -9,24 +9,35 @@
     tools:context="com.expertsight.app.lttc.CheckInActivity">
 
 
+    <ImageView
+        android:id="@+id/ivHero"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:scaleType="centerCrop"
+      />
+
     <TextView
         android:id="@+id/tvWelcomeHeadline"
         android:textAppearance="@style/AppTheme.TextAppearance.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="Welcome"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/ivHero"
+        />
 
     <TextView
         android:id="@+id/tvAdminExplanation"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="8dp"
         android:textAppearance="@style/AppTheme.TextAppearance.Small"
         android:text="If you want to authenticate yourself as an admin, please swipe your smartcard or enter your credential in the form below"
         app:layout_constraintBottom_toTopOf="@+id/tilAdminCredential"
@@ -37,7 +48,7 @@
         android:layout_width="240dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="204dp"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -71,4 +82,6 @@
         android:background="@drawable/white_grey_border_top"
         app:menu="@menu/bottom_navigation_menu">
     </com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx>
+
+
 </android.support.constraint.ConstraintLayout>

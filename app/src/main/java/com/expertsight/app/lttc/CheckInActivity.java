@@ -34,6 +34,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.expertsight.app.lttc.model.Member;
 
 import com.expertsight.app.lttc.ui.BottomNavigationViewHelper;
@@ -78,6 +79,8 @@ public class CheckInActivity extends AppCompatActivity implements AdminBottomShe
     @BindView(R.id.btnAdminCredential)
     Button btnAdminCredential;
 
+    @BindView(R.id.ivHero)
+    ImageView ivHero;
 
 
     @Override
@@ -101,6 +104,10 @@ public class CheckInActivity extends AppCompatActivity implements AdminBottomShe
                 Toast.makeText(this, "NFC is disabled, please enable to read smart cards", Toast.LENGTH_LONG).show();
             }
         }
+
+        Glide.with(this)
+                .load(R.drawable.pingpong)
+                .into(ivHero);
 
         setupAdminList();
 
