@@ -48,5 +48,33 @@
     <string name="implement_AdminBottomSheetDialogListener"> must implement AdminBottomSheetDialogListener</string>
     <string name="implement_OnFragmentInteractionListener"> must implement OnFragmentInteractionListener</string>
     <string name="msg_member_already_checked_in">This member already checked in this week</string>
+    <string name="dialog_fee">The fee for playing today is $%s</string>
+    <string name="dialog_balance">Your balance is $%s</string>
+    <string name="title_club_checkin">Club Check-In %s</string>
+    <string name="msg_club_checkin_cancelled">Club check-in cancelled</string>
+    <string name="implement_CheckInMemberDialogListener"> must implement CheckInMemberDialogListener</string>
+    <string name="add_player_1">Add Player 1</string>
+    <string name="add_player_2">Add Player 2</string>
+    <string name="checked_in_date">Checked in %s</string>
+    <string name="msg_added_match">Added match %s : %s</string>
+    <string name="msg_error_add_match">Unknown Error: Couldn\'t add new match</string>
+    <string name="msg_edit_member_details">Please edit member details for ID %s</string>
+    <string name="title_edit_member">Edit a Member</string>
+    <string name="msg_editing_member">Editing member</string>
+    <string name="implement_EditMemberDialogListener"> must implement EditMemberDialogListener</string>
+    <string name="msg_invalid_credentials">Sorry, credentials not valid</string>
+    <string name="msg_error_smartcard_not_unique">Error: The smartcard ID %s is assigned to more than one member</string>
+    <string name="msg_error_smartcard_not_found">Couldn\'t find a member with the smartcard ID %s</string>
+    <string name="msg_only_for_admin">Sorry, only admins can edit</string>
+    <string name="dollar_amount">$%s</string>
+    <string name="title_weekof">Week %s of %s"</string>
+    <string name="msg_added_new_member">Added new member: %s %s</string>
+    <string name="msg_error_add_member">Unknown Error: Couldn\'t add new member</string>
+    <string name="msg_added_new_checkin_transaction">Added new transaction: %s from %s</string>
+    <string name="msg_error_checking_in_member">Error while checking in member %s</string>
+    <string name="msg_error_add_match_score">Error while adding match score %s</string>
+    <string name="transaction_paid">Paid on %s</string>
+
+
 
 </resources>

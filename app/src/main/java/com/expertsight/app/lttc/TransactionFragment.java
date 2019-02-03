@@ -124,8 +124,7 @@ public class TransactionFragment extends Fragment {
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+            throw new RuntimeException(context.toString() + getString(R.string.implement_OnFragmentInteractionListener));
         }
 
     }
@@ -178,7 +177,7 @@ public class TransactionFragment extends Fragment {
                 holder.subject.setText(transaction.getSubject());
 
                 double amount = transaction.getAmount();
-                holder.amount.setText("$" + amount);
+                holder.amount.setText(getString(R.string.dollar_amount, String.valueOf(amount)));
                 if (amount > 0) {
                     holder.amount.setTextColor(ContextCompat.getColor(getContext(), R.color.darkGreen));
                 } else if (amount < 0) {
@@ -188,7 +187,7 @@ public class TransactionFragment extends Fragment {
                 }
 
                 // TODO: 5/22/2018 use string resource
-                holder.time.setText("Paid on " + new SimpleDateFormat("MM/dd 'at' HH:mm").format(new Date(transaction.getTimestamp())));
+                holder.time.setText(getString(R.string.transaction_paid, new SimpleDateFormat("MM/dd 'at' HH:mm").format(new Date(transaction.getTimestamp()))));
 
             }
 
@@ -246,7 +245,7 @@ public class TransactionFragment extends Fragment {
                     transaction.setId(transactionSnapshot.getKey());
                     totalBalance = totalBalance + transaction.getAmount();
                 }
-                tvTotalBalance.setText("$" + totalBalance);
+                tvTotalBalance.setText(getString(R.string.dollar_amount, String.valueOf(totalBalance)));
                 if (totalBalance > 0) {
                     tvTotalBalance.setTextColor(ContextCompat.getColor(getContext(), R.color.darkGreen));
                 }
@@ -268,7 +267,7 @@ public class TransactionFragment extends Fragment {
         if (((AdminActivity) getActivity()).initializedByAdmin()) {
             showAddTransactionDialog();
         } else {
-            Toast.makeText(getContext(), "Sorry, only admins can edit", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.msg_only_for_admin), Toast.LENGTH_SHORT).show();
         }
 
     }

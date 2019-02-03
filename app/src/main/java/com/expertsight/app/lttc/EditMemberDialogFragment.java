@@ -36,7 +36,7 @@ public class EditMemberDialogFragment extends DialogFragment {
         final Bundle args = getArguments();
 
         final String memberId = args.getString("member_id");
-        String message = "Please edit member details for ID " + memberId ;
+        String message = getString(R.string.msg_edit_member_details, memberId);
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View form = inflater.inflate(R.layout.fragment_edit_member_dialog,null);
@@ -109,12 +109,12 @@ public class EditMemberDialogFragment extends DialogFragment {
                 // set dialog icon
                 .setIcon(R.drawable.ic_person)
                 // set Dialog Title
-                .setTitle("Edit a Member")
+                .setTitle(getString(R.string.title_edit_member))
                 // Set Dialog Message
                 .setMessage(message)
 
                 // positive button
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.dialog_ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         String firstName = textInputEditTextFirstName.getText().toString();
                         String lastName = textInputEditTextLastName.getText().toString();
@@ -130,13 +130,13 @@ public class EditMemberDialogFragment extends DialogFragment {
 
                         listener.applyEditMemberData(memberId, firstName, lastName, email, mailingList, smartcardId, isAdmin, lastCheckIn, isActive, balance);
 
-                        Toast.makeText(getActivity(), "Editing member", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.msg_editing_member), Toast.LENGTH_SHORT).show();
                     }
                 })
                 // negative button
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getActivity(), "Cancelled", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.msg_cancelled), Toast.LENGTH_SHORT).show();
                     }
                 });
         AlertDialog alertDialog = builder.create();
@@ -150,7 +150,7 @@ public class EditMemberDialogFragment extends DialogFragment {
         try {
             listener =  (EditMemberDialogListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + "mus implement EditMemberDialogListener");
+            throw new ClassCastException(context.toString() + getString(R.string.implement_EditMemberDialogListener));
         }
     }
 

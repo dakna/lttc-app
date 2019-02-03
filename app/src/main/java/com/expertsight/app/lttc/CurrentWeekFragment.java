@@ -172,8 +172,7 @@ public class CurrentWeekFragment extends Fragment {
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+            throw new RuntimeException(context.toString() + getString(R.string.implement_OnFragmentInteractionListener));
         }
 
     }
@@ -201,13 +200,13 @@ public class CurrentWeekFragment extends Fragment {
         if (player1 != null) {
             tvPlayer1.setText(player1.getFullName());
         } else {
-            tvPlayer1.setText("Add Player 1");
+            tvPlayer1.setText(getString(R.string.add_player_1));
         }
 
         if (player2 != null) {
             tvPlayer2.setText(player2.getFullName());
         } else {
-            tvPlayer2.setText("Add Player 2");
+            tvPlayer2.setText(getString(R.string.add_player_2));
         }
 
         if ((player1 != null) && (player2 != null)) {
@@ -224,13 +223,9 @@ public class CurrentWeekFragment extends Fragment {
 
         Date startOfThisWeek = DateHelper.getStartOfWeek(new Date());
 
-        //final CollectionReference membersRef = db.collection("/members/");
         final Query query = db.getReference("/members")
                 .orderByChild("lastCheckIn")
                 .startAt(startOfThisWeek.getTime());
-        //.whereGreaterThanOrEqualTo("lastCheckIn", startOfThisWeek)
-        //.orderBy("lastCheckIn")
-        //.orderBy("firstName");
 
         Log.d(TAG, "starting to get Member list checked in for " + new Date().getTime() + "in week starting at " + startOfThisWeek.getTime());
 
@@ -256,7 +251,7 @@ public class CurrentWeekFragment extends Fragment {
                 Log.d(TAG, "onBindViewHolder: Member CheckedIn ID " + member.getId() + " lastCheckIn " + member.getLastCheckIn());
                 holder.fullName.setText(member.getFullName());
                 // TODO: 5/22/2018 use string resource
-                holder.time.setText("Checked in " + new SimpleDateFormat("MM/dd 'at' hh:mm a").format(new Date(member.getLastCheckIn())));
+                holder.time.setText(getString(R.string.checked_in_date,new SimpleDateFormat("MM/dd 'at' hh:mm a").format(new Date(member.getLastCheckIn()))));
 
             }
 
@@ -338,10 +333,10 @@ public class CurrentWeekFragment extends Fragment {
                         if(task.isSuccessful()) {
 
                             Log.d(TAG, "onComplete: new match added ");
-                            Toast.makeText(getContext(), "Added match " + player1.getFullName() + " : " + player2.getFullName(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), getString(R.string.msg_added_match, player1.getFullName(), player2.getFullName()), Toast.LENGTH_SHORT).show();
                         } else {
                             Log.d(TAG, "onComplete: error adding new match");
-                            Toast.makeText(getContext(), "Unknown Error: Couldn't add new match", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), getString(R.string.msg_error_add_match), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

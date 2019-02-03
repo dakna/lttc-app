@@ -44,8 +44,8 @@ public class CheckInMemberDialogFragment extends DialogFragment {
 
 
         tvMemberFullName.setText(args.getString("member_fullname"));
-        tvFee.setText("The fee for playing today is $" + HomeActivity.FEE_PER_DAY + ".");
-        tvMemberBalance.setText("Your balance is $" + balance);
+        tvFee.setText(getString(R.string.dialog_fee, String.valueOf(HomeActivity.FEE_PER_DAY)));
+        tvMemberBalance.setText(getString(R.string.dialog_balance, String.valueOf(balance)));
 
         checkKeepChange.setEnabled(false);
         // you have to select a payment to continue
@@ -68,12 +68,12 @@ public class CheckInMemberDialogFragment extends DialogFragment {
                 // set dialog icon
                 .setIcon(R.drawable.ic_monetization)
                 // set Dialog Title
-                .setTitle("Club Check-In " + new SimpleDateFormat("MM/dd/yyyy").format(new Date()))
+                .setTitle(getString(R.string.title_club_checkin, new SimpleDateFormat("MM/dd/yyyy").format(new Date())))
                 // Set Dialog Message
                 //.setMessage("Welcome ")
 
                 // positive button
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.dialog_ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
                         //test data
@@ -94,13 +94,12 @@ public class CheckInMemberDialogFragment extends DialogFragment {
 
                         listener.applyCheckInData(args.getString("member_id"), payment, keepChange);
 
-                        //Toast.makeText(getActivity(), "Pressed OK ", Toast.LENGTH_SHORT).show();
                     }
                 })
                 // negative button
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getActivity(), "Club check-in cancelled", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.msg_club_checkin_cancelled), Toast.LENGTH_SHORT).show();
                     }
                 });
         AlertDialog alertDialog = builder.create();
@@ -113,7 +112,7 @@ public class CheckInMemberDialogFragment extends DialogFragment {
         try {
             listener =  (CheckInMemberDialogListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + "must implement CheckInMemberDialogListener");
+            throw new ClassCastException(context.toString() + getString(R.string.implement_CheckInMemberDialogListener));
         }
     }
 

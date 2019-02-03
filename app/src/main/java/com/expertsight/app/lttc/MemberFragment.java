@@ -126,8 +126,7 @@ public class MemberFragment extends Fragment {
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+            throw new RuntimeException(context.toString() + getString(R.string.implement_OnFragmentInteractionListener));
         }
 
     }
@@ -161,7 +160,7 @@ public class MemberFragment extends Fragment {
                 if (((AdminActivity) getActivity()).initializedByAdmin()) {
                     showEditMemberDialog(member);
                 } else {
-                    Toast.makeText(getContext(), "Sorry, only admins can edit", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.msg_only_for_admin), Toast.LENGTH_SHORT).show();
                 }
                 autoCompleteTextView.setText("");
                 autoCompleteTextView.clearFocus();
@@ -202,7 +201,6 @@ public class MemberFragment extends Fragment {
 
     private void setupMemberListView() {
 
-        //final CollectionReference membersRef = db.collection("/members");
         final Query query = db.getReference("members")
                 .orderByChild("firstName");
 
@@ -229,7 +227,7 @@ public class MemberFragment extends Fragment {
                 //Log.d(TAG, "onBindViewHolder: Member " + member.toStringIncludingAllProperties());
                 holder.fullName.setText(member.getFullName());
                 double balance = member.getBalance();
-                holder.balance.setText("$" + String.valueOf(balance));
+                holder.balance.setText(getString(R.string.dollar_amount, String.valueOf(balance)));
                 holder.email.setText(member.getEmail());
 
                 if (balance > 0) {
@@ -298,7 +296,7 @@ public class MemberFragment extends Fragment {
             if (((AdminActivity) getActivity()).initializedByAdmin()) {
                 showEditMemberDialog(member);
             } else {
-                Toast.makeText(getContext(), "Sorry, only admins can edit", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.msg_only_for_admin), Toast.LENGTH_SHORT).show();
             }
 
         }

@@ -123,8 +123,7 @@ public class MatchFragment extends Fragment {
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+            throw new RuntimeException(context.toString() + getString(R.string.implement_OnFragmentInteractionListener));
         }
 
     }
@@ -152,13 +151,13 @@ public class MatchFragment extends Fragment {
         if (player1 != null) {
             tvPlayer1.setText(player1.getFullName());
         } else {
-            tvPlayer1.setText("Add Player 1");
+            tvPlayer1.setText(getString(R.string.add_player_1));
         }
 
         if (player2 != null) {
             tvPlayer2.setText(player2.getFullName());
         } else {
-            tvPlayer2.setText("Add Player 2");
+            tvPlayer2.setText(getString(R.string.add_player_2));
         }
     }
 

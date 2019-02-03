@@ -35,6 +35,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -250,7 +251,6 @@ public class CheckInFragment extends Fragment {
     private void setupMemberActiveListView() {
 
         final Query query = db.getReference("members")
-
                 .orderByChild("isActive")
                 .equalTo(true);
 
@@ -280,7 +280,7 @@ public class CheckInFragment extends Fragment {
                 Log.d(TAG, "onBindViewHolder: fullname textsize" + holder.fullName.getTextSize());
                 BigDecimal balance = new BigDecimal(member.getBalance());
                 Log.d(TAG, "onBindViewHolder: balance " + balance);
-                holder.balance.setText("$" + String.valueOf(balance));
+                holder.balance.setText(getString(R.string.dollar_amount, String.valueOf(balance)));
 
 
                 holder.email.setText(member.getEmail());
@@ -352,7 +352,6 @@ public class CheckInFragment extends Fragment {
         public void onClick(View v) {
             int adapterPos = getAdapterPosition();
             Member member = (Member) dbAdapterActiveMembers.getItem(adapterPos);
-            //Toast.makeText(context, "clicked on " + member.getId(), Toast.LENGTH_SHORT).show();
             showCheckInMemberDialog(member);
         }
     }

@@ -143,7 +143,7 @@ public class HomeActivity extends AppCompatActivity implements AdminBottomSheetD
         if (admin != null) {
             showAdminDialog(admin);
         } else {
-            Toast.makeText(context, "Sorry, credentials not valid", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, getString(R.string.msg_invalid_credentials), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -212,7 +212,8 @@ public class HomeActivity extends AppCompatActivity implements AdminBottomSheetD
             Log.d(TAG, "handleIntent: tag ID in HEX " + hexId);
 
             final Query query = db.getReference("/members/")
-                    .equalTo("smartcardId", hexId);
+                    .orderByChild("smartcardId")
+                    .equalTo(hexId);
 
             query.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -234,9 +235,9 @@ public class HomeActivity extends AppCompatActivity implements AdminBottomSheetD
                             //showCheckInMemberDialog(member);
                         }
                     } else if (dataSnapshot.getChildrenCount()  > 1){
-                        Toast.makeText(context, "Error: The smartcard ID " + hexId + " is assigned to more than one member", Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, getString(R.string.msg_error_smartcard_not_unique, hexId), Toast.LENGTH_LONG).show();
                     } else {
-                        Toast.makeText(context, "Couldn't find a member with the smartcard ID " + hexId, Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, getString(R.string.msg_error_smartcard_not_found, hexId), Toast.LENGTH_LONG).show();
                         // TODO: INTENT TO LAUNCH FRAGMENT CHECKIN AND START DIALOG
                         //showAddMemberDialog(hexId);
                     }
@@ -268,7 +269,7 @@ public class HomeActivity extends AppCompatActivity implements AdminBottomSheetD
         try {
             filters[0].addDataType(MIME_TEXT_PLAIN);
         } catch (IntentFilter.MalformedMimeTypeException e) {
-            throw new RuntimeException("Check your mime type.");
+            Log.e(TAG, "setupForegroundDispatch Error: mime type wrong, check intent filter");
         }
 
         adapter.enableForegroundDispatch(activity, pendingIntent, filters, techList);

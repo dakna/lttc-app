@@ -70,7 +70,7 @@ public class PlayActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Date date = new Date();
-        toolbar.setTitle("Week " + DateHelper.getWeekNumber(date) + " of " + DateHelper.getYear(date));
+        toolbar.setTitle(getString(R.string.title_weekof, String.valueOf(DateHelper.getWeekNumber(date)), String.valueOf(DateHelper.getYear(date))));
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -176,10 +176,10 @@ public class PlayActivity extends AppCompatActivity
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(context, "Added new member: " + firstName + " " + lastName, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, getString(R.string.msg_added_new_member, firstName, lastName), Toast.LENGTH_SHORT).show();
                         } else {
                             Log.d(TAG, "onComplete: error adding new member");
-                            Toast.makeText(context, "Unknown Error: Couldn't add new member", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, getString(R.string.msg_error_add_member), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -237,24 +237,24 @@ public class PlayActivity extends AppCompatActivity
                                         if(task.isSuccessful()) {
 
                                             Log.d(TAG, "onComplete: new transaction added ");
-                                            Toast.makeText(context, "Added new transaction: " + payment + " from " + member.getFullName(), Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(context, getString(R.string.msg_added_new_checkin_transaction,String.valueOf(payment) , member.getFullName()), Toast.LENGTH_SHORT).show();
                                         } else {
                                             Log.d(TAG, "onComplete: error adding new transaction");
-                                            Toast.makeText(context, "Unknown Error: Couldn't add new transaction", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(context, getString(R.string.msg_error_new_transaction), Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 });
                     }
                 } else {
                     Log.d(TAG, "No such document");
-                    Toast.makeText(context, "Error while checking in member " + memberId, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getString(R.string.msg_error_checking_in_member, memberId), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.d(TAG, "get failed with ", databaseError.toException());
-                Toast.makeText(context, "Error while checking in member " + memberId, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, getString(R.string.msg_error_checking_in_member, memberId), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -292,14 +292,14 @@ public class PlayActivity extends AppCompatActivity
 
                } else {
                     Log.d(TAG, "No such document");
-                    Toast.makeText(context, "Error while checking in member " + matchId, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getString(R.string.msg_error_add_match_score, matchId), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.d(TAG, "get failed with ", databaseError.toException());
-                Toast.makeText(context, "Error while checking in member " + matchId, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, getString(R.string.msg_error_add_match_score, matchId), Toast.LENGTH_SHORT).show();
 
             }
         });
