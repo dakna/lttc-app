@@ -11,16 +11,29 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
+
+    signingConfigs {
+        debug {
+            keyAlias 'keyLTTC'
+            keyPassword 'udacity'
+            storeFile file('../keystore.jks')
+            storePassword 'udacity'
+        }
+    }
+
     buildTypes {
         release {
             debuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
         debug {
             debuggable true
+            signingConfig signingConfigs.debug
         }
     }
+
 }
 
 dependencies {
