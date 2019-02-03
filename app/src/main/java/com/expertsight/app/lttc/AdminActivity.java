@@ -27,6 +27,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,6 +49,7 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
     private String adminMemberId;
 
     private FirebaseDatabase db;
+    private FirebaseAnalytics analytics;
 
     private SectionsPagerAdapter sectionsPagerAdapter;
 
@@ -77,6 +79,7 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
 
         db = FirebaseDatabase.getInstance();
+        analytics = FirebaseAnalytics.getInstance(this);
 
         Log.d(TAG, "onCreate: Intent admin adminMemberId " + getIntent().getStringExtra("adminMemberId"));
         adminMemberId = getIntent().getStringExtra("adminMemberId");

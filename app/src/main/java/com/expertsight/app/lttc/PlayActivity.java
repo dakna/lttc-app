@@ -32,6 +32,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -56,6 +57,7 @@ public class PlayActivity extends AppCompatActivity
 
 
     private FirebaseDatabase db;
+    private FirebaseAnalytics analytics;
 
     private SectionsPagerAdapter sectionsPagerAdapter;
 
@@ -85,6 +87,7 @@ public class PlayActivity extends AppCompatActivity
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
 
         db = FirebaseDatabase.getInstance();
+        analytics = FirebaseAnalytics.getInstance(this);
 
         if (savedInstanceState == null) {
             Intent i = getIntent();
@@ -210,6 +213,14 @@ public class PlayActivity extends AppCompatActivity
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     Log.d(TAG, "DocumentSnapshot successfully written!");
+
+                                    Bundle params = new Bundle();
+                                    params.putString("member_id", member.getId());
+                                    params.putString("member_full_name", member.getFullName());
+                                    params.putLong("timestamp", member.getLastCheckIn());
+                                    params.putDouble("payment", payment);
+                                    analytics.logEvent("club_check_in", params);
+
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
@@ -281,6 +292,11 @@ public class PlayActivity extends AppCompatActivity
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     Log.d(TAG, "DocumentSnapshot successfully written!");
+                                    Bundle params = new Bundle();
+                                    params.putString("match_id", match.getId());
+                                    params.putInt("player_1_games", player1Games);
+                                    params.putInt("player_2_games", player2Games);
+                                    analytics.logEvent("match_score", params);
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {

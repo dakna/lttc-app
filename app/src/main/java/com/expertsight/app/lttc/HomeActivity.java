@@ -29,6 +29,7 @@ import com.expertsight.app.lttc.util.CredentialCheckAsyncTask;
 import com.expertsight.app.lttc.util.MifareHelper;
 
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -58,6 +59,7 @@ public class HomeActivity extends AppCompatActivity implements AdminBottomSheetD
     private NfcAdapter mNfcAdapter = null;
 
     private FirebaseDatabase db;
+    private FirebaseAnalytics analytics;
 
     private List<Member> adminList = new ArrayList<>();
 
@@ -76,6 +78,7 @@ public class HomeActivity extends AppCompatActivity implements AdminBottomSheetD
         setupBottomNavigationView();
 
         db = FirebaseDatabase.getInstance();
+        analytics = FirebaseAnalytics.getInstance(this);
 
         ButterKnife.bind(this);
 
