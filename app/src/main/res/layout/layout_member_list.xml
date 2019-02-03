@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -19,7 +18,7 @@
         android:paddingEnd="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="FullName"/>
+        android:text="@string/full_name"/>
 
     <TextView
         android:id="@+id/tvEmail"
@@ -32,7 +31,7 @@
         android:paddingEnd="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvFullName"
-        android:text="N/A"/>
+        android:text="@string/n_a"/>
 
     <TextView
         android:id="@+id/tvMemberBalance"
@@ -45,7 +44,7 @@
         android:paddingEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="N/A"/>
+        android:text="@string/n_a"/>
 
     <ImageView
         android:id="@+id/ivPlayingToday"
@@ -55,6 +54,7 @@
         android:layout_marginBottom="8dp"
         android:paddingStart="4dp"
         android:paddingEnd="4dp"
+        android:contentDescription="@string/description_playing_today"
         app:srcCompat="@drawable/ic_today"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvMemberBalance" />

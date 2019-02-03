@@ -10,7 +10,7 @@
         android:id="@+id/tvMemberFullName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Member"
+        android:text="@string/member"
         android:textSize="28sp"
         android:textStyle="bold"
         android:layout_marginStart="20dp"
@@ -23,7 +23,7 @@
         android:id="@+id/tvFee"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Fee"
+        android:text="@string/fee"
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
@@ -34,7 +34,7 @@
         android:id="@+id/tvMemberBalance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Balance"
+        android:text="@string/balance"
         android:layout_marginStart="20dp"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="16dp"
@@ -48,7 +48,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="32dp"
         android:layout_marginBottom="16dp"
-        android:text="How much money do you put in today?"
+        android:text="@string/how_much_money"
         app:layout_constraintTop_toBottomOf="@+id/tvMemberBalance"
         app:layout_constraintStart_toStartOf="parent"
         />
@@ -67,30 +67,30 @@
             android:id="@+id/radioPayZero"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
+            android:layout_marginEnd="12dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:text="$0" />
+            android:text="@string/zero_dollar" />
         <RadioButton
             android:id="@+id/radioPayFive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
+            android:layout_marginEnd="12dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:text="$5" />
+            android:text="@string/five_dollar" />
         <RadioButton
             android:id="@+id/radioPayTen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
+            android:layout_marginEnd="12dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:text="$10" />
+            android:text="@string/ten_dollar" />
         <RadioButton
             android:id="@+id/radioPayTwenty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
+            android:layout_marginEnd="12dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:text="$20" />
+            android:text="@string/twenty_dollar" />
     </RadioGroup>
 
     <TextView
@@ -100,7 +100,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="32dp"
         android:layout_marginBottom="16dp"
-        android:text="Do you want change back?"
+        android:text="@string/do_you_want_change_back"
         app:layout_constraintTop_toBottomOf="@+id/radioPayment"
         app:layout_constraintStart_toStartOf="parent"
         />
@@ -111,7 +111,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-        android:text="No, add to my balance"
+        android:text="@string/no_add_to_balance"
         app:layout_constraintTop_toBottomOf="@+id/tvChangeQuestion"
         app:layout_constraintStart_toStartOf="parent"
         />

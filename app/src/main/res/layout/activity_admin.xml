@@ -46,13 +46,13 @@
                     android:id="@+id/tabItem"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Members" />
+                    android:text="@string/members" />
 
                 <android.support.design.widget.TabItem
                     android:id="@+id/tabItem2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Transactions" />
+                    android:text="@string/transactions" />
 
             </android.support.design.widget.TabLayout>
         </android.support.design.widget.AppBarLayout>

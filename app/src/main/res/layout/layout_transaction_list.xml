@@ -18,7 +18,7 @@
         android:paddingEnd="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="FullName"/>
+        android:text="@string/full_name"/>
 
     <TextView
         android:id="@+id/tvTime"
@@ -31,7 +31,7 @@
         android:textAppearance="@style/AppTheme.TextAppearance.Small"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvSubject"
-        android:text="N/A"/>
+        android:text="@string/n_a"/>
 
     <TextView
         android:id="@+id/tvAmount"
@@ -44,6 +44,6 @@
         android:textAppearance="@style/AppTheme.TextAppearance.Small"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="N/A"/>
+        android:text="@string/n_a"/>
 
 </android.support.constraint.ConstraintLayout>

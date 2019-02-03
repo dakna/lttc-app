@@ -27,8 +27,6 @@ public class AdminBottomSheetDialogFragment extends BottomSheetDialogFragment im
         final Bundle args = getArguments();
         memberId = args.getString("member_id");
         View view = inflater.inflate(R.layout.fragment_admin_bottom_sheet_dialog, container, false);
-        btnCheckIn = view.findViewById(R.id.btnCheckIn);
-        btnCheckIn.setOnClickListener(this);
         btnAdminActivity = view.findViewById(R.id.btnAdmin);
         btnAdminActivity.setOnClickListener(this);
         return view;
@@ -37,7 +35,7 @@ public class AdminBottomSheetDialogFragment extends BottomSheetDialogFragment im
     @Override
     public void onClick(View v) {
         Log.d(TAG, "onClick: view ID " + v.getId());
-        if ((v.getId() == R.id.btnCheckIn) || (v.getId() == R.id.btnAdmin)) {
+        if (v.getId() == R.id.btnAdmin) {
             listener.applyAdminDialogData(memberId, v.getId());
             AdminBottomSheetDialogFragment.this.dismiss();
         }

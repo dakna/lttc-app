@@ -28,6 +28,29 @@
     <string name="last_check_in">Last Check In</string>
     <string name="is_active">Is Active</string>
     <string name="balance">Balance</string>
+    <string name="player_1_games">Player 1 Games</string>
+    <string name="player_2_games">Player 2 Games</string>
+    <string name="subscribe_to_mailing_list">Subscribe to Mailing List</string>
+    <string name="subject">Subject</string>
+    <string name="amount">Amount</string>
+    <string name="admin_options">Admin Options</string>
+    <string name="go_to_admin_settings">Go to admin settings</string>
+    <string name="member">Member</string>
+    <string name="fee">Fee</string>
+    <string name="how_much_money">How much money do you put in today?</string>
+    <string name="zero_dollar">$0</string>
+    <string name="five_dollar">$5</string>
+    <string name="ten_dollar">$10</string>
+    <string name="twenty_dollar">$20</string>
+    <string name="do_you_want_change_back">Do you want change back?</string>
+    <string name="no_add_to_balance">No, add to my balance</string>
+    <string name="members">Members</string>
+    <string name="transactions">Transactions</string>
+    <string name="description_image_hero">Image of table tennis gear</string>
+    <string name="welcome">Welcome</string>
+    <string name="msg_auth_admin">If you want to authenticate yourself as an admin, please swipe your smart card or enter your credential in the form below</string>
+    <string name="admin_credential">Admin Credential</string>
+    <string name="button_ok">OK</string>
 
     <string name="msg_no_ncf">This device doesn\'t support NFC smart cards</string>
     <string name="msg_nfc_disabled">NFC is disabled, please enable to read smart cards</string>
@@ -84,6 +107,15 @@
     <string name="msg_error_checking_in_member">Error while checking in member %s</string>
     <string name="msg_error_add_match_score">Error while adding match score %s</string>
     <string name="transaction_paid">Paid on %s</string>
+    <string name="player_1_not_set">Player 1: n/a</string>
+    <string name="player_2_not_set">Player 2: n/a</string>
+    <string name="player_1">Player 1</string>
+    <string name="player_2">Player 2</string>
+    <string name="total_balance">Total Balance</string>
+    <string name="full_name">FullName</string>
+    <string name="n_a">N/A</string>
+    <string name="description_playing_today">Icon for members playing today</string>
+
 
 
 

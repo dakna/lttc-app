@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Player 1 Games"
+            android:hint="@string/player_1_games"
             android:inputType="number"
             android:maxLength="1" />
     </android.support.design.widget.TextInputLayout>
@@ -50,7 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Player 2 Games"
+            android:hint="@string/player_2_games"
             android:inputType="number"
             android:maxLength="1" />
     </android.support.design.widget.TextInputLayout>

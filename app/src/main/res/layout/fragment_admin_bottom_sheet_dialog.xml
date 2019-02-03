@@ -9,22 +9,14 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Admin Options"
+        android:text="@string/admin_options"
         android:textSize="25sp" />
-
-    <Button
-        android:id="@+id/btnCheckIn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:visibility="gone"
-        android:text="Check in and play" />
 
     <Button
         android:id="@+id/btnAdmin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Go to admin settings" />
+        android:text="@string/go_to_admin_settings" />
 
 </LinearLayout>

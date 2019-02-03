@@ -283,30 +283,7 @@ public class HomeActivity extends AppCompatActivity implements AdminBottomSheetD
 
     @Override
     public void applyAdminDialogData(String memberId, int buttonSelection) {
-        if (buttonSelection == R.id.btnCheckIn) {
-
-            final DatabaseReference memberRef = db.getReference("members").child(memberId);
-            memberRef.addListenerForSingleValueEvent(new ValueEventListener() {
-
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        Log.d(TAG, "onComplete:  DocumentSnapshot data: " + dataSnapshot.getValue());
-                        final Member member = dataSnapshot.getValue(Member.class);
-                        // TODO: INTENT TO LAUNCH FRAGMENT CHECKIN AND START DIALOG
-                        //showCheckInMemberDialog(member);
-                    }
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.d(TAG, "onCancelled: " + databaseError.toException());
-                }
-              });
-
-
-
-
-        } else if (buttonSelection == R.id.btnAdmin) {
+         if (buttonSelection == R.id.btnAdmin) {
             Log.d(TAG, "applyAdminDialogData: memberId " + memberId);
             Intent intent = new Intent(context, AdminActivity.class);
             intent.putExtra("adminMemberId" , memberId);

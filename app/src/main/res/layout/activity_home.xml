@@ -16,6 +16,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="@string/description_image_hero"
         android:scaleType="centerCrop"
       />
 
@@ -26,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Welcome"
+        android:text="@string/welcome"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivHero"
@@ -39,7 +40,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginBottom="8dp"
         android:textAppearance="@style/AppTheme.TextAppearance.Small"
-        android:text="If you want to authenticate yourself as an admin, please swipe your smartcard or enter your credential in the form below"
+        android:text="@string/msg_auth_admin"
         app:layout_constraintBottom_toTopOf="@+id/tilAdminCredential"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -59,7 +60,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:hint="Admin Credential" />
+            android:hint="@string/admin_credential" />
     </android.support.design.widget.TextInputLayout>
 
     <Button
@@ -67,7 +68,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="OK"
+        android:text="@string/button_ok"
         app:layout_constraintStart_toEndOf="@+id/tilAdminCredential"
         app:layout_constraintTop_toTopOf="@+id/tilAdminCredential" />
 
