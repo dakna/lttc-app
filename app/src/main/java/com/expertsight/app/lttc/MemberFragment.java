@@ -59,6 +59,9 @@ public class MemberFragment extends Fragment {
     @BindView(R.id.rvMembers)
     RecyclerView rvMembers;
 
+    @BindView(R.id.btnAddMember)
+    Button btnAddMember;
+
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -300,6 +303,36 @@ public class MemberFragment extends Fragment {
             }
 
         }
+    }
+
+    @OnClick(R.id.btnAddMember)
+    public void onClickAddMember() {
+
+        if (((AdminActivity) getActivity()).initializedByAdmin()) {
+            showAddMemberDialog(null);
+        } else {
+            Toast.makeText(getContext(), getString(R.string.msg_only_for_admin), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    public void showAddMemberDialog(String hexId) {
+        Log.d(TAG, "showAddMemberDialog: start " + hexId);
+
+        Bundle args = new Bundle();
+        if (hexId != null) {
+            args.putString("smartcard_id", hexId);
+        }
+
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        Fragment frag = manager.findFragmentByTag("fragment_add_member_dialog");
+        if (frag != null) {
+            manager.beginTransaction().remove(frag).commit();
+        }
+        AddMemberDialogFragment addMemberDialogFragment = new AddMemberDialogFragment();
+        addMemberDialogFragment.setArguments(args);
+        addMemberDialogFragment.show(manager, "fragment_add_member_dialog");
+
     }
 
     public void showEditMemberDialog(Member member) {
