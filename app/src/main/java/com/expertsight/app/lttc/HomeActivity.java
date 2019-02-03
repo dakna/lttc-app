@@ -239,7 +239,7 @@ public class HomeActivity extends AppCompatActivity implements AdminBottomSheetD
                     } else {
                         Toast.makeText(context, getString(R.string.msg_error_smartcard_not_found, hexId), Toast.LENGTH_LONG).show();
                         // TODO: INTENT TO LAUNCH FRAGMENT CHECKIN AND START DIALOG
-                        //showAddMemberDialog(hexId);
+
                     }
                 }
 
