@@ -32,10 +32,10 @@ public class AddMemberDialogFragment extends DialogFragment {
         final String smartcardId = args.getString("smartcard_id", null);
         Log.d(TAG, "onCreateDialog: args smartcard " + args.getString("smartcard_id"));
 
-        String message = "Please enter member details";
+        String message = getString(R.string.msg_enter_member_details);
 
         if (smartcardId != null) {
-            message = message + " for smartcard " + smartcardId;
+            message = message + getString(R.string.msg_addon_smartcard) + smartcardId;
         }
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -92,12 +92,12 @@ public class AddMemberDialogFragment extends DialogFragment {
                 // set dialog icon
                 .setIcon(R.drawable.ic_person)
                 // set Dialog Title
-                .setTitle("Add Member")
+                .setTitle(getString(R.string.title_add_member))
                 // Set Dialog Message
                 .setMessage(message)
 
                 // positive button
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.dialog_ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         String firstName = textInputEditTextFirstName.getText().toString();
                         String lastName = textInputEditTextLastName.getText().toString();
@@ -106,13 +106,13 @@ public class AddMemberDialogFragment extends DialogFragment {
 
                         listener.applyNewMemberData(firstName, lastName, email, mailingList, smartcardId);
 
-                        Toast.makeText(getActivity(), "Adding new member", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.msg_adding_new_member), Toast.LENGTH_SHORT).show();
                     }
                 })
                 // negative button
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getActivity(), "Cancelled", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.msg_cancelled), Toast.LENGTH_SHORT).show();
                     }
                 });
         AlertDialog alertDialog = builder.create();
@@ -126,7 +126,7 @@ public class AddMemberDialogFragment extends DialogFragment {
         try {
             listener =  (AddMemberDialogListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + "mus implement AddMemberDialogListener");
+            throw new ClassCastException(context.toString() + getString(R.string.implement_AddMemberDialogListener));
         }
     }
 

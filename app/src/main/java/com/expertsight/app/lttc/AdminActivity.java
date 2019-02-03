@@ -62,7 +62,7 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.setTitle("Club Administration");
+        toolbar.setTitle(getString(R.string.title_section_admin));
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -167,7 +167,7 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
                             member.setLastCheckIn(lastCheckInDate.getTime());
                         } catch (ParseException e) {
                             Log.e(TAG, "Error parsing date string  " + lastCheckIn, e);
-                            Toast.makeText(context, "Last Check-In Date not updated because " + lastCheckIn + " couldn't be parsed into Date", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, getString(R.string.msg_last_checkin_error_begin) + lastCheckIn + getString(R.string.msg_last_checkin_eror_end), Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         member.setLastCheckIn(0);
@@ -181,7 +181,7 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
                             member.setBalance(balanceDouble);
                         } catch (NumberFormatException e) {
                             Log.e(TAG, "Error parsing balance string to float" + balance, e);
-                            Toast.makeText(context, "Balance not updated because " + balance + " couldn't be parsed into Double", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, getString(R.string.msg_balance_error_begin) + balance + getString(R.string.msg_balance_error_end), Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         member.setBalance(0d);
@@ -204,14 +204,14 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
 
                 } else {
                     Log.d(TAG, "No such document");
-                    Toast.makeText(context, "Error while checking in member " + memberId, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getString(R.string.msg_error_checkin_member) + memberId, Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.d(TAG, "get failed with ", databaseError.toException());
-                Toast.makeText(context, "Error while checking in member " + memberId, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, getString(R.string.msg_error_checkin_member) + memberId, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -236,10 +236,10 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()) {
                             Log.d(TAG, "onComplete: new transaction added");
-                            Toast.makeText(context, "Added new transaction: " + subject + " " + amount, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, getString(R.string.msg_added_new_transaction) + subject + " " + amount, Toast.LENGTH_SHORT).show();
                         } else {
                             Log.d(TAG, "onComplete: error adding new transaction");
-                            Toast.makeText(context, "Unknown Error: Couldn't add new transaction", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, getString(R.string.msg_error_new_transaction), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

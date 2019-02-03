@@ -10,7 +10,6 @@
     <string name="headline_member_checked_in_list">Playing This Week</string>
     <string name="transaction_subject_member_fee">Member fee</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="headline_transaction_list">All Transactions</string>
     <string name="title_activity_play">PlayActivity</string>
@@ -19,4 +18,35 @@
     <string name="play_tab_text_3">Matches</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="msg_no_ncf">This device doesn\'t support NFC smart cards</string>
+    <string name="msg_nfc_disabled">NFC is disabled, please enable to read smart cards</string>
+    <string name="title_add_match_score">Add Match Score</string>
+    <string name="dialog_ok">Ok</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="msg_adding_match_score">Adding new match score</string>
+    <string name="msg_cancelled">Cancelled</string>
+    <string name="msg_enter_score">Please enter score (best 3 out of 5)</string>
+    <string name="implement_AddMatchScoreDialogListener"> must implement AddMatchScoreDialogListener</string>
+    <string name="msg_enter_member_details">Please enter member details</string>
+    <string name="msg_addon_smartcard">" for smartcard "</string>
+    <string name="title_add_member">Add Member</string>
+    <string name="msg_adding_new_member">Adding new member</string>
+    <string name="implement_AddMemberDialogListener"> must implement AddMemberDialogListener</string>
+    <string name="msg_enter_transaction_details">Please enter transaction details</string>
+    <string name="title_add_transaction">Add Transaction</string>
+    <string name="msg_adding_new_transaction">Adding new transaction</string>
+    <string name="implement_AddTransactionDialogListener">must implement AddTransactionDialogListener</string>
+    <string name="title_section_admin">Club Administration</string>
+    <string name="msg_last_checkin_error_begin">Last Check-In Date not updated because </string>
+    <string name="msg_last_checkin_eror_end"> couldn\'t be parsed into Date</string>
+    <string name="msg_balance_error_begin">Balance not updated because </string>
+    <string name="msg_balance_error_end"> couldn\'t be parsed into Double</string>
+    <string name="msg_error_checkin_member">Error while checking in member </string>
+    <string name="msg_added_new_transaction">Added new transaction: </string>
+    <string name="msg_error_new_transaction">Unknown Error: Couldn\'t add new transaction</string>
+    <string name="implement_AdminBottomSheetDialogListener"> must implement AdminBottomSheetDialogListener</string>
+    <string name="implement_OnFragmentInteractionListener"> must implement OnFragmentInteractionListener</string>
+    <string name="msg_member_already_checked_in">This member already checked in this week</string>
+
 </resources>

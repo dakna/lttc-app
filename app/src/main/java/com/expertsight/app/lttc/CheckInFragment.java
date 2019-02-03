@@ -124,8 +124,7 @@ public class CheckInFragment extends Fragment {
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+            throw new RuntimeException(context.toString() + getString(R.string.implement_OnFragmentInteractionListener));
         }
 
     }
@@ -156,7 +155,6 @@ public class CheckInFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Member member = (Member) parent.getAdapter().getItem(position);
-                //Toast.makeText(context, "You clicked on " + member.getFullName() +" " + member.getId(), Toast.LENGTH_SHORT).show();
                 showCheckInMemberDialog(member);
                 autoCompleteTextView.setText("");
                 autoCompleteTextView.clearFocus();
@@ -173,7 +171,9 @@ public class CheckInFragment extends Fragment {
 
 
         DatabaseReference members = db.getReference("members");
-        members.addValueEventListener(new ValueEventListener() {
+        Query query = members.orderByChild("isActive")
+                .equalTo(true);
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -226,7 +226,7 @@ public class CheckInFragment extends Fragment {
 
         if (member.isPlayingThisWeek()) {
         //if (member.isPlayingToday()) {
-            Toast.makeText(getContext(), "This member already checked in this week", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.msg_member_already_checked_in), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -249,10 +249,10 @@ public class CheckInFragment extends Fragment {
 
     private void setupMemberActiveListView() {
 
-        //final CollectionReference membersRef = db.collection("/members");
         final Query query = db.getReference("members")
-                //.equalTo("isActive", "true")
-                .orderByChild("firstName");
+
+                .orderByChild("isActive")
+                .equalTo(true);
 
         Log.d(TAG, "starting to get Member list");
 

@@ -28,7 +28,7 @@ public class AddTransactionDialogFragment extends DialogFragment {
 
         final Bundle args = getArguments();
 
-        String message = "Please enter transaction details";
+        String message = getString(R.string.msg_enter_transaction_details);
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View form = inflater.inflate(R.layout.fragment_add_transaction_dialog,null);
@@ -82,24 +82,24 @@ public class AddTransactionDialogFragment extends DialogFragment {
                 // set dialog icon
                 .setIcon(R.drawable.ic_person)
                 // set Dialog Title
-                .setTitle("Add Transaction")
+                .setTitle(getString(R.string.title_add_transaction))
                 // Set Dialog Message
                 .setMessage(message)
 
                 // positive button
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.dialog_ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         String subject = textInputEditSubject.getText().toString();
                         double amount = Double.valueOf(textInputEditAmount.getText().toString());
 
                         listener.applyNewTransactionData(subject, amount);
-                        Toast.makeText(getActivity(), "Adding new transaction", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.msg_adding_new_transaction), Toast.LENGTH_SHORT).show();
                     }
                 })
                 // negative button
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getActivity(), "Cancelled", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.msg_cancelled), Toast.LENGTH_SHORT).show();
                     }
                 });
         AlertDialog alertDialog = builder.create();
@@ -113,7 +113,7 @@ public class AddTransactionDialogFragment extends DialogFragment {
         try {
             listener =  (AddTransactionDialogListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + "mus implement AddTransactionDialogListener");
+            throw new ClassCastException(context.toString() + getString(R.string.implement_AddTransactionDialogListener));
         }
     }
 

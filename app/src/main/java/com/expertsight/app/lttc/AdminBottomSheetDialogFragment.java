@@ -49,7 +49,7 @@ public class AdminBottomSheetDialogFragment extends BottomSheetDialogFragment im
         try {
             listener =  (AdminBottomSheetDialogListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + "mus implement AddMemberDialogListener");
+            throw new ClassCastException(context.toString() + getString(R.string.implement_AdminBottomSheetDialogListener));
         }
     }
 

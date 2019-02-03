@@ -44,7 +44,7 @@ public class AddMatchScoreDialogFragment extends DialogFragment {
 
         final Bundle args = getArguments();
 
-        String message = "Please enter score (best 3 out of 5)";
+        String message = getString(R.string.msg_enter_score);
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View form = inflater.inflate(R.layout.fragment_add_match_score_dialog,null);
@@ -109,25 +109,25 @@ public class AddMatchScoreDialogFragment extends DialogFragment {
                 // set dialog icon
                 .setIcon(R.drawable.ic_person)
                 // set Dialog Title
-                .setTitle("Add Match Score")
+                .setTitle(getString(R.string.title_add_match_score))
                 // Set Dialog Message
                 .setMessage(message)
 
                 // positive button
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.dialog_ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
                         int player1Games = Integer.parseInt(textInputPlayer1Games.getText().toString());
                         int player2Games = Integer.parseInt(textInputPlayer2Games.getText().toString());
 
                         listener.applyMatchScoreData(args.getString("match_id"), player1Games, player2Games);
-                        Toast.makeText(getActivity(), "Adding new match score", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.msg_adding_match_score), Toast.LENGTH_SHORT).show();
                     }
                 })
                 // negative button
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getActivity(), "Cancelled", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.msg_cancelled), Toast.LENGTH_SHORT).show();
                     }
                 });
         AlertDialog alertDialog = builder.create();
@@ -141,7 +141,7 @@ public class AddMatchScoreDialogFragment extends DialogFragment {
         try {
             listener =  (AddMatchScoreDialogListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + "mus implement AddMatchScoreDialogListener");
+            throw new ClassCastException(context.toString() + getString(R.string.implement_AddMatchScoreDialogListener));
         }
     }
 

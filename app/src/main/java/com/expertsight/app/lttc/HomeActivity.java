@@ -83,11 +83,11 @@ public class HomeActivity extends AppCompatActivity implements AdminBottomSheetD
 
         if (mNfcAdapter == null) {
             // Give a warning
-            Toast.makeText(this, "This device doesn't support NFC smart cards", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.msg_no_ncf), Toast.LENGTH_LONG).show();
 
         } else {
             if (!mNfcAdapter.isEnabled()) {
-                Toast.makeText(this, "NFC is disabled, please enable to read smart cards", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.msg_nfc_disabled), Toast.LENGTH_LONG).show();
             }
         }
 
