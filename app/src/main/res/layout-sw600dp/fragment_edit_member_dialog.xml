@@ -30,10 +30,10 @@
         android:id="@+id/tilLastName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="20dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tilFirstName"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         >
 
         <android.support.design.widget.TextInputEditText
@@ -53,7 +53,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="20dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tilLastName"
+        app:layout_constraintTop_toBottomOf="@id/tilFirstName"
         >
 
         <android.support.design.widget.TextInputEditText
@@ -65,14 +65,24 @@
             android:inputType="textEmailAddress" />
     </android.support.design.widget.TextInputLayout>
 
+    <CheckBox
+        android:id="@+id/mailingList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
 
+        android:layout_marginTop="16dp"
+        android:text="@string/subscribed_to_mailing_list"
+        app:layout_constraintTop_toBottomOf="@+id/tilLastName"
+        app:layout_constraintStart_toStartOf="@+id/tilLastName"
+        />
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/tilSmartcardId"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginStart="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tilEmail"
         >
@@ -86,12 +96,24 @@
             android:inputType="textPersonName" />
     </android.support.design.widget.TextInputLayout>
 
+    <CheckBox
+        android:id="@+id/isAdmin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+
+        android:layout_marginTop="16dp"
+        android:text="@string/is_administrator"
+        app:layout_constraintTop_toBottomOf="@+id/tilEmail"
+        app:layout_constraintStart_toStartOf="@+id/mailingList"
+        />
+
     <android.support.design.widget.TextInputLayout
         android:id="@+id/tilLastCheckIn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tilSmartcardId"
         >
@@ -105,12 +127,24 @@
             android:inputType="datetime" />
     </android.support.design.widget.TextInputLayout>
 
+    <CheckBox
+        android:id="@+id/isActive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+
+        android:layout_marginTop="16dp"
+        android:text="@string/is_active"
+        app:layout_constraintTop_toBottomOf="@+id/tilSmartcardId"
+        app:layout_constraintStart_toStartOf="@+id/isAdmin"
+        />
+
     <android.support.design.widget.TextInputLayout
         android:id="@+id/tilBalance"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tilLastCheckIn"
         >
@@ -123,44 +157,5 @@
             android:hint="@string/balance"
             android:inputType="numberDecimal|numberSigned" />
     </android.support.design.widget.TextInputLayout>
-
-    <CheckBox
-        android:id="@+id/mailingList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/subscribed_to_mailing_list"
-        app:layout_constraintTop_toBottomOf="@+id/tilBalance"
-        app:layout_constraintStart_toStartOf="parent"
-        />
-    <CheckBox
-        android:id="@+id/isAdmin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/is_administrator"
-        app:layout_constraintTop_toBottomOf="@+id/mailingList"
-        app:layout_constraintStart_toStartOf="parent"
-        />
-
-
-
-    <CheckBox
-        android:id="@+id/isActive"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/is_active"
-        app:layout_constraintTop_toBottomOf="@+id/isAdmin"
-        app:layout_constraintStart_toStartOf="parent"
-        />
-
-
 
 </android.support.constraint.ConstraintLayout>

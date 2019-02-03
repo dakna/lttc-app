@@ -19,6 +19,16 @@
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="email_address">Email Address</string>
+    <string name="subscribed_to_mailing_list">Subscribed to Mailing List</string>
+    <string name="smartcard_id">Smartcard ID</string>
+    <string name="is_administrator">Is Administrator</string>
+    <string name="last_check_in">Last Check In</string>
+    <string name="is_active">Is Active</string>
+    <string name="balance">Balance</string>
+
     <string name="msg_no_ncf">This device doesn\'t support NFC smart cards</string>
     <string name="msg_nfc_disabled">NFC is disabled, please enable to read smart cards</string>
     <string name="title_add_match_score">Add Match Score</string>
