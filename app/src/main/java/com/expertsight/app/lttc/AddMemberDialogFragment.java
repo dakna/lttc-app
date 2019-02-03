@@ -116,10 +116,7 @@ public class AddMemberDialogFragment extends DialogFragment {
                     }
                 });
         AlertDialog alertDialog = builder.create();
-/*
-        alertDialog.show();
-        alertDialog.getWindow().setLayout(800, 400);
-*/
+
         return alertDialog;
     }
 
