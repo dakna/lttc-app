@@ -83,11 +83,11 @@ public class HomeActivity extends AppCompatActivity implements AdminBottomSheetD
 
         if (mNfcAdapter == null) {
             // Give a warning
-            Toast.makeText(this, getString(R.string.msg_no_ncf), Toast.LENGTH_LONG).show();
+            Log.e(TAG, getString(R.string.msg_no_ncf));
 
         } else {
             if (!mNfcAdapter.isEnabled()) {
-                Toast.makeText(this, getString(R.string.msg_nfc_disabled), Toast.LENGTH_LONG).show();
+                Log.e(TAG, getString(R.string.msg_nfc_disabled));
             }
         }
 

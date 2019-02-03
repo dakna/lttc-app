@@ -6,17 +6,19 @@
     android:orientation="vertical"
     android:padding="32dp">
 
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/admin_options"
-        android:textSize="25sp" />
+        android:layout_marginTop="8dp"
+        android:text="@string/admin_explanation"
+        />
 
     <Button
         android:id="@+id/btnAdmin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="@string/go_to_admin_settings" />
+        android:text="@string/go_to_club_administration" />
 
 </LinearLayout>

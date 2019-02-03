@@ -33,8 +33,7 @@
     <string name="subscribe_to_mailing_list">Subscribe to Mailing List</string>
     <string name="subject">Subject</string>
     <string name="amount">Amount</string>
-    <string name="admin_options">Admin Options</string>
-    <string name="go_to_admin_settings">Go to admin settings</string>
+    <string name="go_to_club_administration">Go to club administration</string>
     <string name="member">Member</string>
     <string name="fee">Fee</string>
     <string name="how_much_money">How much money do you put in today?</string>
@@ -48,8 +47,8 @@
     <string name="transactions">Transactions</string>
     <string name="description_image_hero">Image of table tennis gear</string>
     <string name="welcome">Welcome</string>
-    <string name="msg_auth_admin">If you want to authenticate yourself as an admin, please swipe your smart card or enter your credential in the form below</string>
-    <string name="admin_credential">Admin Credential</string>
+    <string name="msg_auth_admin">If you want to authenticate yourself as an admin, please swipe your smart card or enter your PIN</string>
+    <string name="admin_credential">PIN</string>
     <string name="button_ok">OK</string>
 
     <string name="msg_no_ncf">This device doesn\'t support NFC smart cards</string>
@@ -115,6 +114,7 @@
     <string name="full_name">FullName</string>
     <string name="n_a">N/A</string>
     <string name="description_playing_today">Icon for members playing today</string>
+    <string name="admin_explanation">If you click on the button below, you will be able to edit data on the club administration screen as long as you don\'t leave that screen. Remember that this is a public device and you have to leave the club administration screen when you are done so everyone else can only view the data.</string>
 
 
 
