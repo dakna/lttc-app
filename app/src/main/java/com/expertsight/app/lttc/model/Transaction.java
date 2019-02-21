@@ -2,7 +2,7 @@ package com.expertsight.app.lttc.model;
 
 
 
-import com.google.firebase.database.IgnoreExtraProperties;
+import com.google.firebase.firestore.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
 public class Transaction extends BaseModel {

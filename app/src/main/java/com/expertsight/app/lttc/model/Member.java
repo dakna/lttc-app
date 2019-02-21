@@ -3,8 +3,8 @@ package com.expertsight.app.lttc.model;
 import android.util.Log;
 
 import com.expertsight.app.lttc.util.DateHelper;
-import com.google.firebase.database.Exclude;
-import com.google.firebase.database.IgnoreExtraProperties;
+import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.IgnoreExtraProperties;
 
 
 import java.util.Calendar;
@@ -24,7 +24,7 @@ public class Member extends BaseModel {
     private boolean isAdmin;
     private boolean hasSignedWaiver;
     private double balance;
-    private long lastCheckIn;
+    private Date lastCheckIn;
     private int pin;
 
 
@@ -99,9 +99,9 @@ public class Member extends BaseModel {
         this.balance = balance;
     }
 
-    public long getLastCheckIn() { return lastCheckIn; }
+    public Date getLastCheckIn() { return lastCheckIn; }
 
-    public void setLastCheckIn(long lastCheckIn) {
+    public void setLastCheckIn(Date lastCheckIn) {
         this.lastCheckIn = lastCheckIn;
     }
 
@@ -119,8 +119,8 @@ public class Member extends BaseModel {
 
     @Exclude
     public boolean isPlayingToday() {
-        if (lastCheckIn == 0) return false;
-        Date lastCheckIn = new Date(getLastCheckIn());
+        Date lastCheckIn = getLastCheckIn();
+        if (lastCheckIn == null) return false;
 
         Date startOfToday = DateHelper.getStartOfDay(new Date());
 
@@ -142,8 +142,8 @@ public class Member extends BaseModel {
 
     @Exclude
     public boolean isPlayingThisWeek() {
-        if (lastCheckIn == 0) return false;
-        Date lastCheckIn = new Date(getLastCheckIn());
+        Date lastCheckIn = getLastCheckIn();
+        if (lastCheckIn == null) return false;
 
         Date startOfWeek= DateHelper.getStartOfWeek(new Date());
 
