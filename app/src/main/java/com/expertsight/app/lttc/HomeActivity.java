@@ -29,17 +29,28 @@ import com.expertsight.app.lttc.util.CredentialCheckAsyncTask;
 import com.expertsight.app.lttc.util.MifareHelper;
 
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
+
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -58,7 +69,7 @@ public class HomeActivity extends AppCompatActivity implements AdminBottomSheetD
 
     private NfcAdapter mNfcAdapter = null;
 
-    private FirebaseDatabase db;
+    private FirebaseFirestore db;
     private FirebaseAnalytics analytics;
 
     private List<Member> adminList = new ArrayList<>();
@@ -77,7 +88,7 @@ public class HomeActivity extends AppCompatActivity implements AdminBottomSheetD
         setContentView(R.layout.activity_home);
         setupBottomNavigationView();
 
-        db = FirebaseDatabase.getInstance();
+        db = FirebaseFirestore.getInstance();
         analytics = FirebaseAnalytics.getInstance(this);
 
         ButterKnife.bind(this);
@@ -106,26 +117,22 @@ public class HomeActivity extends AppCompatActivity implements AdminBottomSheetD
     }
 
     private void setupAdminList() {
-        DatabaseReference ref = db.getReference("members");
-        Query query = ref.orderByChild("isAdmin").equalTo(true);
-        query.addValueEventListener(new ValueEventListener() {
+        CollectionReference membersRef = db.collection("members");
+        Query query = membersRef.whereEqualTo("isAdmin", true);
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
                 adminList.clear();
-                for (DataSnapshot memberSnapshot : dataSnapshot.getChildren()) {
-                    Log.d(TAG, memberSnapshot.getKey() + " => " + memberSnapshot.getValue());
-                    Member member = memberSnapshot.getValue(Member.class);
-                    member.setId(memberSnapshot.getKey());
+                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                    Log.d(TAG, document.getId() + " => " + document.getData());
+                    Member member = document.toObject(Member.class).withId(document.getId());
                     adminList.add(member);
                     Log.d(TAG, "onDataChange: admin member " + member.getFullName());
                 }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG, "onCancelled: no members in list");
             }
         });
     }
@@ -214,19 +221,16 @@ public class HomeActivity extends AppCompatActivity implements AdminBottomSheetD
             final String hexId = MifareHelper.getHexString(id, id.length);
             Log.d(TAG, "handleIntent: tag ID in HEX " + hexId);
 
-            final Query query = db.getReference("/members/")
-                    .orderByChild("smartcardId")
-                    .equalTo(hexId);
+            CollectionReference membersRef = db.collection("/members/");
+            final Query query = membersRef.whereEqualTo("smartcardId", hexId);
 
-            query.addValueEventListener(new ValueEventListener() {
+            query.get()
+            .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.getChildrenCount() == 1) {
-                        Member member = new Member();
-                        for (DataSnapshot memberSnapshot: dataSnapshot.getChildren()) {
-                            member = memberSnapshot.getValue(Member.class);
-                            member.setId(memberSnapshot.getKey());
-                        }
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    if (queryDocumentSnapshots.size() == 1) {
+                        DocumentSnapshot memberDoc = queryDocumentSnapshots.getDocuments().get(0);
+                        Member member = memberDoc.toObject(Member.class).withId(memberDoc.getId());
 
                         Log.d(TAG, "onSuccess getting member by smartcard id " + member.getSmartcardId() + ": " + member.toString());
                         if (member.getIsAdmin() == true) {
@@ -237,21 +241,22 @@ public class HomeActivity extends AppCompatActivity implements AdminBottomSheetD
                             // TODO: INTENT TO LAUNCH FRAGMENT CHECKIN AND START DIALOG
                             //showCheckInMemberDialog(member);
                         }
-                    } else if (dataSnapshot.getChildrenCount()  > 1){
+                    } else if (queryDocumentSnapshots.size() > 1){
                         Toast.makeText(context, getString(R.string.msg_error_smartcard_not_unique, hexId), Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(context, getString(R.string.msg_error_smartcard_not_found, hexId), Toast.LENGTH_LONG).show();
-                        // TODO: INTENT TO LAUNCH FRAGMENT CHECKIN AND START DIALOG
-
+                        // todo: add member with smartcard id
+                        //showAddMemberDialog(hexId);
                     }
                 }
 
+            })
+            .addOnFailureListener(new OnFailureListener() {
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.d(TAG, "onCancelled: " + databaseError.toException());
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, "onFailure: Error " + e);
                 }
             });
-
         }
     }
 
@@ -296,21 +301,18 @@ public class HomeActivity extends AppCompatActivity implements AdminBottomSheetD
 
 
     public void testAdminDialog(String memberId) {
-        final DatabaseReference memberRef = db.getReference("members").child(memberId);
-        memberRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        final DocumentReference memberRef = db.collection("members").document(memberId);
+        memberRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    Log.d(TAG, "onComplete:  DocumentSnapshot data: " + dataSnapshot.getValue());
-                    final Member member = dataSnapshot.getValue(Member.class);
-                    member.setId(dataSnapshot.getKey());
-                    showAdminDialog(member);
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "onComplete:  DocumentSnapshot data: " + document.getData());
+                        final Member member = document.toObject(Member.class).withId(document.getId());
+                        showAdminDialog(member);
+                    }
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
 

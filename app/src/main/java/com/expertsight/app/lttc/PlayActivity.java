@@ -33,11 +33,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.Date;
@@ -56,7 +56,7 @@ public class PlayActivity extends AppCompatActivity
     private Context context = PlayActivity.this;
 
 
-    private FirebaseDatabase db;
+    private FirebaseFirestore db;
     private FirebaseAnalytics analytics;
 
     private SectionsPagerAdapter sectionsPagerAdapter;
@@ -86,7 +86,7 @@ public class PlayActivity extends AppCompatActivity
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
 
-        db = FirebaseDatabase.getInstance();
+        db = FirebaseFirestore.getInstance();
         analytics = FirebaseAnalytics.getInstance(this);
 
         if (savedInstanceState == null) {
@@ -172,13 +172,14 @@ public class PlayActivity extends AppCompatActivity
         newMember.setIsAdmin(false);
         newMember.setBalance(0f);
 
-        db.getReference("members")
-                .push()
-                .setValue(newMember)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
+        CollectionReference members = db.collection("members");
+        members.add(newMember)
+                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
+                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                        if(task.isSuccessful()) {
+                            DocumentReference memberRef = task.getResult();
+                            Log.d(TAG, "onComplete: new member added with ID " + memberRef.getId());
                             Toast.makeText(context, getString(R.string.msg_added_new_member, firstName, lastName), Toast.LENGTH_SHORT).show();
                         } else {
                             Log.d(TAG, "onComplete: error adding new member");
@@ -194,79 +195,77 @@ public class PlayActivity extends AppCompatActivity
         Log.d(TAG, "applyCheckInMemberData: memberId: " + memberId + " payment" + payment + " keepChange " +keepChange);
 
         //load latest data, even if its in local cache
-        final DatabaseReference memberRef = db.getReference("members").child(memberId);
+        final DocumentReference memberRef = db.collection("members").document(memberId);
 
-        memberRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        memberRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    final Member member = dataSnapshot.getValue(Member.class);
-                    member.setId(dataSnapshot.getKey());
-                    double newBalance = member.getBalance() - HomeActivity.FEE_PER_DAY + payment;
-                    Log.d(TAG, "onComplete: calculating new member balance as $" + newBalance);
-                    member.setBalance(newBalance);
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        final Member member = document.toObject(Member.class).withId(document.getId());
+                        double newBalance = member.getBalance() - HomeActivity.FEE_PER_DAY + payment;
+                        Log.d(TAG, "onComplete: calculating new member balance as $" + newBalance);
+                        member.setBalance(newBalance);
 
-                    //no server timestamp so it works offline
-                    member.setLastCheckIn(new Date().getTime());
-                    memberRef.setValue(member)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Log.d(TAG, "DocumentSnapshot successfully written!");
-
-                                    Bundle params = new Bundle();
-                                    params.putString("member_id", member.getId());
-                                    params.putString("member_full_name", member.getFullName());
-                                    params.putLong("timestamp", member.getLastCheckIn());
-                                    params.putDouble("payment", payment);
-                                    analytics.logEvent("club_check_in", params);
-
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w(TAG, "Error writing document", e);
-                                }
-                            });
-
-                    // no $0 transactions if member uses his balance, because he prepaid
-                    if (payment != 0) {
-                        Transaction newTransaction = new Transaction();
-                        newTransaction.setAmount(payment);
-                        newTransaction.setMemberId(member.getId());
-                        newTransaction.setSubject(getString(R.string.transaction_subject_member_fee));
                         //no server timestamp so it works offline
-                        newTransaction.setTimestamp(new Date().getTime());
-
-                        DatabaseReference transactions = db.getReference("transactions");
-                        transactions.push()
-                                .setValue(newTransaction)
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        member.setLastCheckIn(new Date());
+                        memberRef.set(member, SetOptions.merge())
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if(task.isSuccessful()) {
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "DocumentSnapshot successfully written!");
 
-                                            Log.d(TAG, "onComplete: new transaction added ");
-                                            Toast.makeText(context, getString(R.string.msg_added_new_checkin_transaction,String.valueOf(payment) , member.getFullName()), Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            Log.d(TAG, "onComplete: error adding new transaction");
-                                            Toast.makeText(context, getString(R.string.msg_error_new_transaction), Toast.LENGTH_SHORT).show();
-                                        }
+                                        Bundle params = new Bundle();
+                                        params.putString("member_id", member.getId());
+                                        params.putString("member_full_name", member.getFullName());
+                                        params.putString("timestamp", member.getLastCheckIn().toString());
+                                        params.putDouble("payment", payment);
+                                        analytics.logEvent("club_check_in", params);
+
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error writing document", e);
                                     }
                                 });
+
+                        // no $0 transactions if member uses his balance, because he prepaid
+                        if (payment != 0) {
+                            Transaction newTransaction = new Transaction();
+                            newTransaction.setAmount(payment);
+                            newTransaction.setMemberId(member.getId());
+                            newTransaction.setSubject(getString(R.string.transaction_subject_member_fee));
+                            //no server timestamp so it works offline
+                            newTransaction.setTimestamp(new Date().getTime());
+
+                            CollectionReference transactions = db.collection("transactions");
+                            transactions.add(newTransaction)
+                                    .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentReference> task) {
+                                            if (task.isSuccessful()) {
+
+                                                Log.d(TAG, "onComplete: new transaction added ");
+                                                Toast.makeText(context, getString(R.string.msg_added_new_checkin_transaction, String.valueOf(payment), member.getFullName()), Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Log.d(TAG, "onComplete: error adding new transaction");
+                                                Toast.makeText(context, getString(R.string.msg_error_new_transaction), Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+                        }
+                    } else {
+                        Log.d(TAG, "No such document");
+                        Toast.makeText(context, getString(R.string.msg_error_checking_in_member, memberId), Toast.LENGTH_SHORT).show();
                     }
+
                 } else {
-                    Log.d(TAG, "No such document");
+                    Log.d(TAG, "get failed with ", task.getException());
                     Toast.makeText(context, getString(R.string.msg_error_checking_in_member, memberId), Toast.LENGTH_SHORT).show();
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG, "get failed with ", databaseError.toException());
-                Toast.makeText(context, getString(R.string.msg_error_checking_in_member, memberId), Toast.LENGTH_SHORT).show();
-
             }
         });
     }
@@ -276,47 +275,43 @@ public class PlayActivity extends AppCompatActivity
         Log.d(TAG, "applyMatchData: matchrId: " + matchId + " player1Games " + player1Games + " player2Games " + player2Games);
 
         //load latest data, even if its in local cache
-        final DatabaseReference memberRef = db.getReference("matches").child(matchId);
+        final DocumentReference memberRef = db.collection("matches").document(matchId);
 
-        memberRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        memberRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    final Match match = dataSnapshot.getValue(Match.class);
-                    match.setId(dataSnapshot.getKey());
-
-                    match.setPlayer1Games(player1Games);
-                    match.setPlayer2Games(player2Games);
-                    memberRef.setValue(match)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Log.d(TAG, "DocumentSnapshot successfully written!");
-                                    Bundle params = new Bundle();
-                                    params.putString("match_id", match.getId());
-                                    params.putInt("player_1_games", player1Games);
-                                    params.putInt("player_2_games", player2Games);
-                                    analytics.logEvent("match_score", params);
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w(TAG, "Error writing document", e);
-                                }
-                            });
-
-               } else {
-                    Log.d(TAG, "No such document");
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        final Match match = document.toObject(Match.class).withId(document.getId());
+                        match.setPlayer1Games(player1Games);
+                        match.setPlayer2Games(player2Games);
+                        memberRef.set(match, SetOptions.merge())
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                                        Bundle params = new Bundle();
+                                        params.putString("match_id", match.getId());
+                                        params.putInt("player_1_games", player1Games);
+                                        params.putInt("player_2_games", player2Games);
+                                        analytics.logEvent("match_score", params);
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error writing document", e);
+                                    }
+                                });
+                    } else {
+                        Log.d(TAG, "No such document");
+                        Toast.makeText(context, getString(R.string.msg_error_add_match_score, matchId), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
                     Toast.makeText(context, getString(R.string.msg_error_add_match_score, matchId), Toast.LENGTH_SHORT).show();
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG, "get failed with ", databaseError.toException());
-                Toast.makeText(context, getString(R.string.msg_error_add_match_score, matchId), Toast.LENGTH_SHORT).show();
-
             }
         });
     }
