@@ -28,11 +28,12 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.text.ParseException;
@@ -48,7 +49,7 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
 
     private String adminMemberId;
 
-    private FirebaseDatabase db;
+    private FirebaseFirestore db;
     private FirebaseAnalytics analytics;
 
     private SectionsPagerAdapter sectionsPagerAdapter;
@@ -78,7 +79,7 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
 
-        db = FirebaseDatabase.getInstance();
+        db = FirebaseFirestore.getInstance();
         analytics = FirebaseAnalytics.getInstance(this);
 
         Log.d(TAG, "onCreate: Intent admin adminMemberId " + getIntent().getStringExtra("adminMemberId"));
@@ -148,73 +149,71 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
     public void applyEditMemberData(final String memberId, final String firstName, final String lastName, final String email, final boolean mailingList, final String smartcardId, final boolean isAdmin, final String lastCheckIn, final boolean isActive, final String balance) {
         Log.d(TAG, "applyEditMemberData: " + memberId + " " + firstName + " " + lastName + " " + email + " " + mailingList + " " + smartcardId + " " + isAdmin + " " + lastCheckIn + " " + isActive);
 
-        final DatabaseReference memberRef = db.getReference("members").child(memberId);
-        memberRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        final DocumentReference memberRef = db.collection("members").document(memberId);
+        memberRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
 
-                    Log.d(TAG, "onComplete:  DocumentSnapshot data: " + dataSnapshot.getValue());
-                    final Member member = dataSnapshot.getValue(Member.class);
-                    member.setId(dataSnapshot.getKey());
-
-                    member.setFirstName(firstName);
-                    member.setLastName(lastName);
-                    member.setEmail(email);
-                    member.setIsMailingSubscriber(mailingList);
-                    member.setSmartcardId(smartcardId);
-                    member.setIsAdmin(isAdmin);
-                    if (lastCheckIn.length() > 0) {
-                        try {
-                            Date lastCheckInDate = new SimpleDateFormat("MM/dd/yyyy hh:mm").parse(lastCheckIn);
-                            member.setLastCheckIn(lastCheckInDate.getTime());
-                        } catch (ParseException e) {
-                            Log.e(TAG, "Error parsing date string  " + lastCheckIn, e);
-                            Toast.makeText(context, getString(R.string.msg_last_checkin_error_begin) + lastCheckIn + getString(R.string.msg_last_checkin_eror_end), Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "onComplete:  DocumentSnapshot data: " + document.getId());
+                        final Member member = document.toObject(Member.class).withId(document.getId());;
+                        member.setFirstName(firstName);
+                        member.setLastName(lastName);
+                        member.setEmail(email);
+                        member.setIsMailingSubscriber(mailingList);
+                        member.setSmartcardId(smartcardId);
+                        member.setIsAdmin(isAdmin);
+                        if (lastCheckIn.length() > 0) {
+                            try {
+                                Date lastCheckInDate = new SimpleDateFormat("MM/dd/yyyy hh:mm").parse(lastCheckIn);
+                                member.setLastCheckIn(lastCheckInDate);
+                            } catch (ParseException e) {
+                                Log.e(TAG, "Error parsing date string  " + lastCheckIn, e);
+                                Toast.makeText(context, getString(R.string.msg_last_checkin_error_begin) + lastCheckIn + getString(R.string.msg_last_checkin_eror_end), Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            member.setLastCheckIn(null);
                         }
-                    } else {
-                        member.setLastCheckIn(0);
-                    }
 
-                    member.setIsActive(isActive);
+                        member.setIsActive(isActive);
 
-                    if (balance.length() > 0) {
-                        try {
-                            double balanceDouble = Double.valueOf(balance);
-                            member.setBalance(balanceDouble);
-                        } catch (NumberFormatException e) {
-                            Log.e(TAG, "Error parsing balance string to float" + balance, e);
-                            Toast.makeText(context, getString(R.string.msg_balance_error_begin) + balance + getString(R.string.msg_balance_error_end), Toast.LENGTH_SHORT).show();
+                        if (balance.length() > 0) {
+                            try {
+                                double balanceDouble = Double.valueOf(balance);
+                                member.setBalance(balanceDouble);
+                            } catch (NumberFormatException e) {
+                                Log.e(TAG, "Error parsing balance string to float" + balance, e);
+                                Toast.makeText(context, getString(R.string.msg_balance_error_begin) + balance + getString(R.string.msg_balance_error_end), Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            member.setBalance(0d);
                         }
+
+
+                        memberRef.set(member, SetOptions.merge())
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error writing document", e);
+                                    }
+                                });
                     } else {
-                        member.setBalance(0d);
+                        Log.d(TAG, "No such document");
+                        Toast.makeText(context, getString(R.string.msg_error_checkin_member) + memberId, Toast.LENGTH_SHORT).show();
                     }
-
-
-                    memberRef.setValue(member)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Log.d(TAG, "DocumentSnapshot successfully written!");
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w(TAG, "Error writing document", e);
-                                }
-                            });
-
-                } else {
-                    Log.d(TAG, "No such document");
+                }  else {
+                    Log.d(TAG, "get failed with ", task.getException());
                     Toast.makeText(context, getString(R.string.msg_error_checkin_member) + memberId, Toast.LENGTH_SHORT).show();
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG, "get failed with ", databaseError.toException());
-                Toast.makeText(context, getString(R.string.msg_error_checkin_member) + memberId, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -222,7 +221,7 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
     @Override
     public void applyNewMemberData(final String firstName, final String lastName, String email, boolean mailingList, String smartcardId) {
         Log.d(TAG, "applyMemberData: " + firstName + " " + lastName + " " + email + " " + mailingList + " " + smartcardId);
-        Member newMember = new Member();
+        final Member newMember = new Member();
         newMember.setFirstName(firstName);
         newMember.setLastName(lastName);
         newMember.setEmail(email);
@@ -233,50 +232,47 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
         newMember.setIsAdmin(false);
         newMember.setBalance(0f);
 
-        db.getReference("members")
-                .push()
-                .setValue(newMember)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(context, getString(R.string.msg_added_new_member, firstName, lastName), Toast.LENGTH_SHORT).show();
-                        } else {
-                            Log.d(TAG, "onComplete: error adding new member");
-                            Toast.makeText(context, getString(R.string.msg_error_add_member), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+        CollectionReference members = db.collection("members");
+        members.add(newMember).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentReference> task) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "onComplete: new member added with ID " + newMember.getId());
+                    Toast.makeText(context, getString(R.string.msg_added_new_member, firstName, lastName), Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.d(TAG, "onComplete: error adding new member");
+                    Toast.makeText(context, getString(R.string.msg_error_add_member), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
 
     @Override
     public void applyNewTransactionData(final String subject, final double amount) {
         Log.d(TAG, "applyNewTransactionData: " + subject + " " + amount);
-        Transaction newTransaction = new Transaction();
+        final Transaction newTransaction = new Transaction();
         newTransaction.setSubject(subject);
         newTransaction.setAmount(amount);
         newTransaction.setTimestamp(new Date().getTime());
         if (initializedByAdmin()) {
-            DatabaseReference memberRef = db.getReference("members").child(adminMemberId);
+            DocumentReference memberRef = db.collection("members").document(adminMemberId);
             newTransaction.setMemberId(memberRef.toString());
         }
 
-        DatabaseReference transactions = db.getReference("transactions");
-        transactions.push()
-                .setValue(newTransaction)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()) {
-                            Log.d(TAG, "onComplete: new transaction added");
-                            Toast.makeText(context, getString(R.string.msg_added_new_transaction) + subject + " " + amount, Toast.LENGTH_SHORT).show();
-                        } else {
-                            Log.d(TAG, "onComplete: error adding new transaction");
-                            Toast.makeText(context, getString(R.string.msg_error_new_transaction), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+        CollectionReference transactions = db.collection("transactions");
+        transactions.add(newTransaction).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentReference> task) {
+                if(task.isSuccessful()) {
+                    Log.d(TAG, "onComplete: new transaction added with ID " + newTransaction.getId());
+                    Toast.makeText(context, getString(R.string.msg_added_new_transaction) + subject + " " + amount, Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.d(TAG, "onComplete: error adding new transaction");
+                    Toast.makeText(context, getString(R.string.msg_error_new_transaction), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     public boolean initializedByAdmin() {
