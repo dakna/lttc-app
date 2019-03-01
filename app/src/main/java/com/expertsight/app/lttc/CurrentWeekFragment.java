@@ -24,16 +24,17 @@ import com.expertsight.app.lttc.model.Match;
 import com.expertsight.app.lttc.model.Member;
 import com.expertsight.app.lttc.util.DateHelper;
 import com.expertsight.app.lttc.widget.MemberListWidgetService;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 
+
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseError;
-
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,8 +51,8 @@ public class CurrentWeekFragment extends Fragment {
 
     private static final String TAG = "CurrentWeekFragment";
 
-    private FirebaseDatabase db;
-    private FirebaseRecyclerAdapter dbAdapterMembersCheckedIn;
+    private FirebaseFirestore db;
+    private FirestoreRecyclerAdapter dbAdapterMembersCheckedIn;
 
     @BindView(R.id.rvMembers)
     RecyclerView rvMembersCheckedIn;
@@ -102,7 +103,7 @@ public class CurrentWeekFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        db = FirebaseDatabase.getInstance();
+        db = FirebaseFirestore.getInstance();
     }
 
     @Override
@@ -223,26 +224,26 @@ public class CurrentWeekFragment extends Fragment {
 
         Date startOfThisWeek = DateHelper.getStartOfWeek(new Date());
 
-        final Query query = db.getReference("/members")
-                .orderByChild("lastCheckIn")
+        final Query query = db.collection("/members")
+                .orderBy("lastCheckIn")
                 .startAt(startOfThisWeek.getTime());
 
         Log.d(TAG, "starting to get Member list checked in for " + new Date().getTime() + "in week starting at " + startOfThisWeek.getTime());
 
         
-        FirebaseRecyclerOptions<Member> response = new FirebaseRecyclerOptions.Builder<Member>()
+        FirestoreRecyclerOptions<Member> response = new FirestoreRecyclerOptions.Builder<Member>()
                 .setQuery(query, Member.class)
                 .build();
 
 
-        dbAdapterMembersCheckedIn = new FirebaseRecyclerAdapter<Member, CurrentWeekFragment.MemberCheckedInViewHolder>(response) {
+        dbAdapterMembersCheckedIn = new FirestoreRecyclerAdapter<Member, CurrentWeekFragment.MemberCheckedInViewHolder>(response) {
 
 
             @Override
             public Member getItem(int position) {
                 Member member = super.getItem(position);
                 // fill id into local POJO so we can pass it on when clicked
-                member.setId(this.getSnapshots().getSnapshot(position).getKey());
+                member.setId(this.getSnapshots().getSnapshot(position).getId());
                 return member;
             }
 
@@ -251,7 +252,7 @@ public class CurrentWeekFragment extends Fragment {
                 Log.d(TAG, "onBindViewHolder: Member CheckedIn ID " + member.getId() + " lastCheckIn " + member.getLastCheckIn());
                 holder.fullName.setText(member.getFullName());
                 // TODO: 5/22/2018 use string resource
-                holder.time.setText(getString(R.string.checked_in_date,new SimpleDateFormat("MM/dd 'at' hh:mm a").format(new Date(member.getLastCheckIn()))));
+                holder.time.setText(getString(R.string.checked_in_date,new SimpleDateFormat("MM/dd 'at' hh:mm a").format(member.getLastCheckIn())));
 
             }
 
@@ -265,9 +266,9 @@ public class CurrentWeekFragment extends Fragment {
             }
 
             @Override
-            public void onError(@NonNull DatabaseError error) {
+            public void onError(@NonNull FirebaseFirestoreException e) {
                 Log.d(TAG, "onError: ");
-                super.onError(error);
+                super.onError(e);
             }
 
             @Override
@@ -291,7 +292,7 @@ public class CurrentWeekFragment extends Fragment {
     }
 
     
-    private void updateWidget(FirebaseRecyclerAdapter adapter) {
+    private void updateWidget(FirestoreRecyclerAdapter adapter) {
         List<Member> memberList = new ArrayList<>();
 
         Iterator iterator = adapter.getSnapshots().listIterator();
@@ -324,22 +325,21 @@ public class CurrentWeekFragment extends Fragment {
         //no server timestamp so it works offline
         match.setTimestamp(new Date().getTime());
 
-        DatabaseReference matches = db.getReference("matches");
-        matches.push()
-                .setValue(match)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()) {
+        CollectionReference matches = db.collection("matches");
+        matches.add(match)
+            .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentReference> task) {
+                    if(task.isSuccessful()) {
 
-                            Log.d(TAG, "onComplete: new match added ");
-                            Toast.makeText(getContext(), getString(R.string.msg_added_match, player1.getFullName(), player2.getFullName()), Toast.LENGTH_SHORT).show();
-                        } else {
-                            Log.d(TAG, "onComplete: error adding new match");
-                            Toast.makeText(getContext(), getString(R.string.msg_error_add_match), Toast.LENGTH_SHORT).show();
-                        }
+                        Log.d(TAG, "onComplete: new match added ");
+                        Toast.makeText(getContext(), getString(R.string.msg_added_match, player1.getFullName(), player2.getFullName()), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.d(TAG, "onComplete: error adding new match");
+                        Toast.makeText(getContext(), getString(R.string.msg_error_add_match), Toast.LENGTH_SHORT).show();
                     }
-                });
+                }
+            });
     }
 
     public class MemberCheckedInViewHolder extends RecyclerView.ViewHolder {
