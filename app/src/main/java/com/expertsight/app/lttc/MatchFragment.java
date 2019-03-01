@@ -16,16 +16,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.expertsight.app.lttc.model.Match;
 import com.expertsight.app.lttc.model.Member;
 import com.expertsight.app.lttc.util.DateHelper;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+
 
 import java.util.Date;
 
@@ -37,8 +37,8 @@ public class MatchFragment extends Fragment {
 
     private static final String TAG = "MatchFragment";
 
-    private FirebaseDatabase db;
-    private FirebaseRecyclerAdapter dbAdapterMatches;
+    private FirebaseFirestore db;
+    private FirestoreRecyclerAdapter dbAdapterMatches;
 
     @BindView(R.id.rvMatches)
     RecyclerView rvMatches;
@@ -88,7 +88,7 @@ public class MatchFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        db = FirebaseDatabase.getInstance();
+        db = FirebaseFirestore.getInstance();
     }
 
     @Override
@@ -165,26 +165,26 @@ public class MatchFragment extends Fragment {
 
         Date startOfThisWeek = DateHelper.getStartOfWeek(new Date());
 
-        final Query query = db.getReference("/matches")
-                .orderByChild("timestamp")
+        final Query query = db.collection("/matches")
+                .orderBy("timestamp")
                 .startAt(startOfThisWeek.getTime());
 
         Log.d(TAG, "starting to get match list played for " + new Date().getTime() + "in week starting at " + startOfThisWeek.getTime());
 
 
-        FirebaseRecyclerOptions<Match> response = new FirebaseRecyclerOptions.Builder<Match>()
+        FirestoreRecyclerOptions<Match> response = new FirestoreRecyclerOptions.Builder<Match>()
                 .setQuery(query, Match.class)
                 .build();
 
 
-        dbAdapterMatches= new FirebaseRecyclerAdapter<Match, MatchFragment.MatchViewHolder>(response) {
+        dbAdapterMatches= new FirestoreRecyclerAdapter<Match, MatchFragment.MatchViewHolder>(response) {
 
 
             @Override
             public Match getItem(int position) {
                 Match match = super.getItem(position);
                 // fill id into local POJO so we can pass it on when clicked
-                match.setId(this.getSnapshots().getSnapshot(position).getKey());
+                match.setId(this.getSnapshots().getSnapshot(position).getId());
                 return match;
             }
 
@@ -213,9 +213,9 @@ public class MatchFragment extends Fragment {
             }
 
             @Override
-            public void onError(@NonNull DatabaseError error) {
+            public void onError(@NonNull FirebaseFirestoreException e) {
                 Log.d(TAG, "onError: ");
-                super.onError(error);
+                super.onError(e);
             }
 
             @Override
