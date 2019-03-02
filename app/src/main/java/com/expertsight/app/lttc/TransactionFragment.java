@@ -3,8 +3,6 @@ package com.expertsight.app.lttc;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -15,40 +13,37 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.expertsight.app.lttc.model.Member;
 import com.expertsight.app.lttc.model.Transaction;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.annotation.Nullable;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.Optional;
+
 
 
 public class TransactionFragment extends Fragment {
 
     private static final String TAG = "TransactionFragment";
 
-    private FirebaseDatabase db;
-    private FirebaseRecyclerAdapter dbAdapterAllTransactions;
+    private FirebaseFirestore db;
+    private FirestoreRecyclerAdapter dbAdapterAllTransactions;
 
     @BindView(R.id.rvTransactions)
     RecyclerView rvTransactions;
@@ -91,7 +86,7 @@ public class TransactionFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        db = FirebaseDatabase.getInstance();
+        db = FirebaseFirestore.getInstance();
     }
 
     @Override
@@ -149,25 +144,25 @@ public class TransactionFragment extends Fragment {
 
     private void setupTransactionListView() {
 
-        final Query query = db.getReference("/transactions")
-                .orderByChild("timestamp");
+        final Query query = db.collection("/transactions")
+                .orderBy("timestamp");
 
         Log.d(TAG, "starting to get Transaction list" );
 
 
-        FirebaseRecyclerOptions<Transaction> response = new FirebaseRecyclerOptions.Builder<Transaction>()
+        FirestoreRecyclerOptions<Transaction> response = new FirestoreRecyclerOptions.Builder<Transaction>()
                 .setQuery(query, Transaction.class)
                 .build();
 
 
-        dbAdapterAllTransactions = new FirebaseRecyclerAdapter<Transaction, TransactionFragment.TransactionViewHolder>(response) {
+        dbAdapterAllTransactions = new FirestoreRecyclerAdapter<Transaction, TransactionFragment.TransactionViewHolder>(response) {
 
 
             @Override
             public Transaction getItem(int position) {
                 Transaction transaction = super.getItem(position);
                 // fill id into local POJO so we can pass it on when clicked
-                transaction.setId(this.getSnapshots().getSnapshot(position).getKey());
+                transaction.setId(this.getSnapshots().getSnapshot(position).getId());
                 return transaction;
             }
 
@@ -234,32 +229,31 @@ public class TransactionFragment extends Fragment {
 
     private void setTotalBalance() {
         Log.d(TAG, "setTotalBalance: start");
-        DatabaseReference members = db.getReference("transactions");
+        CollectionReference transactions = db.collection("transactions");
 
-        members.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                double totalBalance = 0;
-                for (DataSnapshot transactionSnapshot: dataSnapshot.getChildren()) {
-                    Transaction transaction = transactionSnapshot.getValue(Transaction.class);
-                    transaction.setId(transactionSnapshot.getKey());
-                    totalBalance = totalBalance + transaction.getAmount();
-                }
-                tvTotalBalance.setText(getString(R.string.dollar_amount, String.valueOf(totalBalance)));
-                if (totalBalance > 0) {
-                    tvTotalBalance.setTextColor(ContextCompat.getColor(getContext(), R.color.darkGreen));
-                }
-                if (totalBalance < 0) {
-                    tvTotalBalance.setTextColor(ContextCompat.getColor(getContext(), R.color.darkRed));
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+        transactions.addSnapshotListener(new EventListener<QuerySnapshot>() {
+             @Override
+             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                 if (e != null) {
+                     Log.w(TAG, "Listen failed.", e);
+                     return;
+                 }
 
-            }
-        });
-
+                 double totalBalance = 0;
+                 for (QueryDocumentSnapshot transactionDocument : queryDocumentSnapshots) {
+                     Transaction transaction = transactionDocument.toObject(Transaction.class).withId(transactionDocument.getId());
+                     totalBalance = totalBalance + transaction.getAmount();
+                 }
+                 tvTotalBalance.setText(getString(R.string.dollar_amount, String.valueOf(totalBalance)));
+                 if (totalBalance > 0) {
+                     tvTotalBalance.setTextColor(ContextCompat.getColor(getContext(), R.color.darkGreen));
+                 }
+                 if (totalBalance < 0) {
+                     tvTotalBalance.setTextColor(ContextCompat.getColor(getContext(), R.color.darkRed));
+                 }
+             }
+         });
     }
 
     @OnClick(R.id.btnAddTransaction)
