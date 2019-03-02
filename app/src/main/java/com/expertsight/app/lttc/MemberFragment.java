@@ -26,17 +26,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.expertsight.app.lttc.model.Member;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
-
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -49,8 +48,8 @@ public class MemberFragment extends Fragment {
 
     private static final String TAG = "MemberFragment";
 
-    private FirebaseDatabase db;
-    private FirebaseRecyclerAdapter dbAdapterAllMembers;
+    private FirebaseFirestore db;
+    private FirestoreRecyclerAdapter dbAdapterAllMembers;
 
     @BindView(R.id.actvMembers)
     AutoCompleteTextView autoCompleteTextView;
@@ -96,7 +95,7 @@ public class MemberFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        db = FirebaseDatabase.getInstance();
+        db = FirebaseFirestore.getInstance();
     }
 
     @Override
@@ -179,49 +178,47 @@ public class MemberFragment extends Fragment {
         });
 
 
-        DatabaseReference members = db.getReference("members");
-        members.addValueEventListener(new ValueEventListener() {
+        CollectionReference members = db.collection("members");
+        Query query = members.orderBy("firstName");
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                adapter.clear();
-                for (DataSnapshot memberSnapshot : dataSnapshot.getChildren()) {
-                    Log.d(TAG, memberSnapshot.getKey() + " => " + memberSnapshot.getValue());
-                    Member member = memberSnapshot.getValue(Member.class);
-                    member.setId(memberSnapshot.getKey());
-                    adapter.add(member);
+            public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
                 }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG, "onCancelled: no members in list");
+                if (queryDocumentSnapshots != null) {
+                    adapter.clear();
+                    for (QueryDocumentSnapshot memberSnapshot : queryDocumentSnapshots) {
+                        Log.d(TAG, memberSnapshot.getId() + " => " + memberSnapshot.getData());
+                        Member member = memberSnapshot.toObject(Member.class).withId(memberSnapshot.getId());
+                        adapter.add(member);
+                    }
+                }
             }
         });
-
     }
 
     private void setupMemberListView() {
 
-        final Query query = db.getReference("members")
-                .orderByChild("firstName");
+        final Query query = db.collection("members")
+                .orderBy("firstName");
 
         Log.d(TAG, "starting to get Member list");
 
-        FirebaseRecyclerOptions<Member> response = new FirebaseRecyclerOptions.Builder<Member>()
+        FirestoreRecyclerOptions<Member> response = new FirestoreRecyclerOptions.Builder<Member>()
                 .setQuery(query, Member.class)
                 .build();
 
 
-        dbAdapterAllMembers = new FirebaseRecyclerAdapter<Member, MemberFragment.MemberViewHolder>(response) {
+        dbAdapterAllMembers = new FirestoreRecyclerAdapter<Member, MemberFragment.MemberViewHolder>(response) {
 
 
             @Override
             public Member getItem(int position) {
                 Member member = super.getItem(position);
                 // fill id into local POJO so we can pass it on when clicked
-                member.setId(this.getSnapshots().getSnapshot(position).getKey());
+                member.setId(this.getSnapshots().getSnapshot(position).getId());
                 return member;
             }
 
@@ -349,9 +346,8 @@ public class MemberFragment extends Fragment {
         args.putString("member_smartcard_id", member.getSmartcardId());
 
 
-        if (member.getLastCheckIn() != 0) {
-            Date lastCheckIn = new Date(member.getLastCheckIn());
-            String dateString = new SimpleDateFormat("MM/dd/yyyy hh:mm").format(lastCheckIn);
+        if (member.getLastCheckIn() != null) {
+            String dateString = new SimpleDateFormat("MM/dd/yyyy hh:mm").format(member.getLastCheckIn());
             args.putString("member_last_check_in", dateString);
         }
 
