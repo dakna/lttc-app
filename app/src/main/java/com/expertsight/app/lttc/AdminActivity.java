@@ -254,7 +254,7 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
         final Transaction newTransaction = new Transaction();
         newTransaction.setSubject(subject);
         newTransaction.setAmount(amount);
-        newTransaction.setTimestamp(new Date().getTime());
+        newTransaction.setTimestamp(new Date());
         if (initializedByAdmin()) {
             DocumentReference memberRef = db.collection("members").document(adminMemberId);
             newTransaction.setMemberId(memberRef.toString());

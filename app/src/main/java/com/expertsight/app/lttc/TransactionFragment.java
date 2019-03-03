@@ -182,7 +182,7 @@ public class TransactionFragment extends Fragment {
                 }
 
                 // TODO: 5/22/2018 use string resource
-                holder.time.setText(getString(R.string.transaction_paid, new SimpleDateFormat("MM/dd 'at' HH:mm").format(new Date(transaction.getTimestamp()))));
+                holder.time.setText(getString(R.string.transaction_paid, new SimpleDateFormat("MM/dd 'at' HH:mm").format(transaction.getTimestamp())));
 
             }
 

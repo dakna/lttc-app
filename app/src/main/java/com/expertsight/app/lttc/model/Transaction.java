@@ -4,13 +4,15 @@ package com.expertsight.app.lttc.model;
 
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
+import java.util.Date;
+
 @IgnoreExtraProperties
 public class Transaction extends BaseModel {
 
     private double amount;
     private String memberId;
     private String subject;
-    private long timestamp;
+    private Date timestamp;
 
     public Transaction() {}
 
@@ -38,11 +40,11 @@ public class Transaction extends BaseModel {
         this.subject = subject;
     }
 
-    public long getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 

@@ -239,7 +239,7 @@ public class PlayActivity extends AppCompatActivity
                             newTransaction.setMemberId(member.getId());
                             newTransaction.setSubject(getString(R.string.transaction_subject_member_fee));
                             //no server timestamp so it works offline
-                            newTransaction.setTimestamp(new Date().getTime());
+                            newTransaction.setTimestamp(new Date());
 
                             CollectionReference transactions = db.collection("transactions");
                             transactions.add(newTransaction)

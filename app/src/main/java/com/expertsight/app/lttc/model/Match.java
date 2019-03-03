@@ -1,8 +1,9 @@
 package com.expertsight.app.lttc.model;
 
 
+import com.google.firebase.firestore.IgnoreExtraProperties;
 
-import com.google.firebase.database.IgnoreExtraProperties;
+import java.util.Date;
 
 @IgnoreExtraProperties
 public class Match extends BaseModel {
@@ -13,7 +14,7 @@ public class Match extends BaseModel {
     private String player2FullName;
     private int player1Games;
     private int player2Games;
-    private long timestamp;
+    private Date timestamp;
 
     public Match() {}
 
@@ -65,11 +66,11 @@ public class Match extends BaseModel {
         this.player2Games = player2Games;
     }
 
-    public long getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 

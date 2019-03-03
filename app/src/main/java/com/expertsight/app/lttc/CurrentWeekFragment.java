@@ -211,10 +211,10 @@ public class CurrentWeekFragment extends Fragment {
         }
 
         if ((player1 != null) && (player2 != null)) {
-            fabMatch.setVisibility(View.VISIBLE);
+            fabMatch.show();
 
         } else {
-            fabMatch.setVisibility(View.INVISIBLE);
+            fabMatch.hide();
         }
 
 
@@ -323,7 +323,7 @@ public class CurrentWeekFragment extends Fragment {
         match.setPlayer2Id(player2.getId());
         match.setPlayer2FullName(player2.getFullName());
         //no server timestamp so it works offline
-        match.setTimestamp(new Date().getTime());
+        match.setTimestamp(new Date());
 
         CollectionReference matches = db.collection("matches");
         matches.add(match)
