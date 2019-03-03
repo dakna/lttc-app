@@ -11,7 +11,6 @@ import com.google.firebase.firestore.IgnoreExtraProperties;
 public class BaseModel {
 
 
-    @Exclude
     private String id;
 
     public <T extends BaseModel> T withId(@NonNull final String id) {
@@ -19,11 +18,12 @@ public class BaseModel {
         return (T) this;
     }
 
-
+    @Exclude
     public String getId() {
         return id;
     }
 
+    @Exclude
     public void setId(String id) {
         this.id = id;
     }
