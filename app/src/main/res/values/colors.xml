@@ -58,6 +58,7 @@
     <color name="darkRed">#cc0000</color>
     <color name="darkGreen">#00aa00</color>
     <color name="colordarkRed">#cc0000</color>
+    <color name="colorBackgroundPendingWrite">#ffd596</color>
 
     <color name="mcam_color_light">#FAFAFA</color>
     <color name="mcam_color_dark">#424242</color>

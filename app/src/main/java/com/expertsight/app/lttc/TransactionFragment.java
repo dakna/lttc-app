@@ -3,6 +3,7 @@ package com.expertsight.app.lttc;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -17,15 +18,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.expertsight.app.lttc.model.Transaction;
+import com.firebase.ui.common.BaseChangeEventListener;
+import com.firebase.ui.common.ChangeEventType;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SnapshotMetadata;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -145,13 +151,13 @@ public class TransactionFragment extends Fragment {
     private void setupTransactionListView() {
 
         final Query query = db.collection("/transactions")
-                .orderBy("timestamp");
+                .orderBy("timestamp", Query.Direction.DESCENDING);
 
         Log.d(TAG, "starting to get Transaction list" );
 
 
         FirestoreRecyclerOptions<Transaction> response = new FirestoreRecyclerOptions.Builder<Transaction>()
-                .setQuery(query, Transaction.class)
+                .setQuery(query,  MetadataChanges.INCLUDE, Transaction.class)
                 .build();
 
 
@@ -159,16 +165,38 @@ public class TransactionFragment extends Fragment {
 
 
             @Override
+            public void onChildChanged(@NonNull ChangeEventType type, @NonNull DocumentSnapshot snapshot, int newIndex, int oldIndex) {
+                super.onChildChanged(type, snapshot, newIndex, oldIndex);
+                Log.d(TAG, "onChildChanged: snapshot " + snapshot.getId());
+            }
+
+            @Override
             public Transaction getItem(int position) {
                 Transaction transaction = super.getItem(position);
                 // fill id into local POJO so we can pass it on when clicked
-                transaction.setId(this.getSnapshots().getSnapshot(position).getId());
+                DocumentSnapshot snapshot = this.getSnapshots().getSnapshot(position);
+                transaction.setId(snapshot.getId());
+                // set pending writes
+
+                snapshot.getReference().addSnapshotListener(MetadataChanges.INCLUDE, new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                        Log.d(TAG, "onEvent: metadate " + documentSnapshot.getMetadata());
+
+                    }
+                });
+
+                transaction.setHasPendingWrites(snapshot.getMetadata().hasPendingWrites());
                 return transaction;
             }
 
             @Override
             protected void onBindViewHolder(TransactionFragment.TransactionViewHolder holder, int position, final Transaction transaction) {
                 Log.d(TAG, "onBindViewHolder: Transaction ID " + transaction.getId() + " amount " + transaction.getAmount());
+
+                if (transaction.hasPendingWrites()) holder.view.setBackgroundColor(getResources().getColor(R.color.colorBackgroundPendingWrite, getActivity().getTheme()));
+                //else holder.view.setBackgroundColor(getResources().getColor(R.color.colorAccentLight, getActivity().getTheme()));
+
                 holder.subject.setText(transaction.getSubject());
 
                 double amount = transaction.getAmount();
@@ -209,6 +237,15 @@ public class TransactionFragment extends Fragment {
         };
 
         dbAdapterAllTransactions.notifyDataSetChanged();
+
+        query.addSnapshotListener(MetadataChanges.INCLUDE, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                SnapshotMetadata snapshotMetadata = queryDocumentSnapshots.getMetadata();
+                Log.d(TAG, "onEvent: queryDocumentSnapshots " + snapshotMetadata);
+            }
+        });
+
         rvTransactions.setAdapter(dbAdapterAllTransactions);
         rvTransactions.setLayoutManager(new LinearLayoutManager(getContext()));
         rvTransactions.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
@@ -218,9 +255,11 @@ public class TransactionFragment extends Fragment {
         public TextView subject;
         public TextView amount;
         public TextView time;
+        public View view;
 
         public TransactionViewHolder(View view) {
             super(view);
+            this.view = view;
             subject = view.findViewById(R.id.tvSubject);
             amount = view.findViewById(R.id.tvAmount);
             time = view.findViewById(R.id.tvTime);

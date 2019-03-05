@@ -87,7 +87,9 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
 
         if (initializedByAdmin()) {
             tabLayout.setBackgroundColor(getResources().getColor(R.color.darkRed,getTheme()));
+            showPendingSync(true);
         }
+
     }
 
 
@@ -208,7 +210,8 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
                                     public void onFailure(@NonNull Exception e) {
                                         Log.w(TAG, "Error writing document", e);
                                     }
-                                });
+                                })
+                        ;
                     } else {
                         Log.d(TAG, "No such document");
                         Toast.makeText(context, getString(R.string.msg_error_checkin_member) + memberId, Toast.LENGTH_SHORT).show();
@@ -255,6 +258,7 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
     @Override
     public void applyNewTransactionData(final String subject, final double amount) {
         Log.d(TAG, "applyNewTransactionData: " + subject + " " + amount);
+
         final Transaction newTransaction = new Transaction();
         newTransaction.setSubject(subject);
         newTransaction.setAmount(amount);
@@ -265,7 +269,11 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
         }
 
         CollectionReference transactions = db.collection("transactions");
-        transactions.add(newTransaction).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+        DocumentReference ref = transactions.document();
+        Log.d(TAG, "applyNewTransactionData: test doc ref path = " + ref.getPath());
+
+        transactions.add(newTransaction)
+                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
             @Override
             public void onComplete(@NonNull Task<DocumentReference> task) {
                 if(task.isSuccessful()) {
@@ -282,6 +290,12 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
     public boolean initializedByAdmin() {
         if ((adminMemberId != null) && (!adminMemberId.isEmpty())) return true;
         return false;
+    }
+
+    public void showPendingSync(Boolean isSyncPending) {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        if (isSyncPending) toolbar.setSubtitle("Sync Pending");
+        else toolbar.setSubtitle("");
     }
 
     private void setupBottomNavigationView() {
