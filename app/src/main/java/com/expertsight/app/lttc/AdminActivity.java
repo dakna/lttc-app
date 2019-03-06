@@ -85,11 +85,6 @@ public class AdminActivity extends AppCompatActivity implements MemberFragment.O
         Log.d(TAG, "onCreate: Intent admin adminMemberId " + getIntent().getStringExtra("adminMemberId"));
         adminMemberId = getIntent().getStringExtra("adminMemberId");
 
-        if (initializedByAdmin()) {
-            tabLayout.setBackgroundColor(getResources().getColor(R.color.darkRed,getTheme()));
-            showPendingSync(true);
-        }
-
     }
 
 

@@ -12,6 +12,7 @@ public class BaseModel {
 
 
     private String id;
+    private boolean hasPendingWrites;
 
     public <T extends BaseModel> T withId(@NonNull final String id) {
         this.id = id;
@@ -26,5 +27,15 @@ public class BaseModel {
     @Exclude
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Exclude
+    public boolean hasPendingWrites() {
+        return hasPendingWrites;
+    }
+
+    @Exclude
+    public void setHasPendingWrites(boolean hasPendingWrites) {
+        this.hasPendingWrites = hasPendingWrites;
     }
 }

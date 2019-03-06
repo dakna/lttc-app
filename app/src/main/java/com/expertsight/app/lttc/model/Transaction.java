@@ -14,7 +14,6 @@ public class Transaction extends BaseModel {
     private String memberId;
     private String subject;
     private Date timestamp;
-    private boolean hasPendingWrites;
 
     public Transaction() {}
 
@@ -48,16 +47,6 @@ public class Transaction extends BaseModel {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
-    }
-
-    @Exclude
-    public boolean hasPendingWrites() {
-        return hasPendingWrites;
-    }
-
-    @Exclude
-    public void setHasPendingWrites(boolean hasPendingWrites) {
-        this.hasPendingWrites = hasPendingWrites;
     }
 
     @Override

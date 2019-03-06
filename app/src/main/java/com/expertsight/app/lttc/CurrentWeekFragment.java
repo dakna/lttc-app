@@ -32,8 +32,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.Query;
 
 import java.text.SimpleDateFormat;
@@ -232,7 +234,7 @@ public class CurrentWeekFragment extends Fragment {
 
         
         FirestoreRecyclerOptions<Member> response = new FirestoreRecyclerOptions.Builder<Member>()
-                .setQuery(query, Member.class)
+                .setQuery(query, MetadataChanges.INCLUDE, Member.class)
                 .build();
 
 
@@ -244,12 +246,19 @@ public class CurrentWeekFragment extends Fragment {
                 Member member = super.getItem(position);
                 // fill id into local POJO so we can pass it on when clicked
                 member.setId(this.getSnapshots().getSnapshot(position).getId());
+                DocumentSnapshot snapshot = this.getSnapshots().getSnapshot(position);
+                member.setId(snapshot.getId());
+                // set pending writes
+                member.setHasPendingWrites(snapshot.getMetadata().hasPendingWrites());
                 return member;
             }
 
             @Override
             protected void onBindViewHolder(CurrentWeekFragment.MemberCheckedInViewHolder holder, int position, final Member member) {
-                Log.d(TAG, "onBindViewHolder: Member CheckedIn ID " + member.getId() + " lastCheckIn " + member.getLastCheckIn());
+                //Log.d(TAG, "onBindViewHolder: Member CheckedIn ID " + member.getId() + " lastCheckIn " + member.getLastCheckIn());
+
+                if (member.hasPendingWrites()) holder.view.setBackgroundColor(getResources().getColor(R.color.colorBackgroundPendingWrite, getActivity().getTheme()));
+
                 holder.fullName.setText(member.getFullName());
                 // TODO: 5/22/2018 use string resource
                 holder.time.setText(getString(R.string.checked_in_date,new SimpleDateFormat("MM/dd 'at' hh:mm a").format(member.getLastCheckIn())));
@@ -345,9 +354,11 @@ public class CurrentWeekFragment extends Fragment {
     public class MemberCheckedInViewHolder extends RecyclerView.ViewHolder {
         public TextView fullName;
         public TextView time;
+        public View view;
 
         public MemberCheckedInViewHolder(View view) {
             super(view);
+            this.view = view;
             fullName = view.findViewById(R.id.tvFullName);
             time = view.findViewById(R.id.tvTime);
         }
