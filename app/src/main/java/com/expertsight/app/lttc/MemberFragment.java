@@ -219,11 +219,8 @@ public class MemberFragment extends Fragment {
             @Override
             public Member getItem(int position) {
                 Member member = super.getItem(position);
-                // fill id into local POJO so we can pass it on when clicked
-                member.setId(this.getSnapshots().getSnapshot(position).getId());
                 DocumentSnapshot snapshot = this.getSnapshots().getSnapshot(position);
                 member.setId(snapshot.getId());
-                // set pending writes
                 member.setHasPendingWrites(snapshot.getMetadata().hasPendingWrites());
                 return member;
             }

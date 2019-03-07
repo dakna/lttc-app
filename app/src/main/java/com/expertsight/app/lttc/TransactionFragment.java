@@ -160,10 +160,8 @@ public class TransactionFragment extends Fragment {
             @Override
             public Transaction getItem(int position) {
                 Transaction transaction = super.getItem(position);
-                // fill id into local POJO so we can pass it on when clicked
                 DocumentSnapshot snapshot = this.getSnapshots().getSnapshot(position);
                 transaction.setId(snapshot.getId());
-                // set pending writes
                 transaction.setHasPendingWrites(snapshot.getMetadata().hasPendingWrites());
                 return transaction;
             }

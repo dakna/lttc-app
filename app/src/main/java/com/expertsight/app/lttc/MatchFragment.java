@@ -22,8 +22,10 @@ import com.expertsight.app.lttc.model.Member;
 import com.expertsight.app.lttc.util.DateHelper;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.Query;
 
 
@@ -173,7 +175,7 @@ public class MatchFragment extends Fragment {
 
 
         FirestoreRecyclerOptions<Match> response = new FirestoreRecyclerOptions.Builder<Match>()
-                .setQuery(query, Match.class)
+                .setQuery(query, MetadataChanges.INCLUDE, Match.class)
                 .build();
 
 
@@ -183,14 +185,19 @@ public class MatchFragment extends Fragment {
             @Override
             public Match getItem(int position) {
                 Match match = super.getItem(position);
-                // fill id into local POJO so we can pass it on when clicked
-                match.setId(this.getSnapshots().getSnapshot(position).getId());
+                DocumentSnapshot snapshot = this.getSnapshots().getSnapshot(position);
+                match.setId(snapshot.getId());
+                // set pending writes
+                match.setHasPendingWrites(snapshot.getMetadata().hasPendingWrites());
                 return match;
             }
 
             @Override
             protected void onBindViewHolder(MatchFragment.MatchViewHolder holder, int position, final Match match) {
                 Log.d(TAG, "onBindViewHolder: Match ID " + match.getId() + " timestamp " + match.getTimestamp());
+
+                if (match.hasPendingWrites()) holder.view.setBackgroundColor(getResources().getColor(R.color.colorBackgroundPendingWrite, getActivity().getTheme()));
+
                 holder.player1.setText(match.getPlayer1FullName());
                 holder.player1Games.setText(String.valueOf(match.getPlayer1Games()));
                 if (match.getPlayer1Games() == 3) {
@@ -244,9 +251,11 @@ public class MatchFragment extends Fragment {
         public TextView player2;
         public TextView player1Games;
         public TextView player2Games;
+        public View view;
 
         public MatchViewHolder(View view) {
             super(view);
+            this.view = view;
             view.setOnClickListener(this);
             player1 = view.findViewById(R.id.tvPlayer1FullName);
             player2 = view.findViewById(R.id.tvPlayer2FullName);

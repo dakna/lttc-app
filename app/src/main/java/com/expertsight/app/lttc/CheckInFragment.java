@@ -28,9 +28,11 @@ import com.expertsight.app.lttc.model.Member;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -258,7 +260,7 @@ public class CheckInFragment extends Fragment {
         Log.d(TAG, "starting to get Member list");
 
         FirestoreRecyclerOptions<Member> response = new FirestoreRecyclerOptions.Builder<Member>()
-                .setQuery(query, Member.class)
+                .setQuery(query, MetadataChanges.INCLUDE, Member.class)
                 .build();
 
         int defaultTextColor = 0;
@@ -269,14 +271,18 @@ public class CheckInFragment extends Fragment {
             @Override
             public Member getItem(int position) {
                 Member member = super.getItem(position);
-                // fill id into local POJO so we can pass it on when clicked
-                member.setId(this.getSnapshots().getSnapshot(position).getId());
+                DocumentSnapshot snapshot = this.getSnapshots().getSnapshot(position);
+                member.setId(snapshot.getId());
+                member.setHasPendingWrites(snapshot.getMetadata().hasPendingWrites());
                 return member;
             }
 
             @Override
             protected void onBindViewHolder(CheckInFragment.MemberViewHolder holder, int position, Member member) {
                 Log.d(TAG, "onBindViewHolder: Member ID " + member.getId());
+
+                if (member.hasPendingWrites()) holder.view.setBackgroundColor(getResources().getColor(R.color.colorBackgroundPendingWrite, getActivity().getTheme()));
+
                 holder.fullName.setText(member.getFullName());
                 Log.d(TAG, "onBindViewHolder: fullname textsize" + holder.fullName.getTextSize());
                 BigDecimal balance = new BigDecimal(member.getBalance());
@@ -339,9 +345,11 @@ public class CheckInFragment extends Fragment {
         public TextView email;
         public TextView balance;
         public ImageView playingToday;
+        public View view;
 
         public MemberViewHolder(View view) {
             super(view);
+            this.view = view;
             view.setOnClickListener(this);
             fullName = view.findViewById(R.id.tvFullName);
             email = view.findViewById(R.id.tvEmail);
