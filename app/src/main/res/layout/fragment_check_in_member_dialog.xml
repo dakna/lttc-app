@@ -27,6 +27,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvMemberFullName" />
 
@@ -37,6 +38,7 @@
         android:text="@string/balance"
         android:layout_marginStart="20dp"
         android:layout_marginTop="12dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:layout_marginBottom="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvFee" />
@@ -48,6 +50,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="32dp"
         android:layout_marginBottom="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:text="@string/how_much_money"
         app:layout_constraintTop_toBottomOf="@+id/tvMemberBalance"
         app:layout_constraintStart_toStartOf="parent"
@@ -68,21 +71,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:text="@string/zero_dollar" />
         <RadioButton
             android:id="@+id/radioPayFive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:text="@string/five_dollar" />
         <RadioButton
             android:id="@+id/radioPayTen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:text="@string/ten_dollar" />
         <RadioButton
             android:id="@+id/radioPayTwenty"
@@ -101,6 +104,7 @@
         android:layout_marginTop="32dp"
         android:layout_marginBottom="16dp"
         android:text="@string/do_you_want_change_back"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintTop_toBottomOf="@+id/radioPayment"
         app:layout_constraintStart_toStartOf="parent"
         />
@@ -112,6 +116,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:text="@string/no_add_to_balance"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintTop_toBottomOf="@+id/tvChangeQuestion"
         app:layout_constraintStart_toStartOf="parent"
         />
