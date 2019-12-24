@@ -37,10 +37,10 @@
     <string name="member">Member</string>
     <string name="fee">Fee</string>
     <string name="how_much_money">How much money do you put in today?</string>
-    <string name="zero_dollar">$0</string>
-    <string name="five_dollar">$5</string>
-    <string name="ten_dollar">$10</string>
-    <string name="twenty_dollar">$20</string>
+    <string name="zero_dollar">$0.0</string>
+    <string name="five_dollar">$5.0</string>
+    <string name="ten_dollar">$10.0</string>
+    <string name="twenty_dollar">$20.0</string>
     <string name="do_you_want_change_back">Do you want change back?</string>
     <string name="no_add_to_balance">No, add to my balance</string>
     <string name="members">Members</string>
@@ -80,8 +80,8 @@
     <string name="implement_AdminBottomSheetDialogListener"> must implement AdminBottomSheetDialogListener</string>
     <string name="implement_OnFragmentInteractionListener"> must implement OnFragmentInteractionListener</string>
     <string name="msg_member_already_checked_in">This member already checked in this week</string>
-    <string name="dialog_fee">The fee for playing today is $%s</string>
-    <string name="dialog_balance">Your balance is $%s</string>
+    <string name="dialog_fee">The fee for playing today is:</string>
+    <string name="dialog_balance">Your balance is:</string>
     <string name="title_club_checkin">Club Check-In %s</string>
     <string name="msg_club_checkin_cancelled">Club check-in cancelled</string>
     <string name="implement_CheckInMemberDialogListener"> must implement CheckInMemberDialogListener</string>
@@ -113,6 +113,7 @@
     <string name="total_balance">Total Balance</string>
     <string name="full_name">FullName</string>
     <string name="n_a">N/A</string>
+    <string name="dollar">$%s</string>
     <string name="description_playing_today">Icon for members playing today</string>
     <string name="admin_explanation">If you click on the button below, you will be able to edit data on the club administration screen as long as you don\'t leave that screen. Remember that this is a public device and you have to leave the club administration screen when you are done so everyone else can only view the data.</string>
 

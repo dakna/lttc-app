@@ -4,10 +4,13 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -23,37 +26,65 @@ public class CheckInMemberDialogFragment extends DialogFragment {
     private TextView tvMemberFullName;
     private TextView tvFee;
     private TextView tvMemberBalance;
+    private TextView tvAmount;
     private RadioGroup radioPayment;
-    private RadioButton radioButtonZero;
+    private RadioButton radioPayZero;
+    private RadioButton radioPayFive;
+    private RadioButton radioPayTen;
+    private RadioButton radioPayTwenty;
+    private Button btnChangeAmount;
     private CheckBox checkKeepChange;
     private CheckInMemberDialogListener listener;
+    private double payment = 5f;
+    private ConstraintLayout differentAmountLayout;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Bundle args = getArguments();
         double balance = args.getDouble("member_balance");
 
+
+
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View form = inflater.inflate(R.layout.fragment_check_in_member_dialog,null);
+        final View form = inflater.inflate(R.layout.fragment_check_in_member_dialog,null);
         tvMemberFullName = form.findViewById(R.id.tvMemberFullName);
         tvFee = form.findViewById(R.id.tvFee);
         tvMemberBalance = form.findViewById(R.id.tvMemberBalance);
+        tvAmount = form.findViewById(R.id.tvAmount);
         radioPayment = form.findViewById(R.id.radioPayment);
-        radioButtonZero = form.findViewById(R.id.radioPayZero);
+        radioPayZero = form.findViewById(R.id.radioPayZero);
+        radioPayFive = form.findViewById(R.id.radioPayFive);
+        radioPayTen = form.findViewById(R.id.radioPayTen);
+        radioPayTwenty = form.findViewById(R.id.radioPayTwenty);
         checkKeepChange = form.findViewById(R.id.cbKeepChange);
+        btnChangeAmount = form.findViewById(R.id.btnChangeAmount);
+        differentAmountLayout = form.findViewById(R.id.differentAmount);
 
 
         tvMemberFullName.setText(args.getString("member_fullname"));
-        tvFee.setText(getString(R.string.dialog_fee, String.valueOf(HomeActivity.FEE_PER_DAY)));
-        tvMemberBalance.setText(getString(R.string.dialog_balance, String.valueOf(balance)));
+        tvFee.setText(getString(R.string.dollar, String.valueOf(HomeActivity.FEE_PER_DAY)));
+        tvMemberBalance.setText(getString(R.string.dollar,String.valueOf(balance)));
+        tvAmount.setText(radioPayFive.getText());
 
         checkKeepChange.setEnabled(false);
-        // you have to select a payment to continue
+
+        btnChangeAmount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("click", "onClick: ");
+                differentAmountLayout.setVisibility(View.VISIBLE);
+                view.setVisibility(View.GONE);
+            }
+        });
+
         radioPayment.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 AlertDialog dialog = (AlertDialog) getDialog();
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                //dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                RadioButton button = form.findViewById(checkedId);
+                tvAmount.setText(button.getText());
+
                 if ((checkedId != R.id.radioPayZero) && (checkedId != R.id.radioPayFive)) {
                     checkKeepChange.setEnabled(true);
                 } else {
@@ -63,7 +94,7 @@ public class CheckInMemberDialogFragment extends DialogFragment {
             }
         });
 
-        AlertDialog.Builder builder =  new AlertDialog.Builder(getActivity())
+        AlertDialog.Builder builder =  new AlertDialog.Builder(getActivity(), R.style.AppTheme_AlertDialog)
                 .setView(form)
                 // set dialog icon
                 .setIcon(R.drawable.ic_monetization)
@@ -78,7 +109,6 @@ public class CheckInMemberDialogFragment extends DialogFragment {
 
                         //test data
                         int radioButtonId = radioPayment.getCheckedRadioButtonId();
-                        double payment = 0f;
 
                         if(radioButtonId == R.id.radioPayZero) {
                             payment = 0f;
@@ -122,7 +152,7 @@ public class CheckInMemberDialogFragment extends DialogFragment {
 
         // disable positive button by default
         AlertDialog dialog = (AlertDialog) getDialog();
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+        //dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
     }
 
     public interface CheckInMemberDialogListener {

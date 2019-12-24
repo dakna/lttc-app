@@ -6,6 +6,13 @@
     android:id="@+id/addMemberDialog"
     tools:context="com.expertsight.app.lttc.CheckInMemberDialogFragment">
 
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelineVertical"
+        android:layout_width="1dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.8"/>
+
     <TextView
         android:id="@+id/tvMemberFullName"
         android:layout_width="wrap_content"
@@ -20,10 +27,10 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvFee"
+        android:id="@+id/tvFeeLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/fee"
+        android:text="@string/dialog_fee"
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
@@ -32,10 +39,21 @@
         app:layout_constraintTop_toBottomOf="@+id/tvMemberFullName" />
 
     <TextView
-        android:id="@+id/tvMemberBalance"
+        android:id="@+id/tvFee"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/balance"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineVertical"
+        app:layout_constraintTop_toBottomOf="@+id/tvMemberFullName"
+        tools:text="$5"/>
+
+    <TextView
+        android:id="@+id/tvMemberBalanceLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dialog_balance"
         android:layout_marginStart="20dp"
         android:layout_marginTop="12dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -44,82 +62,146 @@
         app:layout_constraintTop_toBottomOf="@+id/tvFee" />
 
     <TextView
-        android:id="@+id/tvPaymentQuestion"
+        android:id="@+id/tvMemberBalance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineVertical"
+        app:layout_constraintTop_toBottomOf="@+id/tvFee"
+        tools:text="$20"/>
+
+    <TextView
+        android:id="@+id/tvAmountLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="32dp"
         android:layout_marginBottom="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:text="@string/how_much_money"
+        android:text="Today you pay:"
         app:layout_constraintTop_toBottomOf="@+id/tvMemberBalance"
         app:layout_constraintStart_toStartOf="parent"
         />
 
-    <RadioGroup
-        android:id="@+id/radioPayment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/tvPaymentQuestion">
-        <RadioButton
-            android:id="@+id/radioPayZero"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:text="@string/zero_dollar" />
-        <RadioButton
-            android:id="@+id/radioPayFive"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:text="@string/five_dollar" />
-        <RadioButton
-            android:id="@+id/radioPayTen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:text="@string/ten_dollar" />
-        <RadioButton
-            android:id="@+id/radioPayTwenty"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:text="@string/twenty_dollar" />
-    </RadioGroup>
-
     <TextView
-        android:id="@+id/tvChangeQuestion"
+        android:id="@+id/tvAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
         android:layout_marginTop="32dp"
         android:layout_marginBottom="16dp"
-        android:text="@string/do_you_want_change_back"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintTop_toBottomOf="@+id/radioPayment"
-        app:layout_constraintStart_toStartOf="parent"
-        />
-    <CheckBox
-        android:id="@+id/cbKeepChange"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="@string/no_add_to_balance"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintTop_toBottomOf="@+id/tvChangeQuestion"
-        app:layout_constraintStart_toStartOf="parent"
+        tools:text="$5"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/tvMemberBalance"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineVertical"
         />
 
+    <Button
+        android:id="@+id/btnChangeAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:text="Change"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tvAmountLabel"
+        app:layout_constraintStart_toEndOf="@+id/tvAmountLabel"
+        />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/differentAmount"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintTop_toBottomOf="@+id/tvAmount"
+        app:layout_constraintStart_toStartOf="parent"
+        >
+
+
+        <TextView
+            android:id="@+id/tvPaymentQuestion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:text="@string/how_much_money"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+
+            />
+
+        <RadioGroup
+            android:id="@+id/radioPayment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/tvPaymentQuestion">
+            <RadioButton
+                android:id="@+id/radioPayZero"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:text="@string/zero_dollar" />
+            <RadioButton
+                android:id="@+id/radioPayFive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:checked="true"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:text="@string/five_dollar" />
+            <RadioButton
+                android:id="@+id/radioPayTen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:text="@string/ten_dollar" />
+            <RadioButton
+                android:id="@+id/radioPayTwenty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:text="@string/twenty_dollar" />
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/tvChangeQuestion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/do_you_want_change_back"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintTop_toBottomOf="@+id/radioPayment"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+        <CheckBox
+            android:id="@+id/cbKeepChange"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/no_add_to_balance"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintTop_toBottomOf="@+id/tvChangeQuestion"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+    </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>
