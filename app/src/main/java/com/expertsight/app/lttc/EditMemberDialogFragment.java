@@ -104,7 +104,7 @@ public class EditMemberDialogFragment extends DialogFragment {
         });
 
 
-        AlertDialog.Builder builder =  new AlertDialog.Builder(getActivity())
+        AlertDialog.Builder builder =  new AlertDialog.Builder(getActivity(), R.style.AppTheme_AlertDialog)
                 .setView(form)
                 // set dialog icon
                 .setIcon(R.drawable.ic_person)
